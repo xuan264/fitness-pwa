@@ -424,8 +424,3 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 }
 .time-picker-actions { display: flex; gap: 12px; margin-top: 20px; }
 .time-picker-actions .btn { flex: 1; }
-
-/* 打卡后收缩卡片对齐修复 */
-.meal-header .flex-between { align-items: center; gap: 6px; flex-wrap: nowrap; }
-.meal-header .meal-name { flex: 1; min-width: 0; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.meal-header .badge { white-space: nowrap; flex-shrink: 0; }

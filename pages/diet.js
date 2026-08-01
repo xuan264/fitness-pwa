@@ -1,9 +1,8 @@
 // 饮食页面
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
-import { trainingPlan } from '../data/training-plan.js';
 import { recipes } from '../data/recipes.js';
-import { icons, getDayOfWeek, getDayName, todayStr, getWorkoutIndexForWeek } from '../js/utils.js';
+import { icons, getDayOfWeek, getDayName, todayStr } from '../js/utils.js';
 
 let selectedDay = getDayOfWeek();
 
@@ -14,12 +13,6 @@ export async function renderDiet(params) {
   const week = store.state.currentWeek || 1;
   const currentMenus = recipes.getWeeklyMenus(week);
   const dayMenu = currentMenus.find(m => m.day === selectedDay) || currentMenus[0];
-
-  // 判断当天是否为训练日（用于决定是否显示训练后加餐）
-  const phaseIdx = store.getCurrentPhase ? store.getCurrentPhase() : 0;
-  const phase = trainingPlan.phases[phaseIdx];
-  const dow = getDayOfWeek();
-  const isTrainingDay = getWorkoutIndexForWeek(dow, phase.split) >= 0;
 
   // 计算全天蛋白质（protein 格式如 "约20g"，需要提取数字）
   let totalProtein = 0;
@@ -67,7 +60,7 @@ export async function renderDiet(params) {
     </div>
   `;
 
-  // 三餐 + 加餐（休息日跳过训练后加餐）
+  // 三餐 + 加餐
   const mealOrder = ['breakfast', 'lunch', 'dinner', 'snack'];
   const mealIcons = { breakfast: '🌅', lunch: '☀️', dinner: '🌙', snack: '🍎' };
 
@@ -75,19 +68,16 @@ export async function renderDiet(params) {
     const meal = dayMenu.meals[mealType];
     if (!meal) continue;
 
-    // 休息日不显示训练后加餐
-    if (mealType === 'snack' && !isTrainingDay) continue;
-
     const completed = await checkMealCompleted(meal.id);
 
     html += `
       <div class="meal-card" id="meal-${meal.id}">
         <div class="meal-header ${mealType === 'snack' ? 'accent' : ''}" style="${completed ? 'border-left-color:var(--primary);background:var(--primary-light);' : ''}">
-          <div class="flex-between" style="align-items:center;gap:6px;flex-wrap:nowrap;">
-            <div class="meal-name" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${mealIcons[mealType]} ${meal.mealType} · ${meal.name}</div>
-            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-              ${completed ? '<span class="badge badge-primary" style="white-space:nowrap;">✓ 已打卡</span>' : ''}
-              ${completed ? `<button onclick="toggleMealDetail('${meal.id}')" id="toggle-btn-${meal.id}" style="background:none;border:none;color:var(--primary);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:2px;flex-shrink:0;">查看详情 ${icons.chevronDown}</button>` : ''}
+          <div class="flex-between">
+            <div class="meal-name">${mealIcons[mealType]} ${meal.mealType} · ${meal.name}</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${completed ? '<span class="badge badge-primary">✓ 已打卡</span>' : ''}
+              ${completed ? `<button onclick="toggleMealDetail('${meal.id}')" id="toggle-btn-${meal.id}" style="background:none;border:none;color:var(--primary);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:2px;">查看详情 ${icons.chevronDown}</button>` : ''}
             </div>
           </div>
           ${!completed ? `<div class="meal-meta">

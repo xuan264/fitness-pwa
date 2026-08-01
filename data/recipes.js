@@ -170,19 +170,19 @@ export const recipes = {
       day: 3, dayName: "周三",
       meals: {
         breakfast: {
-          id: "wed-bf", mealType: "早餐", name: "鸡蛋燕麦粥配桃子",
+          id: "wed-bf", mealType: "早餐", name: "鸡蛋燕麦粥配橙子",
           totalTime: "10分钟", calories: "约400大卡", protein: "约30g",
           ingredients: [
             { name: "鸡蛋", amount: "3个", grams: "150g", fist: "1.5个手掌", protein: "19g", category: "protein" },
             { name: "燕麦片", amount: "50g", grams: "50g", fist: "1个拳头", protein: "6.5g", category: "carb" },
-            { name: "桃子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+            { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
             { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
           ],
           steps: [
             "燕麦加水煮5分钟至浓稠",
             "鸡蛋水煮7-10分钟",
             "燕麦粥可加少许盐调味",
-            "桃子洗净食用"
+            "橙子洗净食用"
           ],
           tips: "燕麦粥加一点点盐比加糖更健康，也能提味。"
         },
@@ -311,19 +311,19 @@ export const recipes = {
       day: 5, dayName: "周五",
       meals: {
         breakfast: {
-          id: "fri-bf", mealType: "早餐", name: "鸡蛋三明治配桃子",
+          id: "fri-bf", mealType: "早餐", name: "鸡蛋三明治配橙子",
           totalTime: "10分钟", calories: "约420大卡", protein: "约30g",
           ingredients: [
             { name: "全麦面包", amount: "2片", grams: "70g", fist: "1个拳头", protein: "6.3g", category: "carb" },
             { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
             { name: "生菜", amount: "2叶", grams: "30g", fist: "—", protein: "0.4g", category: "vegetable" },
-            { name: "桃子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+            { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
             { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" }
           ],
           steps: [
             "煎两个荷包蛋（少油）",
             "面包上铺生菜和荷包蛋，盖上面包",
-            "桃子洗净食用"
+            "橙子洗净食用"
           ],
           tips: "荷包蛋不要煎太老，蛋黄微糖心更好吃。"
         },
@@ -436,14 +436,14 @@ export const recipes = {
           tips: "三文鱼含Omega-3脂肪酸，对减脂和心血管都有益。烤蔬菜比炒更省油。"
         },
         snack: {
-          id: "sat-snack", mealType: "加餐（训练后）", name: "桃子+水煮蛋+牛奶",
+          id: "sat-snack", mealType: "加餐（训练后）", name: "橙子+水煮蛋+牛奶",
           totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
           ingredients: [
-            { name: "桃子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+            { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
             { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
             { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
           ],
-          steps: ["鸡蛋水煮", "桃子洗净食用"],
+          steps: ["鸡蛋水煮", "橙子洗净食用"],
           tips: "周末加餐可以更随意。"
         }
       }
@@ -459,14 +459,14 @@ export const recipes = {
             { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
             { name: "燕麦片", amount: "50g", grams: "50g", fist: "1个拳头", protein: "6.5g", category: "carb" },
             { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
-            { name: "葡萄", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" }
+            { name: "蓝莓", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" }
           ],
           steps: [
             "牛奶加热后加燕麦煮3分钟",
             "鸡蛋水煮7分钟",
-            "葡萄洗净放在燕麦粥上"
+            "蓝莓洗净放在燕麦粥上"
           ],
-          tips: "葡萄富含花青素，抗氧化效果好，是减脂期的好水果。"
+          tips: "蓝莓富含花青素，抗氧化效果好，是减脂期的好水果。"
         },
         lunch: {
           id: "sun-lunch", mealType: "午餐", name: "鸡胸肉炒白菜配米饭",

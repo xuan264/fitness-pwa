@@ -212,19 +212,4 @@ async function init() {
   }
 }
 
-// 启动应用，带错误保护
-init().catch(err => {
-  console.error('应用初始化失败:', err);
-  const container = document.getElementById('page-container');
-  if (container) {
-    container.innerHTML = `
-      <div class="page" style="text-align:center;padding:60px 20px;">
-        <div style="font-size:48px;margin-bottom:16px;">😵</div>
-        <h3 style="margin-bottom:8px;">加载失败</h3>
-        <p style="color:var(--text-secondary);margin-bottom:20px;">可能是缓存版本过旧，请尝试以下操作：</p>
-        <button onclick="location.reload(true)" style="background:var(--primary);color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:16px;font-weight:600;cursor:pointer;">🔄 强制刷新页面</button>
-        <p style="color:var(--text-secondary);margin-top:16px;font-size:13px;">或手动清除浏览器缓存后重新访问</p>
-      </div>
-    `;
-  }
-});
+init();

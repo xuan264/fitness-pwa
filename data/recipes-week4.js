@@ -135,15 +135,15 @@ export const week4Menus = [
         tips: "鱼汤变白的秘诀是煎鱼后加开水大火煮。豆腐和鱼搭配钙吸收率更高。"
       },
       snack: {
-        id: "w4-tue-snack", mealType: "加餐（训练后）", name: "桃子+鸡蛋+牛奶",
+        id: "w4-tue-snack", mealType: "加餐（训练后）", name: "橙子+鸡蛋+牛奶",
         totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
         ingredients: [
-          { name: "桃子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
           { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
           { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
         ],
-        steps: ["鸡蛋水煮7分钟", "桃子剥皮食用"],
-        tips: "桃子维C帮助胶原蛋白合成，对皮肤好。"
+        steps: ["鸡蛋水煮7分钟", "橙子剥皮食用"],
+        tips: "橙子维C帮助胶原蛋白合成，对皮肤好。"
       }
     }
   },
@@ -297,22 +297,22 @@ export const week4Menus = [
     day: 5, dayName: "周五",
     meals: {
       breakfast: {
-        id: "w4-fri-bf", mealType: "早餐", name: "全麦面包煎蛋配牛奶芒果",
+        id: "w4-fri-bf", mealType: "早餐", name: "全麦面包煎蛋配牛奶猕猴桃",
         totalTime: "10分钟", calories: "约440大卡", protein: "约31g",
         ingredients: [
           { name: "全麦面包", amount: "2片", grams: "70g", fist: "1个拳头", protein: "6.3g", category: "carb" },
           { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
           { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
-          { name: "芒果", amount: "1个", grams: "80g", fist: "—", protein: "0.8g", category: "fruit" },
+          { name: "猕猴桃", amount: "1个", grams: "80g", fist: "—", protein: "0.8g", category: "fruit" },
           { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
         ],
         steps: [
           "煎两个荷包蛋（少油）",
           "全麦面包烤一下",
           "鸡蛋夹入面包",
-          "芒果去皮切片，配牛奶"
+          "猕猴桃去皮切片，配牛奶"
         ],
-        tips: "芒果不要和牛奶一起煮，蛋白质遇果酸会凝结，分开吃即可。"
+        tips: "猕猴桃不要和牛奶一起煮，蛋白质遇果酸会凝结，分开吃即可。"
       },
       lunch: {
         id: "w4-fri-lunch", mealType: "午餐", name: "龙利鱼烧豆腐配米饭",
@@ -370,19 +370,19 @@ export const week4Menus = [
     day: 6, dayName: "周六",
     meals: {
       breakfast: {
-        id: "w4-sat-bf", mealType: "早餐", name: "玉米鸡蛋羹配牛奶葡萄",
+        id: "w4-sat-bf", mealType: "早餐", name: "玉米鸡蛋羹配牛奶蓝莓",
         totalTime: "15分钟", calories: "约420大卡", protein: "约30g",
         ingredients: [
           { name: "玉米粒", amount: "80g", grams: "80g", fist: "—", protein: "3.2g", category: "carb" },
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "1.5个手掌", protein: "19g", category: "protein" },
           { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
-          { name: "葡萄", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" }
+          { name: "蓝莓", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" }
         ],
         steps: [
           "玉米粒加水打成浆（或用玉米面加水调匀）",
           "鸡蛋打散，加入玉米浆中搅匀",
           "上锅大火蒸8分钟",
-          "配牛奶和葡萄"
+          "配牛奶和蓝莓"
         ],
         tips: "玉米鸡蛋羹口感嫩滑，颜色金黄，周末做很有仪式感。"
       },
@@ -441,19 +441,19 @@ export const week4Menus = [
     day: 7, dayName: "周日",
     meals: {
       breakfast: {
-        id: "w4-sun-bf", mealType: "早餐", name: "水煮蛋全麦馒头配牛奶桃子",
+        id: "w4-sun-bf", mealType: "早餐", name: "水煮蛋全麦馒头配牛奶橙子",
         totalTime: "12分钟", calories: "约430大卡", protein: "约30g",
         ingredients: [
           { name: "全麦馒头", amount: "1个", grams: "80g", fist: "1个拳头", protein: "5g", category: "carb" },
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "1.5个手掌", protein: "19g", category: "protein" },
           { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
-          { name: "桃子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" }
+          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" }
         ],
         steps: [
           "全麦馒头蒸热",
           "鸡蛋水煮7分钟",
           "鸡蛋剥壳夹入馒头",
-          "配牛奶和桃子"
+          "配牛奶和橙子"
         ],
         tips: "全麦馒头可以一次多做几个冷冻，吃的时候蒸10分钟就好，很方便。"
       },

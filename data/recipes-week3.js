@@ -81,22 +81,22 @@ export const week3Menus = [
     day: 2, dayName: "周二",
     meals: {
       breakfast: {
-        id: "w3-tue-bf", mealType: "早餐", name: "牛奶燕麦粥配紫薯葡萄",
+        id: "w3-tue-bf", mealType: "早餐", name: "牛奶燕麦粥配紫薯蓝莓",
         totalTime: "10分钟", calories: "约430大卡", protein: "约28g",
         ingredients: [
           { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
           { name: "燕麦片", amount: "40g", grams: "40g", fist: "1个拳头", protein: "5.2g", category: "carb" },
           { name: "紫薯", amount: "1个", grams: "80g", fist: "—", protein: "1.2g", category: "carb" },
-          { name: "葡萄", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" },
+          { name: "蓝莓", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" },
           { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" }
         ],
         steps: [
           "紫薯蒸10分钟",
           "牛奶加热后加入燕麦煮3分钟",
           "紫薯压成泥放入燕麦粥",
-          "撒葡萄"
+          "撒蓝莓"
         ],
-        tips: "紫薯让燕麦粥变成漂亮的紫色，葡萄的酸甜让粥更好吃。"
+        tips: "紫薯让燕麦粥变成漂亮的紫色，蓝莓的酸甜让粥更好吃。"
       },
       lunch: {
         id: "w3-tue-lunch", mealType: "午餐", name: "瘦牛肉西兰花炒意面",
@@ -137,15 +137,15 @@ export const week3Menus = [
         tips: "鸡肉蒸蛋口感嫩滑，比纯水煮鸡胸肉好吃很多。"
       },
       snack: {
-        id: "w3-tue-snack", mealType: "加餐（训练后）", name: "桃子+牛奶+蛋白粉",
+        id: "w3-tue-snack", mealType: "加餐（训练后）", name: "橙子+牛奶+蛋白粉",
         totalTime: "2分钟", calories: "约240大卡", protein: "约21g",
         ingredients: [
-          { name: "桃子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
           { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
           { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
         ],
         steps: ["直接食用"],
-        tips: "桃子维C含量高，帮助铁质吸收，适合餐后食用。"
+        tips: "橙子维C含量高，帮助铁质吸收，适合餐后食用。"
       }
     }
   },
@@ -299,21 +299,21 @@ export const week3Menus = [
     day: 5, dayName: "周五",
     meals: {
       breakfast: {
-        id: "w3-fri-bf", mealType: "早餐", name: "水煮蛋全麦面包配牛奶芒果",
+        id: "w3-fri-bf", mealType: "早餐", name: "水煮蛋全麦面包配牛奶猕猴桃",
         totalTime: "10分钟", calories: "约430大卡", protein: "约30g",
         ingredients: [
           { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
           { name: "全麦面包", amount: "2片", grams: "70g", fist: "1个拳头", protein: "6.3g", category: "carb" },
           { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
-          { name: "芒果", amount: "1个", grams: "80g", fist: "—", protein: "0.8g", category: "fruit" }
+          { name: "猕猴桃", amount: "1个", grams: "80g", fist: "—", protein: "0.8g", category: "fruit" }
         ],
         steps: [
           "鸡蛋水煮7分钟",
           "全麦面包烤一下",
           "鸡蛋切片夹面包",
-          "芒果去皮切片，配牛奶"
+          "猕猴桃去皮切片，配牛奶"
         ],
-        tips: "芒果维C含量是桃子的2倍，是水果中的营养冠军。"
+        tips: "猕猴桃维C含量是橙子的2倍，是水果中的营养冠军。"
       },
       lunch: {
         id: "w3-fri-lunch", mealType: "午餐", name: "虾仁炒蛋配米饭西兰花",
@@ -354,15 +354,15 @@ export const week3Menus = [
         tips: "番茄炖牛肉酸甜开胃，番茄的酸能让牛肉更软烂。"
       },
       snack: {
-        id: "w3-fri-snack", mealType: "加餐（训练后）", name: "酸奶+葡萄+蛋白粉",
+        id: "w3-fri-snack", mealType: "加餐（训练后）", name: "酸奶+蓝莓+蛋白粉",
         totalTime: "2分钟", calories: "约240大卡", protein: "约20g",
         ingredients: [
           { name: "无糖酸奶", amount: "150g", grams: "150g", fist: "1杯", protein: "7.5g", category: "protein" },
-          { name: "葡萄", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" },
+          { name: "蓝莓", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" },
           { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
         ],
-        steps: ["葡萄洗净撒入酸奶中"],
-        tips: "葡萄花青素抗氧化，酸奶补充蛋白质和益生菌。"
+        steps: ["蓝莓洗净撒入酸奶中"],
+        tips: "蓝莓花青素抗氧化，酸奶补充蛋白质和益生菌。"
       }
     }
   },
@@ -427,14 +427,14 @@ export const week3Menus = [
         tips: "蒸菜最大程度保留营养，不用太多油也很香。"
       },
       snack: {
-        id: "w3-sat-snack", mealType: "加餐（训练后）", name: "桃子+鸡蛋+牛奶",
+        id: "w3-sat-snack", mealType: "加餐（训练后）", name: "橙子+鸡蛋+牛奶",
         totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
         ingredients: [
-          { name: "桃子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
           { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
           { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
         ],
-        steps: ["鸡蛋水煮7分钟", "桃子剥皮食用"],
+        steps: ["鸡蛋水煮7分钟", "橙子剥皮食用"],
         tips: "周末训练后补充维C和蛋白质，帮助肌肉恢复。"
       }
     }
