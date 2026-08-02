@@ -126,6 +126,23 @@ export async function renderDiet(params) {
     `;
   }
 
+  // 本周食材采购清单
+  const currentWeekMenus = currentMenus;
+  html += `
+    <div class="card mt-16" style="border-left:4px solid var(--primary);">
+      <div class="flex-between">
+        <div>
+          <div class="font-bold" style="font-size:15px;">🛒 第${week}周食材采购清单</div>
+          <div class="font-sm text-secondary mt-8">本周7天全部食材用量统计</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="toggleShoppingListCurrent()">查看清单</button>
+      </div>
+      <div id="shopping-list-current" class="exercise-detail" style="padding-top:12px;">
+        ${renderShoppingList(currentWeekMenus, false)}
+      </div>
+    </div>
+  `;
+
   // 下一周食谱 + 食材统计
   const nextWeek = week + 1;
   const nextWeekMenus = recipes.getWeeklyMenus(nextWeek);
@@ -139,7 +156,7 @@ export async function renderDiet(params) {
         <button class="btn btn-accent btn-sm" onclick="toggleShoppingList()">查看清单</button>
       </div>
       <div id="shopping-list" class="exercise-detail" style="padding-top:12px;">
-        ${renderShoppingList(nextWeekMenus)}
+        ${renderShoppingList(nextWeekMenus, true)}
       </div>
     </div>
   `;
@@ -227,11 +244,23 @@ export async function renderDiet(params) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  // 本周食材清单展开/收起
+  window.toggleShoppingListCurrent = () => {
+    const el = document.getElementById('shopping-list-current');
+    if (!el) return;
+    const isShow = el.classList.toggle('show');
+    if (isShow) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 }
 
 // 生成一周食材采购清单
-function renderShoppingList(menus) {
-  // 汇总所有食材，按名称合并
+function renderShoppingList(menus, isNextWeek) {
+  const hint = isNextWeek
+    ? '以下为下一周7天所有食材汇总总量，可按此清单一次性采购'
+    : '以下为本周7天所有食材汇总总量，可按此清单一次性采购';
   const ingredientMap = {};
 
   menus.forEach(dayMenu => {
@@ -281,7 +310,7 @@ function renderShoppingList(menus) {
     byCategory[cat].push(ing);
   });
 
-  let html = '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">以下为下一周7天所有食材汇总总量，可按此清单一次性采购</div>';
+  let html = '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">' + hint + '</div>';
 
   categoryOrder.forEach(cat => {
     if (!byCategory[cat]) return;
