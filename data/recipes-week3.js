@@ -64,7 +64,7 @@ export const week3Menus = [
         tips: "裙带菜富含碘和矿物质，热量极低。干裙带菜泡发量很大，5g就够。"
       },
       snack: {
-        id: "w3-mon-snack", mealType: "加餐（训练后）", name: "香蕉+酸奶+蛋白粉",
+        id: "w3-mon-snack", mealType: "加餐（休息日）", name: "香蕉+酸奶+蛋白粉",
         totalTime: "2分钟", calories: "约260大卡", protein: "约21g",
         ingredients: [
           { name: "香蕉", amount: "1根", grams: "120g", fist: "1个拳头", protein: "1.3g", category: "fruit" },
@@ -137,15 +137,15 @@ export const week3Menus = [
         tips: "鸡肉蒸蛋口感嫩滑，比纯水煮鸡胸肉好吃很多。"
       },
       snack: {
-        id: "w3-tue-snack", mealType: "加餐（训练后）", name: "橙子+牛奶+蛋白粉",
+        id: "w3-tue-snack", mealType: "加餐（休息日）", name: "李子+牛奶+蛋白粉",
         totalTime: "2分钟", calories: "约240大卡", protein: "约21g",
         ingredients: [
-          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+          { name: "李子", amount: "3-4个", grams: "150g", fist: "1个拳头", protein: "0.7g", category: "fruit" },
           { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
           { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
         ],
         steps: ["直接食用"],
-        tips: "橙子维C含量高，帮助铁质吸收，适合餐后食用。"
+        tips: "李子富含抗氧化物和膳食纤维，有助消化。"
       }
     }
   },
@@ -282,7 +282,7 @@ export const week3Menus = [
         tips: "蒸比煎更省油，三文鱼的油脂刚好渗入蔬菜。柠檬去腥提鲜。"
       },
       snack: {
-        id: "w3-thu-snack", mealType: "加餐（训练后）", name: "香蕉+牛奶+蛋白粉",
+        id: "w3-thu-snack", mealType: "加餐（休息日）", name: "香蕉+牛奶+蛋白粉",
         totalTime: "2分钟", calories: "约250大卡", protein: "约20g",
         ingredients: [
           { name: "香蕉", amount: "1根", grams: "120g", fist: "1个拳头", protein: "1.3g", category: "fruit" },
@@ -427,15 +427,15 @@ export const week3Menus = [
         tips: "蒸菜最大程度保留营养，不用太多油也很香。"
       },
       snack: {
-        id: "w3-sat-snack", mealType: "加餐（训练后）", name: "橙子+鸡蛋+牛奶",
+        id: "w3-sat-snack", mealType: "加餐（休息日）", name: "西瓜+鸡蛋+牛奶",
         totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
         ingredients: [
-          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+          { name: "西瓜", amount: "2块", grams: "200g", fist: "1个拳头", protein: "0.6g", category: "fruit" },
           { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
           { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
         ],
-        steps: ["鸡蛋水煮7分钟", "橙子剥皮食用"],
-        tips: "周末训练后补充维C和蛋白质，帮助肌肉恢复。"
+        steps: ["鸡蛋水煮7分钟", "西瓜切块食用"],
+        tips: "西瓜水分足热量低，是夏天解暑的好水果。"
       }
     }
   },
