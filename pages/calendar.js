@@ -2,6 +2,7 @@
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
 import { trainingPlan } from '../data/training-plan.js';
+import { fatLossPlan } from '../data/fat-loss-plan.js';
 import { recipes } from '../data/recipes.js';
 import { getDayOfWeek, getDayName, getWorkoutIndexForWeek, todayStr } from '../js/utils.js';
 
@@ -31,9 +32,16 @@ export async function renderCalendar(params) {
   const allMeals = await db.getAll('mealLog');
   const allProgress = await db.getAll('progress');
 
-  // 按日期索引
-  const workoutByDate = {};
-  allWorkouts.forEach(w => { workoutByDate[w.date] = w; });
+  // 按日期索引（支持同一天多种训练打卡）
+  const workoutByDate = {};      // 原有训练
+  const fatLossByDate = {};      // 减脂训练
+  allWorkouts.forEach(w => {
+    if (w.type === 'fat-loss') {
+      fatLossByDate[w.date] = w;
+    } else {
+      workoutByDate[w.date] = w;
+    }
+  });
   const mealByDate = {};
   allMeals.forEach(m => {
     if (!mealByDate[m.date]) mealByDate[m.date] = [];
@@ -72,11 +80,16 @@ export async function renderCalendar(params) {
       </div>
 
       <!-- 本月统计：按天统计 -->
-      <div class="stat-grid" style="margin-bottom:16px;grid-template-columns:1fr 1fr 1fr;">
+      <div class="stat-grid" style="margin-bottom:16px;grid-template-columns:1fr 1fr 1fr 1fr;">
         <div class="stat-card">
           <div style="font-size:18px;margin-bottom:2px;">💪</div>
           <div class="stat-value">${Object.keys(workoutByDate).filter(d => d.startsWith(monthPrefix)).length}</div>
-          <div class="stat-label">训练打卡天数</div>
+          <div class="stat-label">训练打卡</div>
+        </div>
+        <div class="stat-card" style="border-top:3px solid #4A90D9;">
+          <div style="font-size:18px;margin-bottom:2px;">🫀</div>
+          <div class="stat-value" style="color:#2563EB;">${Object.keys(fatLossByDate).filter(d => d.startsWith(monthPrefix)).length}</div>
+          <div class="stat-label">减脂打卡</div>
         </div>
         <div class="stat-card accent">
           <div style="font-size:18px;margin-bottom:2px;">🥗</div>
@@ -112,22 +125,25 @@ export async function renderCalendar(params) {
     const isFuture = isCurrentMonth && d > today;
 
     const workout = workoutByDate[dateStr];
+    const fatLoss = fatLossByDate[dateStr];
     const meals = mealByDate[dateStr] || [];
     const weight = weightByDate[dateStr];
 
     const hasWorkout = !!workout;
+    const hasFatLoss = !!fatLoss;
     const mealCount = meals.length;
 
     // 背景色
     let bg = 'var(--bg)';
     if (isToday) bg = 'var(--primary-light)';
-    else if (hasWorkout && mealCount >= 4) bg = '#E8F5E9';
-    else if (hasWorkout) bg = '#F1F8E9';
+    else if ((hasWorkout || hasFatLoss) && mealCount >= 4) bg = '#E8F5E9';
+    else if (hasWorkout || hasFatLoss) bg = '#F1F8E9';
     else if (mealCount > 0) bg = '#FFF8E1';
 
     // 打卡图标
     let marks = '';
     if (hasWorkout) marks += '💪';
+    if (hasFatLoss) marks += '🫀';
     if (mealCount >= 4) marks += '🥗';
     else if (mealCount > 0) marks += '🍽️';
     if (weight) marks += '⚖️';
@@ -146,8 +162,9 @@ export async function renderCalendar(params) {
 
       <!-- 图例 -->
       <div class="card" style="margin-top:12px;">
-        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--text-secondary);justify-content:center;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--text-secondary);justify-content:center;">
           <span>💪 训练打卡</span>
+          <span>🫀 减脂打卡</span>
           <span>🥗 全部餐食</span>
           <span>🍽️ 部分餐食</span>
           <span>⚖️ 体重记录</span>
@@ -179,6 +196,7 @@ export async function renderCalendar(params) {
     if (!detailEl) return;
 
     const workout = workoutByDate[dateStr];
+    const fatLoss = fatLossByDate[dateStr];
     const meals = mealByDate[dateStr] || [];
     const weight = weightByDate[dateStr];
     const dateObj = new Date(dateStr);
@@ -189,6 +207,8 @@ export async function renderCalendar(params) {
 
     // 训练详情
     detailHtml += `<div style="margin-bottom:12px;">`;
+    // 原有训练
+    const todayWorkoutIdx = getWorkoutIndexForWeek(dow, phase.split);
     if (workout) {
       detailHtml += `
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
@@ -197,19 +217,55 @@ export async function renderCalendar(params) {
           <span class="badge badge-primary">已完成</span>
         </div>
       `;
-    } else {
-      const todayWorkoutIdx = getWorkoutIndexForWeek(dow, phase.split);
-      if (todayWorkoutIdx >= 0 && phase.workouts[todayWorkoutIdx]) {
-        detailHtml += `
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:18px;opacity:0.4;">💪</span>
-            <span style="color:var(--text-secondary);">${phase.workouts[todayWorkoutIdx].label}</span>
-            <span class="badge badge-gray">未打卡</span>
-          </div>
-        `;
-      } else {
-        detailHtml += `<div style="color:var(--text-secondary);font-size:13px;">😴 休息日</div>`;
+    } else if (todayWorkoutIdx >= 0 && phase.workouts[todayWorkoutIdx]) {
+      detailHtml += `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:18px;opacity:0.4;">💪</span>
+          <span style="color:var(--text-secondary);">${phase.workouts[todayWorkoutIdx].label}</span>
+          <span class="badge badge-gray">未打卡</span>
+        </div>
+      `;
+    }
+    // 减脂训练
+    const FAT_LOSS_DAY_MAP = { 1: 0, 3: 1, 5: 2 };
+    const flIdx = FAT_LOSS_DAY_MAP[dow] ?? -1;
+    // 计算减脂训练当前阶段
+    let flPhaseIdx = 0;
+    try {
+      const flSaved = await db.get('settings', 'fatLossStartDate');
+      if (flSaved?.value) {
+        const flStart = new Date(flSaved.value);
+        const flNow = new Date(dateStr);
+        const flDiffDays = Math.floor((flNow - flStart) / (1000 * 60 * 60 * 24));
+        const flTotalWeeks = Math.floor(flDiffDays / 7) + 1;
+        const flWeek = ((flTotalWeeks - 1) % 12) + 1;
+        if (flWeek <= 3) flPhaseIdx = 0;
+        else if (flWeek <= 6) flPhaseIdx = 1;
+        else if (flWeek <= 9) flPhaseIdx = 2;
+        else flPhaseIdx = 3;
       }
+    } catch (e) {}
+    const flPhase = fatLossPlan.phases[flPhaseIdx];
+    if (fatLoss) {
+      detailHtml += `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:18px;">🫀</span>
+          <span class="font-bold">${fatLoss.workoutLabel || '减脂训练'}</span>
+          <span class="badge" style="background:#4A90D9;color:#fff;">已完成</span>
+        </div>
+      `;
+    } else if (flIdx >= 0 && flPhase.workouts[flIdx]) {
+      detailHtml += `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:18px;opacity:0.4;">🫀</span>
+          <span style="color:var(--text-secondary);">${flPhase.workouts[flIdx].label}</span>
+          <span class="badge badge-gray">未打卡</span>
+        </div>
+      `;
+    }
+    // 如果两种训练都没有计划
+    if (!workout && !fatLoss && todayWorkoutIdx < 0 && flIdx < 0) {
+      detailHtml += `<div style="color:var(--text-secondary);font-size:13px;">😴 休息日</div>`;
     }
     detailHtml += `</div>`;
 
