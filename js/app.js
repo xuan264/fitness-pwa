@@ -100,18 +100,24 @@ async function init() {
           if (newWorker.state !== 'installed') return;
 
           if (navigator.serviceWorker.controller) {
-            // 有旧版本，新版本已就绪，立即激活并刷新
-            newWorker.postMessage({ type: 'SKIP_WAITING' });
+            // 有旧版本，新版本已就绪
+            // 延迟 1 秒让 install 缓存写入完成，再激活
+            setTimeout(() => {
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+            }, 1000);
           }
         });
       });
 
-      // 监听控制器变化，自动刷新
+      // 监听控制器变化，延迟刷新确保新缓存就绪
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (!refreshing) {
           refreshing = true;
-          window.location.reload();
+          // 延迟 500ms 让新 SW 的 claim 和缓存初始化完成
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         }
       });
 
