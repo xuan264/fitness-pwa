@@ -1,5 +1,5 @@
 // Service Worker - 离线缓存 + 通知 + 后台提醒检查
-const CACHE_NAME = 'fitness-pwa-v32';
+const CACHE_NAME = 'fitness-pwa-v33';
 const CACHE_URLS = [
   './',
   './index.html',
@@ -185,15 +185,22 @@ self.addEventListener('message', (event) => {
 // 激活
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+    caches.keys().then(keys => {
+      // 不立即删除旧缓存，延迟 30 秒后再删
+      // 这样如果新缓存不完整，还能从旧缓存回退
+      const oldCaches = keys.filter(k => k !== CACHE_NAME);
+      setTimeout(() => {
+        oldCaches.forEach(k => caches.delete(k));
+      }, 30000);
+      return Promise.resolve();
+    })
   );
   self.clients.claim();
   startReminderCheck();
 });
 
-// 拦截请求 - 网络优先
+// 拦截请求 - 缓存优先（stale-while-revalidate）
+// 避免网络波动导致 ES Module 加载不完整而白屏
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
@@ -205,14 +212,20 @@ self.addEventListener('fetch', (event) => {
     url.pathname === '/' ||
     url.pathname === '/fitness-pwa/'
   )) {
+    // 缓存优先：先返回缓存，后台同时更新
     event.respondWith(
-      fetch(event.request).then(response => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => caches.match(event.request))
+      caches.match(event.request).then(cached => {
+        // 后台获取最新版本更新缓存
+        const fetchPromise = fetch(event.request).then(response => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return response;
+        }).catch(() => {});
+        // 有缓存就用缓存，没有就等网络
+        return cached || fetchPromise;
+      })
     );
     return;
   }
