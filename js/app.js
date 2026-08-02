@@ -13,6 +13,7 @@ import { renderCalendar } from '../pages/calendar.js';
 import { renderWeight } from '../pages/weight.js';
 import { renderPrepregnancy } from '../pages/prepregnancy.js';
 import { renderWeekWorkout } from '../pages/week-workout.js';
+import { renderFatLoss } from '../pages/fat-loss.js';
 import { todayStr } from './utils.js';
 
 async function init() {
@@ -53,6 +54,14 @@ async function init() {
     console.error('初始化设置失败:', e);
   }
 
+  // 2.5 读取训练模式
+  try {
+    const savedMode = await db.get('settings', 'activeMode');
+    if (savedMode?.value) {
+      store.setState({ activeMode: savedMode.value });
+    }
+  } catch (e) {}
+
   // 3. 渲染底部导航
   renderBottomNav();
 
@@ -66,6 +75,7 @@ async function init() {
   registerRoute('/weight', renderWeight);
   registerRoute('/prepregnancy', renderPrepregnancy);
   registerRoute('/week-workout', renderWeekWorkout);
+  registerRoute('/fat-loss', renderFatLoss);
 
   // 5. 初始化路由
   router.init();
