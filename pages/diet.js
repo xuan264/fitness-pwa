@@ -5,12 +5,16 @@ import { recipes } from '../data/recipes.js';
 import { icons, getDayOfWeek, getDayName, todayStr } from '../js/utils.js';
 
 let selectedDay = getDayOfWeek();
+let viewWeek = null; // null=当前周，否则为查看的周数
 
 export async function renderDiet(params) {
   if (params.day) selectedDay = parseInt(params.day);
 
   const container = document.getElementById('page-container');
-  const week = store.state.currentWeek || 1;
+  const currentWeek = store.state.currentWeek || 1;
+  // viewWeek 为 null 时显示当前周，否则显示指定周
+  if (viewWeek === null) viewWeek = currentWeek;
+  const week = viewWeek;
   const currentMenus = recipes.getWeeklyMenus(week);
   const dayMenu = currentMenus.find(m => m.day === selectedDay) || currentMenus[0];
 
@@ -27,19 +31,29 @@ export async function renderDiet(params) {
 
   let html = `<div class="page">`;
 
-  // 日期选择器
-  const weekLabel = `第${week}周食谱`;
+  // 日期选择器 + 周切换
+  const isCurrentWeek = week === currentWeek;
+  const weekLabel = isCurrentWeek ? `第${week}周食谱（本周）` : `第${week}周食谱`;
+  const prevWeek = week > 1 ? week - 1 : 1;
+  const nextWeek = week < 4 ? week + 1 : 4;
   html += `
     <div class="card">
       <div class="flex-between mb-8">
         <div class="font-lg font-bold">${dayMenu.dayName} 食谱</div>
         <div class="font-sm text-secondary">${weekLabel}</div>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <button onclick="switchDietWeek(${prevWeek})" class="btn btn-sm btn-outline" style="padding:4px 10px;cursor:pointer;${week <= 1 ? 'opacity:0.4;pointer-events:none;' : ''}">‹ 上一周</button>
+        <div style="flex:1;text-align:center;font-size:13px;color:var(--text-secondary);">第${week}周 / 共4周</div>
+        <button onclick="switchDietWeek(${nextWeek})" class="btn btn-sm btn-outline" style="padding:4px 10px;cursor:pointer;${week >= 4 ? 'opacity:0.4;pointer-events:none;' : ''}">下一周 ›</button>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">
         ${[1,2,3,4,5,6,7].map(d => `
           <div onclick="selectDietDay(${d})" class="btn btn-sm ${d === selectedDay ? 'btn-primary' : 'btn-outline'}" style="text-align:center;padding:6px 0;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">${getDayName(d)}</div>
         `).join('')}
-      </div></div>`;
+      </div>
+      ${!isCurrentWeek ? `<div style="margin-top:8px;font-size:12px;color:var(--accent);text-align:center;">⚠ 正在查看第${week}周菜谱，非本周。点击 <a onclick="backToCurrentWeek()" style="color:var(--primary);cursor:pointer;text-decoration:underline;">返回本周</a></div>` : ''}
+      </div>`;
 
   // 蛋白质目标
   const profile = store.state.userProfile;
@@ -126,40 +140,43 @@ export async function renderDiet(params) {
     `;
   }
 
-  // 本周食材采购清单
-  const currentWeekMenus = currentMenus;
+  // 当前查看周的食材采购清单
+  const thisWeekMenus = currentMenus;
+  const thisWeekLabel = isCurrentWeek ? '本周7天' : `第${week}周7天`;
   html += `
     <div class="card mt-16" style="border-left:4px solid var(--primary);">
       <div class="flex-between">
         <div>
           <div class="font-bold" style="font-size:15px;">🛒 第${week}周食材采购清单</div>
-          <div class="font-sm text-secondary mt-8">本周7天全部食材用量统计</div>
+          <div class="font-sm text-secondary mt-8">${thisWeekLabel}全部食材用量统计</div>
         </div>
         <button class="btn btn-primary btn-sm" onclick="toggleShoppingListCurrent()">查看清单</button>
       </div>
       <div id="shopping-list-current" class="exercise-detail" style="padding-top:12px;">
-        ${renderShoppingList(currentWeekMenus, false)}
+        ${renderShoppingList(thisWeekMenus, false)}
       </div>
     </div>
   `;
 
-  // 下一周食谱 + 食材统计
-  const nextWeek = week + 1;
-  const nextWeekMenus = recipes.getWeeklyMenus(nextWeek);
-  html += `
-    <div class="card mt-16" style="border-left:4px solid var(--accent);">
-      <div class="flex-between">
-        <div>
-          <div class="font-bold" style="font-size:15px;">📋 第${nextWeek}周食材采购清单</div>
-          <div class="font-sm text-secondary mt-8">下一周7天全部食材用量统计</div>
+  // 下一周食材采购清单（如果有的话）
+  if (week < 4) {
+    const nextWeekNum = week + 1;
+    const nextWeekMenus = recipes.getWeeklyMenus(nextWeekNum);
+    html += `
+      <div class="card mt-16" style="border-left:4px solid var(--accent);">
+        <div class="flex-between">
+          <div>
+            <div class="font-bold" style="font-size:15px;">📋 第${nextWeekNum}周食材采购清单</div>
+            <div class="font-sm text-secondary mt-8">下一周7天全部食材用量统计</div>
+          </div>
+          <button class="btn btn-accent btn-sm" onclick="toggleShoppingList()">查看清单</button>
         </div>
-        <button class="btn btn-accent btn-sm" onclick="toggleShoppingList()">查看清单</button>
+        <div id="shopping-list" class="exercise-detail" style="padding-top:12px;">
+          ${renderShoppingList(nextWeekMenus, true)}
+        </div>
       </div>
-      <div id="shopping-list" class="exercise-detail" style="padding-top:12px;">
-        ${renderShoppingList(nextWeekMenus, true)}
-      </div>
-    </div>
-  `;
+    `;
+  }
 
   // 饮食框架说明
   html += `
@@ -232,6 +249,20 @@ export async function renderDiet(params) {
   // 日期切换：直接更新页面内容，不走路由（避免闪烁）
   window.selectDietDay = (day) => {
     selectedDay = day;
+    renderDiet({ day: selectedDay });
+  };
+
+  // 周切换
+  window.switchDietWeek = (newWeek) => {
+    viewWeek = newWeek;
+    selectedDay = 1; // 切换周时默认选中周一
+    renderDiet({ day: selectedDay });
+  };
+
+  // 返回本周
+  window.backToCurrentWeek = () => {
+    viewWeek = store.state.currentWeek || 1;
+    selectedDay = getDayOfWeek();
     renderDiet({ day: selectedDay });
   };
 
