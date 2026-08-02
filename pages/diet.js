@@ -75,9 +75,9 @@ export async function renderDiet(params) {
         <div class="meal-header ${mealType === 'snack' ? 'accent' : ''}" style="${completed ? 'border-left-color:var(--primary);background:var(--primary-light);' : ''}">
           <div class="flex-between">
             <div class="meal-name">${mealIcons[mealType]} ${meal.mealType} · ${meal.name}</div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              ${completed ? '<span class="badge badge-primary">✓ 已打卡</span>' : ''}
-              ${completed ? `<button onclick="toggleMealDetail('${meal.id}')" id="toggle-btn-${meal.id}" style="background:none;border:none;color:var(--primary);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:2px;">查看详情 ${icons.chevronDown}</button>` : ''}
+            <div style="display:flex;align-items:center;gap:8px;line-height:1;">
+              ${completed ? '<span class="badge badge-primary" style="display:inline-flex;align-items:center;">✓ 已打卡</span>' : ''}
+              ${completed ? `<button onclick="toggleMealDetail('${meal.id}')" id="toggle-btn-${meal.id}" style="background:none;border:none;color:var(--primary);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:2px;padding:3px 0;line-height:1;">查看详情 ${icons.chevronDown}</button>` : ''}
             </div>
           </div>
           ${!completed ? `<div class="meal-meta">
