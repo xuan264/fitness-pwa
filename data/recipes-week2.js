@@ -63,7 +63,7 @@ export const week2Menus = [
         tips: "百合清热润肺，芹菜高纤维，很适合晚餐搭配。"
       },
       snack: {
-        id: "w2-mon-snack", mealType: "加餐（训练后）", name: "酸奶+蓝莓+蛋白粉",
+        id: "w2-mon-snack", mealType: "加餐（休息日）", name: "酸奶+蓝莓+蛋白粉",
         totalTime: "2分钟", calories: "约250大卡", protein: "约20g",
         ingredients: [
           { name: "无糖酸奶", amount: "150g", grams: "150g", fist: "1杯", protein: "7.5g", category: "protein" },
@@ -135,14 +135,12 @@ export const week2Menus = [
         tips: "菌菇种类多更好吃，可搭配金针菇、香菇、蟹味菇。"
       },
       snack: {
-        id: "w2-tue-snack", mealType: "加餐（训练后）", name: "橙子+鸡蛋+牛奶",
+        id: "w2-tue-snack", mealType: "加餐（休息日）", name: "哈密瓜+鸡蛋+牛奶",
         totalTime: "10分钟", calories: "约280大卡", protein: "约22g",
         ingredients: [
-          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
-          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
-          { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
+          { name: "哈密瓜", amount: "2块", grams: "150g", fist: "1个拳头", protein: "0.8g", category: "fruit" },
         ],
-        steps: ["鸡蛋水煮7分钟", "橙子剥皮食用"],
+        steps: ["鸡蛋水煮7分钟", "哈密瓜去皮切块食用"],
         tips: "维生素C帮助蛋白质吸收，水果配鸡蛋是很好的组合。"
       }
     }
@@ -279,7 +277,7 @@ export const week2Menus = [
         tips: "蒸蛋盖保鲜膜可防止水汽滴入，口感更嫩滑。"
       },
       snack: {
-        id: "w2-thu-snack", mealType: "加餐（训练后）", name: "苹果+牛奶+蛋白粉",
+        id: "w2-thu-snack", mealType: "加餐（休息日）", name: "苹果+牛奶+蛋白粉",
         totalTime: "2分钟", calories: "约250大卡", protein: "约21g",
         ingredients: [
           { name: "苹果", amount: "1个", grams: "200g", fist: "1个拳头", protein: "0.6g", category: "fruit" },
@@ -296,7 +294,7 @@ export const week2Menus = [
     day: 5, dayName: "周五",
     meals: {
       breakfast: {
-        id: "w2-fri-bf", mealType: "早餐", name: "鸡蛋蔬菜饼配牛奶橙子",
+        id: "w2-fri-bf", mealType: "早餐", name: "鸡蛋蔬菜饼配牛奶桃子",
         totalTime: "15分钟", calories: "约420大卡", protein: "约28g",
         ingredients: [
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "1.5个手掌", protein: "19g", category: "protein" },
@@ -304,13 +302,13 @@ export const week2Menus = [
           { name: "胡萝卜", amount: "1/4根", grams: "30g", fist: "—", protein: "0.3g", category: "vegetable" },
           { name: "西葫芦", amount: "1/4根", grams: "50g", fist: "—", protein: "0.4g", category: "vegetable" },
           { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" },
-          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" }
+          { name: "桃子", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1g", category: "fruit" }
         ],
         steps: [
           "胡萝卜、西葫芦擦丝",
           "鸡蛋打散，加入面粉和蔬菜丝拌匀，加盐",
           "平底锅少油，倒入蛋液摊成饼，两面煎至金黄",
-          "配牛奶和橙子"
+          "配牛奶和桃子"
         ],
         tips: "蔬菜饼可以把不爱吃的蔬菜都加进去，营养全面。"
       },
@@ -424,7 +422,7 @@ export const week2Menus = [
         tips: "山药去皮一定要戴手套，黏液会引起皮肤瘙痒。山药健脾胃。"
       },
       snack: {
-        id: "w2-sat-snack", mealType: "加餐（训练后）", name: "小番茄+鸡蛋+牛奶",
+        id: "w2-sat-snack", mealType: "加餐（休息日）", name: "小番茄+鸡蛋+牛奶",
         totalTime: "10分钟", calories: "约220大卡", protein: "约15g",
         ingredients: [
           { name: "小番茄", amount: "10个", grams: "120g", fist: "1个拳头", protein: "1.1g", category: "fruit" },
