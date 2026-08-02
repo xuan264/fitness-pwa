@@ -1,5 +1,5 @@
 // Service Worker - 离线缓存 + 通知 + 后台提醒检查
-const CACHE_NAME = 'fitness-pwa-v26';
+const CACHE_NAME = 'fitness-pwa-v27';
 const CACHE_URLS = [
   './',
   './index.html',
