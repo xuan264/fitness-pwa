@@ -46,7 +46,7 @@ body {
 
 /* ===== 头部 ===== */
 #app-header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, #6BCB77 0%, #4DAA57 50%, #3A9A48 100%);
   color: #fff;
   padding: 14px 16px 12px;
   position: fixed;
@@ -57,37 +57,26 @@ body {
   max-width: 480px;
   z-index: 50;
   box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  text-align: center;
   overflow: hidden;
+}
+#app-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.12) 0%, transparent 40%),
+    radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 40%);
+  pointer-events: none;
 }
 #app-header h1 {
   font-size: 22px;
   font-weight: 800;
-  flex: 1;
   text-align: center;
   letter-spacing: 6px;
   text-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-.header-deco-left, .header-deco-right {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: rgba(255,255,255,0.95);
-  animation: bobble 3s ease-in-out infinite;
-}
-.header-deco-left svg, .header-deco-right svg {
-  width: 26px;
-  height: 26px;
-}
-.header-deco-right { animation-delay: 1.5s; }
-@keyframes bobble {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-4px) rotate(8deg); }
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== 页面容器 ===== */
