@@ -8,7 +8,8 @@ export const store = {
     userProfile: null,
     todayWorkoutCompleted: false,
     todayMealsCompleted: {},
-    reminders: []
+    reminders: [],
+    activeMode: 'both'  // 'both' | 'fitness' | 'fat-loss'
   },
 
   listeners: new Set(),
