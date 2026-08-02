@@ -2,11 +2,30 @@
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
 import { trainingPlan } from '../data/training-plan.js';
+import { fatLossPlan } from '../data/fat-loss-plan.js';
 import { recipes } from '../data/recipes.js';
+import { renderBottomNav } from '../components/bottom-nav.js';
 import { icons, getDayOfWeek, getWorkoutIndexForWeek, getDayName, todayStr } from '../js/utils.js';
+
+// 全局打卡刷新标记 - 其他页面打卡后设置，首页渲染时检查
+window._needRefreshDashboard = false;
 
 export async function renderDashboard(params) {
   const container = document.getElementById('page-container');
+
+  // 读取训练模式（从 IndexedDB 持久化）
+  let activeMode = store.state.activeMode || 'both';
+  try {
+    const savedMode = await db.get('settings', 'activeMode');
+    if (savedMode?.value) {
+      activeMode = savedMode.value;
+      store.setState({ activeMode });
+    }
+  } catch (e) {}
+
+  const showFitness = activeMode === 'both' || activeMode === 'fitness';
+  const showFatLoss = activeMode === 'both' || activeMode === 'fat-loss';
+
   const week = store.state.currentWeek;
   const round = store.state.currentRound || 1;
   const totalRounds = store.state.totalRounds || 4;
@@ -16,16 +35,58 @@ export async function renderDashboard(params) {
   const todayWorkoutIdx = getWorkoutIndexForWeek(dow, phase.split);
   const dayMenu = recipes.getWeeklyMenus(store.state.currentWeek || 1).find(m => m.day === dow) || recipes.getWeeklyMenus(store.state.currentWeek || 1)[0];
 
-  // 今日打卡状态
-  const todayWorkouts = await db.getByIndex('workoutLog', 'date', todayStr());
+  // 今日打卡状态（只统计原有训练计划，排除减脂训练 type='fat-loss'）
+  const todayWorkouts = (await db.getByIndex('workoutLog', 'date', todayStr())).filter(l => l.type !== 'fat-loss');
   const todayMeals = await db.getByIndex('mealLog', 'date', todayStr());
   const progressRecords = (await db.getAll('progress')).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  // 本周训练统计
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
-  weekStart.setHours(0, 0, 0, 0);
-  const weekWorkouts = (await db.getAll('workoutLog')).filter(l => new Date(l.date) >= weekStart);
+  // 本周训练统计（周一为一周开始，排除减脂训练）
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=周日
+  // 计算本周一日期：周日时往前推6天，其他天往前推 dayOfWeek-1 天
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  monday.setHours(0, 0, 0, 0);
+  const mondayStr = monday.toISOString().split('T')[0];
+  const allWorkouts = (await db.getAll('workoutLog')).filter(l => l.type !== 'fat-loss');
+  // 用字符串比较避免时区问题：date >= 本周一
+  const weekWorkouts = allWorkouts.filter(l => l.date >= mondayStr);
+
+  // ===== 减脂训练独立计算 =====
+  const FAT_LOSS_DAY_MAP = { 1: 0, 3: 1, 5: 2 };
+  let fatLossWeek = 1, fatLossRound = 1, fatLossPhaseIdx = 0;
+  let fatLossTodayIdx = -1;
+  let fatLossCompleted = false;
+  let fatLossAllLogs = [];
+  try {
+    const flSaved = await db.get('settings', 'fatLossStartDate');
+    let flStart;
+    if (flSaved?.value) {
+      flStart = new Date(flSaved.value);
+    } else {
+      // 未开始减脂计划，仍显示卡片但不计算周次
+      flStart = null;
+    }
+    if (flStart) {
+      const flDiffDays = Math.floor((now - flStart) / (1000 * 60 * 60 * 24));
+      const flTotalWeeks = Math.floor(flDiffDays / 7) + 1;
+      fatLossRound = Math.floor((flTotalWeeks - 1) / 12) + 1;
+      fatLossWeek = ((flTotalWeeks - 1) % 12) + 1;
+      if (fatLossWeek <= 3) fatLossPhaseIdx = 0;
+      else if (fatLossWeek <= 6) fatLossPhaseIdx = 1;
+      else if (fatLossWeek <= 9) fatLossPhaseIdx = 2;
+      else fatLossPhaseIdx = 3;
+    }
+    fatLossTodayIdx = FAT_LOSS_DAY_MAP[dow] ?? -1;
+    const flTodayLogs = (await db.getByIndex('workoutLog', 'date', todayStr())).filter(l => l.type === 'fat-loss');
+    fatLossCompleted = flTodayLogs.length > 0;
+    // 本周减脂训练统计
+    fatLossAllLogs = (await db.getAll('workoutLog')).filter(l => l.type === 'fat-loss');
+  } catch (e) {
+    console.warn('减脂训练状态计算失败:', e);
+  }
+  const flPhase = fatLossPlan.phases[fatLossPhaseIdx];
+  const flWeekCount = fatLossAllLogs.filter(l => l.date >= mondayStr).length;
 
   // 今日日期
   const now = new Date();
@@ -62,14 +123,39 @@ export async function renderDashboard(params) {
     </a>
   `;
 
-  // 统计卡片
+  // 模式切换器
+  const modeOptions = [
+    { key: 'both', label: '全部', emoji: '⚡' },
+    { key: 'fitness', label: '锻炼', emoji: '💪' },
+    { key: 'fat-loss', label: '减脂', emoji: '🫀' }
+  ];
+  html += `
+    <div style="display:flex;gap:0;margin-bottom:12px;background:var(--surface);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow);">
+  `;
+  modeOptions.forEach(opt => {
+    const isActive = activeMode === opt.key;
+    const activeStyle = isActive
+      ? (opt.key === 'fat-loss' ? 'background:#4A90D9;color:#fff;font-weight:600;'
+      : opt.key === 'fitness' ? 'background:var(--primary);color:#fff;font-weight:600;'
+      : 'background:var(--primary);color:#fff;font-weight:600;')
+      : 'color:var(--text-secondary);';
+    html += `
+      <div onclick="switchMode('${opt.key}')" style="flex:1;padding:8px 4px;text-align:center;font-size:12px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;${activeStyle}">
+        ${opt.emoji} ${opt.label}
+      </div>
+    `;
+  });
+  html += `</div>`;
+
+  // 统计卡片（根据模式动态生成）
   const todayMealCount = todayMeals.length;
   const weightDisplay = progressRecords.length > 0
     ? `${progressRecords[progressRecords.length - 1].weight}kg`
     : '—';
 
-  html += `
-    <div class="stat-grid">
+  const statItems = [];
+  if (showFitness) {
+    statItems.push(`
       <a href="#/week-workout" style="text-decoration:none;color:inherit;">
         <div class="stat-card" style="cursor:pointer;padding:10px;position:relative;overflow:hidden;">
           <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">💪</div>
@@ -78,22 +164,46 @@ export async function renderDashboard(params) {
           <div class="stat-label">本周训练</div>
         </div>
       </a>
-      <div class="stat-card accent" style="padding:10px;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">🍽️</div>
-        <div style="font-size:16px;margin-bottom:2px;">🥗</div>
-        <div class="stat-value" style="font-size:20px;">${todayMealCount}/4</div>
-        <div class="stat-label">今日餐食</div>
-      </div>
+    `);
+  }
+  if (showFatLoss) {
+    statItems.push(`
+      <a href="#/fat-loss" style="text-decoration:none;color:inherit;">
+        <div class="stat-card" style="cursor:pointer;padding:10px;position:relative;overflow:hidden;border-top:3px solid #4A90D9;">
+          <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">🫀</div>
+          <div style="font-size:16px;margin-bottom:2px;">🫀</div>
+          <div class="stat-value" style="font-size:20px;color:#2563EB;">${flWeekCount}/3</div>
+          <div class="stat-label">减脂训练</div>
+        </div>
+      </a>
+    `);
+  }
+  statItems.push(`
+    <div class="stat-card accent" style="padding:10px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">🍽️</div>
+      <div style="font-size:16px;margin-bottom:2px;">🥗</div>
+      <div class="stat-value" style="font-size:20px;">${todayMealCount}/4</div>
+      <div class="stat-label">今日餐食</div>
+    </div>
+  `);
+  const statCols = statItems.length;
+  html += `
+    <div class="stat-grid" style="grid-template-columns:repeat(${statCols},1fr);">
+      ${statItems.join('')}
     </div>
   `;
 
-  // 今日训练
+  // 今日训练（仅锻炼模式或全部模式时显示）
+  if (showFitness) {
   if (todayWorkoutIdx >= 0 && phase.workouts[todayWorkoutIdx]) {
     const workout = phase.workouts[todayWorkoutIdx];
     const completed = todayWorkouts.length > 0;
+    const cardStyle = completed
+      ? 'border-left:4px solid var(--primary);background:var(--primary-light);'
+      : 'border-left:4px solid var(--accent);';
     html += `
       <a href="#/training?expand=today" style="text-decoration:none;color:inherit;">
-        <div class="card" style="border-left:4px solid var(--accent);margin-bottom:12px;position:relative;overflow:hidden;">
+        <div class="card" style="${cardStyle}margin-bottom:12px;position:relative;overflow:hidden;">
           <div style="position:absolute;top:-5px;right:10px;font-size:28px;opacity:0.12;">${completed ? '✅' : '💪'}</div>
           <div class="flex-between">
             <div>
@@ -102,7 +212,7 @@ export async function renderDashboard(params) {
               <div class="font-sm text-secondary">${workout.exercises.length}个动作 · 预计45分钟</div>
             </div>
             <div style="text-align:right;">
-              <span class="badge ${completed ? 'badge-primary' : 'badge-accent'}">${completed ? '✓ 完成' : '待完成'}</span>
+              <span class="badge ${completed ? 'badge-primary' : 'badge-accent'}">${completed ? '✓ 已完成' : '待完成'}</span>
               <div style="margin-top:8px;color:var(--text-hint);">${icons.chevron}</div>
             </div>
           </div>
@@ -119,6 +229,47 @@ export async function renderDashboard(params) {
         <div class="font-sm text-secondary mt-8">建议做${phase.cardio.duration}的${phase.cardio.options[0]}</div>
       </div>
     `;
+  }
+  }
+
+  // 减脂训练打卡卡片（仅减脂模式或全部模式时显示）
+  if (showFatLoss) {
+  if (fatLossTodayIdx >= 0 && flPhase.workouts[fatLossTodayIdx]) {
+    const flWorkout = flPhase.workouts[fatLossTodayIdx];
+    const flCardStyle = fatLossCompleted
+      ? 'border-left:4px solid #4A90D9;background:linear-gradient(135deg,#EBF5FF,var(--surface));'
+      : 'border-left:4px solid #4A90D9;';
+    html += `
+      <a href="#/fat-loss?expand=today" style="text-decoration:none;color:inherit;">
+        <div class="card" style="${flCardStyle}margin-bottom:12px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-5px;right:10px;font-size:28px;opacity:0.12;">${fatLossCompleted ? '✅' : '🫀'}</div>
+          <div class="flex-between">
+            <div>
+              <div class="font-sm text-secondary">🫀 减脂训练 · 第${fatLossRound}轮/共4轮 · 第${fatLossWeek}周</div>
+              <div class="font-lg font-bold mt-8">${flWorkout.label}</div>
+              <div class="font-sm text-secondary">${flWorkout.exercises.length}个环节 · ${flPhase.name}</div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge ${fatLossCompleted ? 'badge-primary' : ''}" style="${fatLossCompleted ? '' : 'background:#4A90D9;color:#fff;'}">${fatLossCompleted ? '✓ 已完成' : '待完成'}</span>
+              <div style="margin-top:8px;color:var(--text-hint);">${icons.chevron}</div>
+            </div>
+          </div>
+        </div>
+      </a>
+    `;
+  } else if (fatLossTodayIdx < 0) {
+    // 非训练日也显示一个小提示
+    html += `
+      <a href="#/fat-loss" style="text-decoration:none;color:inherit;">
+        <div class="card text-center" style="margin-bottom:12px;border-left:4px solid #4A90D9;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-8px;left:-8px;font-size:36px;opacity:0.06;">🫀</div>
+          <div style="font-size:28px;">🚶</div>
+          <div class="font-bold mt-8" style="font-size:14px;color:#2563EB;">🫀 减脂休息日</div>
+          <div class="font-sm text-secondary mt-8">建议20-30分钟轻松散步促进恢复</div>
+        </div>
+      </a>
+    `;
+  }
   }
 
   // 今日餐食概览
@@ -147,7 +298,7 @@ export async function renderDashboard(params) {
           <span class="font-sm">${mealLabels[mt]}</span>
           <span class="font-sm text-secondary" style="margin-left:6px;">${meal.name}</span>
         </div>
-        <span class="${done ? 'text-primary' : 'text-secondary'}">${done ? '✓' : '○'}</span>
+        <span class="${done ? 'text-accent' : 'text-secondary'}" style="${done ? 'font-weight:800;font-size:18px;' : ''}">${done ? '✓' : '○'}</span>
       </div>
     `;
   });
@@ -350,5 +501,17 @@ export async function renderDashboard(params) {
     const profileData = { key: 'profile', gender, age, height, weight, activityLevel: activity };
     await db.put('userProfile', profileData);
     store.setState({ userProfile: profileData });
+  };
+
+  // 模式切换
+  window.switchMode = async (mode) => {
+    store.setState({ activeMode: mode });
+    try {
+      await db.put('settings', { key: 'activeMode', value: mode });
+    } catch (e) {}
+    // 重新渲染导航栏
+    renderBottomNav();
+    // 重新渲染首页
+    await renderDashboard();
   };
 }
