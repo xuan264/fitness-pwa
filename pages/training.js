@@ -200,4 +200,175 @@ export async function renderTraining(params) {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;line-height:1.6;">
           <div><span class="text-secondary">频率：</span>${p.frequency}次/周</div>
           <div><span class="text-secondary">强度：</span>${p.acsmParams.intensity.split(';')[0]}</div>
-          <div><span class="text-secondary">次数：</span>${p.acsmParams.reps
+          <div><span class="text-secondary">次数：</span>${p.acsmParams.repsPerSet.split(';')[0]}</div>
+          <div><span class="text-secondary">休息：</span>${p.acsmParams.restInterval}</div>
+          <div style="grid-column:span 2;"><span class="text-secondary">超负荷：</span>${p.acsmParams.progressiveOverload}</div>
+        </div>
+      </div>
+    `;
+
+    // 训练日列表（默认收起详情，点击展开）
+    p.workouts.forEach((w, wIdx) => {
+      const isToday = i === currentPhaseIdx && wIdx === todayWorkoutIdx;
+      // 动作快速预览
+      const exercisePreview = w.exercises.map((e, idx) => { const wp = getWeeklyParams(e, week, round); return `<span style="display:inline-block;background:var(--bg);border-radius:4px;padding:2px 8px;font-size:12px;margin:2px 2px 2px 0;">${idx+1}.${e.name} ${wp.sets}×${wp.reps}</span>`; }).join('');
+
+      html += `
+        <div class="card" style="margin-bottom:12px;${isToday ? 'border:2px solid var(--accent);' : ''}">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <span class="font-bold" style="font-size:15px;">${w.label}</span>
+            ${isToday ? '<span class="badge badge-accent">今日</span>' : ''}
+          </div>
+          <div style="margin-bottom:8px;">${exercisePreview}</div>
+          <button class="btn btn-primary btn-full" onclick="toggleWorkoutDetail(${i},${wIdx})" id="workout-btn-${i}-${wIdx}">查看动作详情</button>
+          <div id="workout-detail-${i}-${wIdx}" class="exercise-detail" style="padding-top:12px;">
+      `;
+
+      // 热身
+      if (w.warmup && w.warmup.length) {
+        html += `<div class="exercise-section"><h4>热身</h4><ul>`;
+        w.warmup.forEach(item => {
+          html += `<li>${item.name} <span class="text-secondary">(${item.duration})</span></li>`;
+        });
+        html += `</ul></div>`;
+      }
+
+      // 动作详情（显示当前周参数）
+      html += `<div class="exercise-section"><h4>正式动作</h4>`;
+      w.exercises.forEach((ex, exIdx) => {
+        const wp = getWeeklyParams(ex, week, round);
+        html += `
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
+            <div class="flex-between">
+              <div>
+                <div class="font-bold">${exIdx + 1}. ${ex.name}</div>
+                <div class="font-sm text-secondary">${ex.category}</div>
+              </div>
+              <div class="text-right">
+                <div class="badge badge-primary">${wp.sets}组×${wp.reps}</div>
+              </div>
+            </div>
+            <div class="font-sm mt-8">
+              <span class="text-secondary">重量：</span>${wp.weight}
+              <span class="text-secondary" style="margin-left:8px;">休息：</span>${ex.rest}
+            </div>
+            <div class="font-sm text-secondary" style="margin-top:2px;">节奏：${ex.tempo}</div>
+            <div class="exercise-section" style="margin-top:8px;">
+              <h4 style="font-size:12px;">动作要领</h4>
+              <ol style="font-size:13px;padding-left:18px;">
+                ${ex.cues.map(c => `<li>${c}</li>`).join('')}
+              </ol>
+            </div>
+            <div class="exercise-section">
+              <h4 style="font-size:12px;">常见错误</h4>
+              <ul style="font-size:13px;padding-left:18px;">
+                ${ex.commonMistakes.map(m => `<li class="text-danger">${m}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="font-sm text-secondary" style="margin-top:4px;">目标肌群：${(ex.muscle || []).join('、')}</div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+
+      // 拉伸
+      if (w.cooldown && w.cooldown.length) {
+        html += `<div class="exercise-section"><h4>拉伸放松</h4><ul>`;
+        w.cooldown.forEach(item => {
+          html += `<li>${item.name} <span class="text-secondary">(${item.duration})</span></li>`;
+        });
+        html += `</ul></div>`;
+      }
+
+      html += `</div></div>`;
+    });
+
+    // 有氧建议
+    html += `
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:8px;">配套有氧</div>
+        <div style="font-size:13px;line-height:1.8;">
+          <div><span class="text-secondary">类型：</span>${p.cardio.type}</div>
+          <div><span class="text-secondary">频率：</span>${p.cardio.frequency}</div>
+          <div><span class="text-secondary">时长：</span>${p.cardio.duration}</div>
+          <div><span class="text-secondary">强度：</span>${p.cardio.intensity}</div>
+          <div><span class="text-secondary">推荐：</span>${p.cardio.options.join('、')}</div>
+        </div>
+      </div>
+    `;
+
+    html += `</div>`;
+  }
+
+  // ===== 科学原理 =====
+  html += `
+    <div class="card mt-16">
+      <div class="card-title">${icons.target} 训练核心原则</div>
+      <ul style="font-size:14px;padding-left:20px;line-height:2;">
+        ${trainingPlan.meta.principles.map(p => `<li>${p}</li>`).join('')}
+      </ul>
+      <div class="font-sm text-secondary mt-8">依据：${trainingPlan.meta.source}</div>
+    </div>
+  `;
+
+  html += `</div>`;
+  container.innerHTML = html;
+
+  // ===== 全局函数 =====
+  window.toggleTodayDetail = () => {
+    const el = document.getElementById('today-detail');
+    if (el) {
+      const isShow = el.classList.toggle('show');
+      const btn = el.previousElementSibling;
+      if (btn && btn.tagName === 'BUTTON') {
+        btn.textContent = isShow ? '收起动作详情' : '查看动作详情';
+      }
+    }
+  };
+
+  // 阶段总览里的训练日详情展开/收起
+  window.toggleWorkoutDetail = (pIdx, wIdx) => {
+    const el = document.getElementById(`workout-detail-${pIdx}-${wIdx}`);
+    const btn = document.getElementById(`workout-btn-${pIdx}-${wIdx}`);
+    if (el) {
+      const isShow = el.classList.toggle('show');
+      if (btn) btn.textContent = isShow ? '收起动作详情' : '查看动作详情';
+    }
+  };
+
+  // Tab 切换 - 简单直接，不再有嵌套折叠
+  window.switchPhaseTab = (idx) => {
+    for (let i = 0; i < trainingPlan.phases.length; i++) {
+      const content = document.getElementById(`phase-tab-content-${i}`);
+      const tab = document.querySelectorAll('.phase-tab')[i];
+      if (content) content.style.display = (i === idx) ? 'block' : 'none';
+      if (tab) {
+        if (i === idx) {
+          tab.style.background = 'var(--primary)';
+          tab.style.color = '#fff';
+          tab.style.fontWeight = '600';
+        } else {
+          tab.style.background = '';
+          tab.style.color = 'var(--text-secondary)';
+          tab.style.fontWeight = '';
+        }
+      }
+    }
+  };
+
+  window.markWorkoutDone = async () => {
+    await db.add('workoutLog', {
+      date: todayStr(),
+      week: store.state.currentWeek,
+      phaseId: phase.id,
+      workoutLabel: phase.workouts[todayWorkoutIdx].label
+    });
+    alert('训练打卡成功！💪');
+    renderTraining();
+  };
+}
+
+async function checkWorkoutCompleted() {
+  const logs = await db.getByIndex('workoutLog', 'date', todayStr());
+  return logs.length > 0;
+}
