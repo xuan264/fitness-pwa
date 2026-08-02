@@ -55,7 +55,7 @@ export async function renderDiet(params) {
       ${!isCurrentWeek ? `<div style="margin-top:8px;font-size:12px;color:var(--accent);text-align:center;">⚠ 正在查看第${week}周菜谱，非本周。点击 <a onclick="backToCurrentWeek()" style="color:var(--primary);cursor:pointer;text-decoration:underline;">返回本周</a></div>` : ''}
       </div>`;
 
-  // 蛋白质目标
+  // 蛋白质目标（双人份，菜谱用量已翻倍）
   const profile = store.state.userProfile;
   let proteinTarget = '120-165g';
   if (profile && profile.weight) {
@@ -65,7 +65,7 @@ export async function renderDiet(params) {
     <div class="stat-grid">
       <div class="stat-card">
         <div class="stat-value">${totalProtein}g</div>
-        <div class="stat-label">今日蛋白质</div>
+        <div class="stat-label">今日蛋白质（双人）</div>
       </div>
       <div class="stat-card accent">
         <div class="stat-value">${proteinTarget}</div>
@@ -226,6 +226,7 @@ export async function renderDiet(params) {
         mealName
       });
     }
+    window._needRefreshDashboard = true;
     renderDiet({ day: selectedDay });
   };
 
