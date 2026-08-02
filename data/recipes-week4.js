@@ -63,7 +63,7 @@ export const week4Menus = [
         tips: "南瓜β-胡萝卜素含量高，蒸熟直接吃就很甜。比红薯热量更低。"
       },
       snack: {
-        id: "w4-mon-snack", mealType: "加餐（训练后）", name: "香蕉+酸奶+蛋白粉",
+        id: "w4-mon-snack", mealType: "加餐（休息日）", name: "香蕉+酸奶+蛋白粉",
         totalTime: "2分钟", calories: "约260大卡", protein: "约21g",
         ingredients: [
           { name: "香蕉", amount: "1根", grams: "120g", fist: "1个拳头", protein: "1.3g", category: "fruit" },
@@ -135,15 +135,15 @@ export const week4Menus = [
         tips: "鱼汤变白的秘诀是煎鱼后加开水大火煮。豆腐和鱼搭配钙吸收率更高。"
       },
       snack: {
-        id: "w4-tue-snack", mealType: "加餐（训练后）", name: "橙子+鸡蛋+牛奶",
+        id: "w4-tue-snack", mealType: "加餐（休息日）", name: "桃子+鸡蛋+牛奶",
         totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
         ingredients: [
-          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
+          { name: "桃子", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1g", category: "fruit" },
           { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
           { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
         ],
-        steps: ["鸡蛋水煮7分钟", "橙子剥皮食用"],
-        tips: "橙子维C帮助胶原蛋白合成，对皮肤好。"
+        steps: ["鸡蛋水煮7分钟", "桃子洗净去核切块食用"],
+        tips: "桃子富含维生素A和膳食纤维，夏天吃补水又养颜。"
       }
     }
   },
@@ -280,7 +280,7 @@ export const week4Menus = [
         tips: "白菜炖粉条是家常菜，加了番茄和鸡肉更营养，减脂也能吃得满足。"
       },
       snack: {
-        id: "w4-thu-snack", mealType: "加餐（训练后）", name: "香蕉+鸡蛋+牛奶",
+        id: "w4-thu-snack", mealType: "加餐（休息日）", name: "香蕉+鸡蛋+牛奶",
         totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
         ingredients: [
           { name: "香蕉", amount: "1根", grams: "120g", fist: "1个拳头", protein: "1.3g", category: "fruit" },
@@ -424,7 +424,7 @@ export const week4Menus = [
         tips: "三文鱼蒸蛋鲜美嫩滑，三文鱼的油脂渗入蛋液非常香。"
       },
       snack: {
-        id: "w4-sat-snack", mealType: "加餐（训练后）", name: "小番茄+牛奶+蛋白粉",
+        id: "w4-sat-snack", mealType: "加餐（休息日）", name: "小番茄+牛奶+蛋白粉",
         totalTime: "2分钟", calories: "约230大卡", protein: "约21g",
         ingredients: [
           { name: "小番茄", amount: "12个", grams: "150g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
@@ -441,19 +441,19 @@ export const week4Menus = [
     day: 7, dayName: "周日",
     meals: {
       breakfast: {
-        id: "w4-sun-bf", mealType: "早餐", name: "水煮蛋全麦馒头配牛奶橙子",
+        id: "w4-sun-bf", mealType: "早餐", name: "水煮蛋全麦馒头配牛奶葡萄",
         totalTime: "12分钟", calories: "约430大卡", protein: "约30g",
         ingredients: [
           { name: "全麦馒头", amount: "1个", grams: "80g", fist: "1个拳头", protein: "5g", category: "carb" },
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "1.5个手掌", protein: "19g", category: "protein" },
           { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
-          { name: "橙子", amount: "1个", grams: "200g", fist: "1个拳头", protein: "1.4g", category: "fruit" }
+          { name: "葡萄", amount: "一小串", grams: "150g", fist: "1个拳头", protein: "0.5g", category: "fruit" }
         ],
         steps: [
           "全麦馒头蒸热",
           "鸡蛋水煮7分钟",
           "鸡蛋剥壳夹入馒头",
-          "配牛奶和橙子"
+          "配牛奶和葡萄"
         ],
         tips: "全麦馒头可以一次多做几个冷冻，吃的时候蒸10分钟就好，很方便。"
       },
