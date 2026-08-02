@@ -9,12 +9,12 @@ export const week4Menus = [
     meals: {
       breakfast: {
         id: "w4-mon-bf", mealType: "早餐", name: "鸡蛋牛油果全麦吐司配牛奶",
-        totalTime: "10分钟", calories: "约430大卡", protein: "约30g",
+        totalTime: "10分钟", calories: "约860大卡", protein: "约60g",
         ingredients: [
-          { name: "全麦面包", amount: "2片", grams: "70g", fist: "1个拳头", protein: "6.3g", category: "carb" },
-          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
-          { name: "牛油果", amount: "1/4个", grams: "50g", fist: "—", protein: "1g", category: "fruit" },
-          { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" }
+          { name: "全麦面包", amount: "4片", grams: "140g", fist: "1个拳头", protein: "12.6g", category: "carb" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "牛油果", amount: "1/2个", grams: "100g", fist: "—", protein: "2g", category: "fruit" },
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" }
         ],
         steps: [
           "全麦面包烤至微脆",
@@ -26,13 +26,13 @@ export const week4Menus = [
       },
       lunch: {
         id: "w4-mon-lunch", mealType: "午餐", name: "虾仁荷兰豆炒饭配小番茄",
-        totalTime: "15分钟", calories: "约450大卡", protein: "约42g",
+        totalTime: "15分钟", calories: "约900大卡", protein: "约84g",
         ingredients: [
-          { name: "虾仁", amount: "150g", grams: "150g", fist: "1个手掌", protein: "36g", category: "protein" },
-          { name: "米饭", amount: "1碗", grams: "熟150g", fist: "1个拳头", protein: "3.9g", category: "carb" },
-          { name: "荷兰豆", amount: "100g", grams: "100g", fist: "1个拳头", protein: "3g", category: "vegetable" },
-          { name: "小番茄", amount: "10个", grams: "100g", fist: "1个拳头", protein: "0.9g", category: "vegetable" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "虾仁", amount: "300g", grams: "300g", fist: "1个手掌", protein: "72g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "荷兰豆", amount: "200g", grams: "200g", fist: "1个拳头", protein: "6g", category: "vegetable" },
+          { name: "小番茄", amount: "20个", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "虾仁解冻沥干，荷兰豆去筋",
@@ -45,13 +45,13 @@ export const week4Menus = [
       },
       dinner: {
         id: "w4-mon-dinner", mealType: "晚餐", name: "鸡胸肉蒸南瓜配菠菜",
-        totalTime: "25分钟", calories: "约380大卡", protein: "约38g",
+        totalTime: "25分钟", calories: "约760大卡", protein: "约76g",
         ingredients: [
-          { name: "鸡胸肉", amount: "150g", grams: "150g", fist: "1个手掌", protein: "35g", category: "protein" },
-          { name: "南瓜", amount: "200g", grams: "200g", fist: "1个拳头", protein: "1.6g", category: "carb" },
-          { name: "菠菜", amount: "1把", grams: "200g", fist: "2个拳头", protein: "5.2g", category: "vegetable" },
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "南瓜", amount: "400g", grams: "400g", fist: "1个拳头", protein: "3.2g", category: "carb" },
+          { name: "菠菜", amount: "2把", grams: "400g", fist: "2个拳头", protein: "10.4g", category: "vegetable" },
           { name: "蒜末、生抽", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "南瓜去皮切块蒸15分钟",
@@ -64,11 +64,11 @@ export const week4Menus = [
       },
       snack: {
         id: "w4-mon-snack", mealType: "加餐（休息日）", name: "香蕉+酸奶+蛋白粉",
-        totalTime: "2分钟", calories: "约260大卡", protein: "约21g",
+        totalTime: "2分钟", calories: "约520大卡", protein: "约42g",
         ingredients: [
-          { name: "香蕉", amount: "1根", grams: "120g", fist: "1个拳头", protein: "1.3g", category: "fruit" },
-          { name: "无糖酸奶", amount: "150g", grams: "150g", fist: "1杯", protein: "7.5g", category: "protein" },
-          { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
+          { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
+          { name: "无糖酸奶", amount: "300g", grams: "300g", fist: "1杯", protein: "15g", category: "protein" },
+          { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
         ],
         steps: ["香蕉切片拌入酸奶"],
         tips: "香蕉和酸奶搅拌后口感像冰淇淋，减脂期甜品替代。"
@@ -81,12 +81,12 @@ export const week4Menus = [
     meals: {
       breakfast: {
         id: "w4-tue-bf", mealType: "早餐", name: "紫薯牛奶配全麦面包水煮蛋",
-        totalTime: "12分钟", calories: "约420大卡", protein: "约28g",
+        totalTime: "12分钟", calories: "约840大卡", protein: "约56g",
         ingredients: [
-          { name: "紫薯", amount: "1个", grams: "100g", fist: "1个拳头", protein: "1.5g", category: "carb" },
-          { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
-          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
-          { name: "全麦面包", amount: "1片", grams: "35g", fist: "半个拳头", protein: "3.2g", category: "carb" }
+          { name: "紫薯", amount: "2个", grams: "200g", fist: "1个拳头", protein: "3g", category: "carb" },
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "全麦面包", amount: "2片", grams: "70g", fist: "半个拳头", protein: "6.4g", category: "carb" }
         ],
         steps: [
           "紫薯蒸10分钟至软烂",
@@ -98,13 +98,13 @@ export const week4Menus = [
       },
       lunch: {
         id: "w4-tue-lunch", mealType: "午餐", name: "瘦牛肉芹菜炒配杂粮饭",
-        totalTime: "25分钟", calories: "约530大卡", protein: "约46g",
+        totalTime: "25分钟", calories: "约1060大卡", protein: "约92g",
         ingredients: [
-          { name: "瘦牛肉", amount: "150g", grams: "150g", fist: "1个手掌", protein: "39g", category: "protein" },
-          { name: "杂粮饭", amount: "1碗", grams: "熟150g", fist: "1个拳头", protein: "3.5g", category: "carb" },
-          { name: "芹菜", amount: "1把", grams: "150g", fist: "1.5个拳头", protein: "1.2g", category: "vegetable" },
-          { name: "胡萝卜", amount: "1/3根", grams: "50g", fist: "—", protein: "0.5g", category: "vegetable" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "瘦牛肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "78g", category: "protein" },
+          { name: "杂粮饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7g", category: "carb" },
+          { name: "芹菜", amount: "2把", grams: "300g", fist: "1.5个拳头", protein: "2.4g", category: "vegetable" },
+          { name: "胡萝卜", amount: "2/3根", grams: "100g", fist: "—", protein: "1g", category: "vegetable" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "牛肉逆纹切薄片，加生抽、料酒、淀粉腌制10分钟",
@@ -117,13 +117,13 @@ export const week4Menus = [
       },
       dinner: {
         id: "w4-tue-dinner", mealType: "晚餐", name: "豆腐鱼头汤配玉米",
-        totalTime: "30分钟", calories: "约380大卡", protein: "约35g",
+        totalTime: "30分钟", calories: "约760大卡", protein: "约70g",
         ingredients: [
-          { name: "鱼头/鱼块", amount: "150g", grams: "150g", fist: "1个手掌", protein: "28g", category: "protein" },
-          { name: "北豆腐", amount: "100g", grams: "100g", fist: "—", protein: "8.1g", category: "protein" },
-          { name: "玉米", amount: "半根", grams: "100g", fist: "1个拳头", protein: "4g", category: "carb" },
-          { name: "白菜", amount: "3叶", grams: "150g", fist: "1.5个拳头", protein: "2g", category: "vegetable" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "鱼头/鱼块", amount: "300g", grams: "300g", fist: "1个手掌", protein: "56g", category: "protein" },
+          { name: "北豆腐", amount: "200g", grams: "200g", fist: "—", protein: "16.2g", category: "protein" },
+          { name: "玉米", amount: "1根", grams: "200g", fist: "1个拳头", protein: "8g", category: "carb" },
+          { name: "白菜", amount: "6叶", grams: "300g", fist: "1.5个拳头", protein: "4g", category: "vegetable" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "玉米蒸15分钟",
@@ -136,11 +136,11 @@ export const week4Menus = [
       },
       snack: {
         id: "w4-tue-snack", mealType: "加餐（休息日）", name: "桃子+鸡蛋+牛奶",
-        totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
+        totalTime: "10分钟", calories: "约460大卡", protein: "约32g",
         ingredients: [
-          { name: "桃子", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1g", category: "fruit" },
-          { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
-          { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
+          { name: "桃子", amount: "2个", grams: "300g", fist: "1个拳头", protein: "2g", category: "fruit" },
+          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "半手掌", protein: "12.6g", category: "protein" },
+          { name: "牛奶", amount: "400ml", grams: "400g", fist: "1杯", protein: "12.8g", category: "protein" }
         ],
         steps: ["鸡蛋水煮7分钟", "桃子洗净去核切块食用"],
         tips: "桃子富含维生素A和膳食纤维，夏天吃补水又养颜。"
@@ -153,13 +153,13 @@ export const week4Menus = [
     meals: {
       breakfast: {
         id: "w4-wed-bf", mealType: "早餐", name: "鸡蛋蔬菜炒面配牛奶",
-        totalTime: "12分钟", calories: "约440大卡", protein: "约30g",
+        totalTime: "12分钟", calories: "约880大卡", protein: "约60g",
         ingredients: [
-          { name: "全麦面条", amount: "50g", grams: "50g（干）", fist: "1个拳头", protein: "5.5g", category: "carb" },
-          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
-          { name: "小白菜", amount: "100g", grams: "100g", fist: "1个拳头", protein: "1.5g", category: "vegetable" },
-          { name: "胡萝卜", amount: "1/4根", grams: "30g", fist: "—", protein: "0.3g", category: "vegetable" },
-          { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" }
+          { name: "全麦面条", amount: "100g", grams: "100g（干）", fist: "1个拳头", protein: "11g", category: "carb" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "小白菜", amount: "200g", grams: "200g", fist: "1个拳头", protein: "3g", category: "vegetable" },
+          { name: "胡萝卜", amount: "1/2根", grams: "60g", fist: "—", protein: "0.6g", category: "vegetable" },
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" }
         ],
         steps: [
           "面条煮至8分熟捞出",
@@ -171,13 +171,13 @@ export const week4Menus = [
       },
       lunch: {
         id: "w4-wed-lunch", mealType: "午餐", name: "鸡胸肉炒西葫芦配红薯",
-        totalTime: "20分钟", calories: "约420大卡", protein: "约40g",
+        totalTime: "20分钟", calories: "约840大卡", protein: "约80g",
         ingredients: [
-          { name: "鸡胸肉", amount: "150g", grams: "150g", fist: "1个手掌", protein: "35g", category: "protein" },
-          { name: "红薯", amount: "1个", grams: "200g", fist: "1个拳头", protein: "2.2g", category: "carb" },
-          { name: "西葫芦", amount: "1根", grams: "200g", fist: "2个拳头", protein: "1.6g", category: "vegetable" },
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
+          { name: "西葫芦", amount: "2根", grams: "400g", fist: "2个拳头", protein: "3.2g", category: "vegetable" },
           { name: "蒜末", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "红薯蒸15分钟",
@@ -190,12 +190,12 @@ export const week4Menus = [
       },
       dinner: {
         id: "w4-wed-dinner", mealType: "晚餐", name: "虾仁豆腐蛋花汤配南瓜",
-        totalTime: "20分钟", calories: "约350大卡", protein: "约35g",
+        totalTime: "20分钟", calories: "约700大卡", protein: "约70g",
         ingredients: [
-          { name: "虾仁", amount: "100g", grams: "100g", fist: "—", protein: "24g", category: "protein" },
-          { name: "嫩豆腐", amount: "100g", grams: "100g", fist: "—", protein: "5g", category: "protein" },
-          { name: "南瓜", amount: "150g", grams: "150g", fist: "1个拳头", protein: "1.2g", category: "carb" },
-          { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
+          { name: "虾仁", amount: "200g", grams: "200g", fist: "—", protein: "48g", category: "protein" },
+          { name: "嫩豆腐", amount: "200g", grams: "200g", fist: "—", protein: "10g", category: "protein" },
+          { name: "南瓜", amount: "300g", grams: "300g", fist: "1个拳头", protein: "2.4g", category: "carb" },
+          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "半手掌", protein: "12.6g", category: "protein" },
           { name: "葱花、盐", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
         ],
         steps: [
@@ -209,11 +209,11 @@ export const week4Menus = [
       },
       snack: {
         id: "w4-wed-snack", mealType: "加餐（训练后）", name: "苹果+牛奶+蛋白粉",
-        totalTime: "2分钟", calories: "约240大卡", protein: "约21g",
+        totalTime: "2分钟", calories: "约480大卡", protein: "约42g",
         ingredients: [
-          { name: "苹果", amount: "1个", grams: "200g", fist: "1个拳头", protein: "0.6g", category: "fruit" },
-          { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
-          { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
+          { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
+          { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
+          { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
         ],
         steps: ["直接食用"],
         tips: "训练后苹果和牛奶快速补充能量和蛋白质。"
@@ -226,12 +226,12 @@ export const week4Menus = [
     meals: {
       breakfast: {
         id: "w4-thu-bf", mealType: "早餐", name: "牛奶燕麦紫薯粥配水煮蛋",
-        totalTime: "10分钟", calories: "约430大卡", protein: "约30g",
+        totalTime: "10分钟", calories: "约860大卡", protein: "约60g",
         ingredients: [
-          { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
-          { name: "燕麦片", amount: "40g", grams: "40g", fist: "1个拳头", protein: "5.2g", category: "carb" },
-          { name: "紫薯", amount: "1个", grams: "80g", fist: "—", protein: "1.2g", category: "carb" },
-          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" }
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
+          { name: "燕麦片", amount: "80g", grams: "80g", fist: "1个拳头", protein: "10.4g", category: "carb" },
+          { name: "紫薯", amount: "2个", grams: "160g", fist: "—", protein: "2.4g", category: "carb" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" }
         ],
         steps: [
           "紫薯蒸10分钟，压成泥",
@@ -243,13 +243,13 @@ export const week4Menus = [
       },
       lunch: {
         id: "w4-thu-lunch", mealType: "午餐", name: "虾仁炒西兰花意面",
-        totalTime: "20分钟", calories: "约450大卡", protein: "约44g",
+        totalTime: "20分钟", calories: "约900大卡", protein: "约88g",
         ingredients: [
-          { name: "虾仁", amount: "150g", grams: "150g", fist: "1个手掌", protein: "36g", category: "protein" },
-          { name: "全麦意面", amount: "60g", grams: "60g（干）", fist: "1个拳头", protein: "7.8g", category: "carb" },
-          { name: "西兰花", amount: "半棵", grams: "150g", fist: "1.5个拳头", protein: "4.2g", category: "vegetable" },
+          { name: "虾仁", amount: "300g", grams: "300g", fist: "1个手掌", protein: "72g", category: "protein" },
+          { name: "全麦意面", amount: "120g", grams: "120g（干）", fist: "1个拳头", protein: "15.6g", category: "carb" },
+          { name: "西兰花", amount: "1棵", grams: "300g", fist: "1.5个拳头", protein: "8.4g", category: "vegetable" },
           { name: "蒜末", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-          { name: "橄榄油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "橄榄油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "意面放加盐沸水中煮8-10分钟",
@@ -262,13 +262,13 @@ export const week4Menus = [
       },
       dinner: {
         id: "w4-thu-dinner", mealType: "晚餐", name: "鸡胸肉番茄白菜炖粉条",
-        totalTime: "25分钟", calories: "约370大卡", protein: "约38g",
+        totalTime: "25分钟", calories: "约740大卡", protein: "约76g",
         ingredients: [
-          { name: "鸡胸肉", amount: "150g", grams: "150g", fist: "1个手掌", protein: "35g", category: "protein" },
-          { name: "红薯粉丝", amount: "30g", grams: "30g（干）", fist: "1个拳头", protein: "0.3g", category: "carb" },
-          { name: "白菜", amount: "4叶", grams: "200g", fist: "2个拳头", protein: "2.6g", category: "vegetable" },
-          { name: "番茄", amount: "1个", grams: "100g", fist: "1个拳头", protein: "0.9g", category: "vegetable" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "红薯粉丝", amount: "60g", grams: "60g（干）", fist: "1个拳头", protein: "0.6g", category: "carb" },
+          { name: "白菜", amount: "8叶", grams: "400g", fist: "2个拳头", protein: "5.2g", category: "vegetable" },
+          { name: "番茄", amount: "2个", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "鸡胸肉切小块，焯水去血沫",
@@ -281,11 +281,11 @@ export const week4Menus = [
       },
       snack: {
         id: "w4-thu-snack", mealType: "加餐（休息日）", name: "香蕉+鸡蛋+牛奶",
-        totalTime: "10分钟", calories: "约230大卡", protein: "约16g",
+        totalTime: "10分钟", calories: "约460大卡", protein: "约32g",
         ingredients: [
-          { name: "香蕉", amount: "1根", grams: "120g", fist: "1个拳头", protein: "1.3g", category: "fruit" },
-          { name: "鸡蛋", amount: "1个", grams: "50g", fist: "半手掌", protein: "6.3g", category: "protein" },
-          { name: "牛奶", amount: "200ml", grams: "200g", fist: "1杯", protein: "6.4g", category: "protein" }
+          { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
+          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "半手掌", protein: "12.6g", category: "protein" },
+          { name: "牛奶", amount: "400ml", grams: "400g", fist: "1杯", protein: "12.8g", category: "protein" }
         ],
         steps: ["鸡蛋水煮7分钟", "香蕉直接食用"],
         tips: "香蕉提供快碳补充训练消耗，鸡蛋补充蛋白质。"
@@ -298,13 +298,13 @@ export const week4Menus = [
     meals: {
       breakfast: {
         id: "w4-fri-bf", mealType: "早餐", name: "全麦面包煎蛋配牛奶猕猴桃",
-        totalTime: "10分钟", calories: "约440大卡", protein: "约31g",
+        totalTime: "10分钟", calories: "约880大卡", protein: "约62g",
         ingredients: [
-          { name: "全麦面包", amount: "2片", grams: "70g", fist: "1个拳头", protein: "6.3g", category: "carb" },
-          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
-          { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
-          { name: "猕猴桃", amount: "1个", grams: "80g", fist: "—", protein: "0.8g", category: "fruit" },
-          { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
+          { name: "全麦面包", amount: "4片", grams: "140g", fist: "1个拳头", protein: "12.6g", category: "carb" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
+          { name: "猕猴桃", amount: "2个", grams: "160g", fist: "—", protein: "1.6g", category: "fruit" },
+          { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
         ],
         steps: [
           "煎两个荷包蛋（少油）",
@@ -316,13 +316,13 @@ export const week4Menus = [
       },
       lunch: {
         id: "w4-fri-lunch", mealType: "午餐", name: "龙利鱼烧豆腐配米饭",
-        totalTime: "25分钟", calories: "约450大卡", protein: "约42g",
+        totalTime: "25分钟", calories: "约900大卡", protein: "约84g",
         ingredients: [
-          { name: "龙利鱼/巴沙鱼", amount: "150g", grams: "150g", fist: "1个手掌", protein: "30g", category: "protein" },
-          { name: "北豆腐", amount: "100g", grams: "100g", fist: "—", protein: "8.1g", category: "protein" },
-          { name: "米饭", amount: "1碗", grams: "熟150g", fist: "1个拳头", protein: "3.9g", category: "carb" },
-          { name: "香菇", amount: "4朵", grams: "80g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "龙利鱼/巴沙鱼", amount: "300g", grams: "300g", fist: "1个手掌", protein: "60g", category: "protein" },
+          { name: "北豆腐", amount: "200g", grams: "200g", fist: "—", protein: "16.2g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "香菇", amount: "8朵", grams: "160g", fist: "1个拳头", protein: "3.6g", category: "vegetable" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "鱼切块，豆腐切块，香菇切片",
@@ -335,13 +335,13 @@ export const week4Menus = [
       },
       dinner: {
         id: "w4-fri-dinner", mealType: "晚餐", name: "鸡胸肉炒油菜配土豆",
-        totalTime: "20分钟", calories: "约380大卡", protein: "约38g",
+        totalTime: "20分钟", calories: "约760大卡", protein: "约76g",
         ingredients: [
-          { name: "鸡胸肉", amount: "150g", grams: "150g", fist: "1个手掌", protein: "35g", category: "protein" },
-          { name: "土豆", amount: "1个", grams: "120g", fist: "1个拳头", protein: "2.4g", category: "carb" },
-          { name: "油菜", amount: "1把", grams: "200g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "土豆", amount: "2个", grams: "240g", fist: "1个拳头", protein: "4.8g", category: "carb" },
+          { name: "油菜", amount: "2把", grams: "400g", fist: "2个拳头", protein: "7.2g", category: "vegetable" },
           { name: "蒜末", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "土豆去皮切小块蒸12分钟",
@@ -354,11 +354,11 @@ export const week4Menus = [
       },
       snack: {
         id: "w4-fri-snack", mealType: "加餐（训练后）", name: "酸奶+苹果+蛋白粉",
-        totalTime: "2分钟", calories: "约240大卡", protein: "约20g",
+        totalTime: "2分钟", calories: "约480大卡", protein: "约40g",
         ingredients: [
-          { name: "无糖酸奶", amount: "150g", grams: "150g", fist: "1杯", protein: "7.5g", category: "protein" },
-          { name: "苹果", amount: "1个", grams: "200g", fist: "1个拳头", protein: "0.6g", category: "fruit" },
-          { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
+          { name: "无糖酸奶", amount: "300g", grams: "300g", fist: "1杯", protein: "15g", category: "protein" },
+          { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
+          { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
         ],
         steps: ["苹果切丁拌入酸奶"],
         tips: "苹果和酸奶搭配，酸甜可口，是减脂期最好的甜品替代。"
@@ -371,12 +371,12 @@ export const week4Menus = [
     meals: {
       breakfast: {
         id: "w4-sat-bf", mealType: "早餐", name: "玉米鸡蛋羹配牛奶蓝莓",
-        totalTime: "15分钟", calories: "约420大卡", protein: "约30g",
+        totalTime: "15分钟", calories: "约840大卡", protein: "约60g",
         ingredients: [
-          { name: "玉米粒", amount: "80g", grams: "80g", fist: "—", protein: "3.2g", category: "carb" },
-          { name: "鸡蛋", amount: "3个", grams: "150g", fist: "1.5个手掌", protein: "19g", category: "protein" },
-          { name: "牛奶", amount: "300ml", grams: "300g", fist: "1杯", protein: "9.6g", category: "protein" },
-          { name: "蓝莓", amount: "一小把", grams: "50g", fist: "半个拳头", protein: "0.4g", category: "fruit" }
+          { name: "玉米粒", amount: "160g", grams: "160g", fist: "—", protein: "6.4g", category: "carb" },
+          { name: "鸡蛋", amount: "6个", grams: "300g", fist: "1.5个手掌", protein: "38g", category: "protein" },
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
+          { name: "蓝莓", amount: "一小把", grams: "100g", fist: "半个拳头", protein: "0.8g", category: "fruit" }
         ],
         steps: [
           "玉米粒加水打成浆（或用玉米面加水调匀）",
@@ -388,13 +388,13 @@ export const week4Menus = [
       },
       lunch: {
         id: "w4-sat-lunch", mealType: "午餐", name: "瘦牛肉炒洋葱彩椒配米饭",
-        totalTime: "25分钟", calories: "约530大卡", protein: "约46g",
+        totalTime: "25分钟", calories: "约1060大卡", protein: "约92g",
         ingredients: [
-          { name: "瘦牛肉", amount: "150g", grams: "150g", fist: "1个手掌", protein: "39g", category: "protein" },
-          { name: "米饭", amount: "1碗", grams: "熟150g", fist: "1个拳头", protein: "3.9g", category: "carb" },
-          { name: "洋葱", amount: "1/2个", grams: "100g", fist: "1个拳头", protein: "1.4g", category: "vegetable" },
-          { name: "红黄彩椒", amount: "各半个", grams: "100g", fist: "1个拳头", protein: "1g", category: "vegetable" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "瘦牛肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "78g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "洋葱", amount: "1个", grams: "200g", fist: "1个拳头", protein: "2.8g", category: "vegetable" },
+          { name: "红黄彩椒", amount: "各1个", grams: "200g", fist: "1个拳头", protein: "2g", category: "vegetable" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "牛肉逆纹切薄片，加生抽、料酒、淀粉腌制10分钟",
@@ -407,12 +407,12 @@ export const week4Menus = [
       },
       dinner: {
         id: "w4-sat-dinner", mealType: "晚餐", name: "三文鱼蒸蛋配蒸蔬菜",
-        totalTime: "20分钟", calories: "约400大卡", protein: "约34g",
+        totalTime: "20分钟", calories: "约800大卡", protein: "约68g",
         ingredients: [
-          { name: "三文鱼", amount: "100g", grams: "100g", fist: "—", protein: "22g", category: "protein" },
-          { name: "鸡蛋", amount: "2个", grams: "100g", fist: "1个手掌", protein: "12.6g", category: "protein" },
-          { name: "西兰花", amount: "半棵", grams: "150g", fist: "1.5个拳头", protein: "4.2g", category: "vegetable" },
-          { name: "胡萝卜", amount: "1/2根", grams: "80g", fist: "—", protein: "0.8g", category: "vegetable" },
+          { name: "三文鱼", amount: "200g", grams: "200g", fist: "—", protein: "44g", category: "protein" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "西兰花", amount: "1棵", grams: "300g", fist: "1.5个拳头", protein: "8.4g", category: "vegetable" },
+          { name: "胡萝卜", amount: "1根", grams: "160g", fist: "—", protein: "1.6g", category: "vegetable" },
           { name: "葱花、盐", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
         ],
         steps: [
@@ -425,11 +425,11 @@ export const week4Menus = [
       },
       snack: {
         id: "w4-sat-snack", mealType: "加餐（休息日）", name: "小番茄+牛奶+蛋白粉",
-        totalTime: "2分钟", calories: "约230大卡", protein: "约21g",
+        totalTime: "2分钟", calories: "约460大卡", protein: "约42g",
         ingredients: [
-          { name: "小番茄", amount: "12个", grams: "150g", fist: "1个拳头", protein: "1.4g", category: "fruit" },
-          { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
-          { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
+          { name: "小番茄", amount: "24个", grams: "300g", fist: "1个拳头", protein: "2.8g", category: "fruit" },
+          { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
+          { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
         ],
         steps: ["小番茄洗净配牛奶食用"],
         tips: "小番茄糖分低维C高，是减脂期最推荐的水果之一。"
@@ -442,12 +442,12 @@ export const week4Menus = [
     meals: {
       breakfast: {
         id: "w4-sun-bf", mealType: "早餐", name: "水煮蛋全麦馒头配牛奶葡萄",
-        totalTime: "12分钟", calories: "约430大卡", protein: "约30g",
+        totalTime: "12分钟", calories: "约860大卡", protein: "约60g",
         ingredients: [
-          { name: "全麦馒头", amount: "1个", grams: "80g", fist: "1个拳头", protein: "5g", category: "carb" },
-          { name: "鸡蛋", amount: "3个", grams: "150g", fist: "1.5个手掌", protein: "19g", category: "protein" },
-          { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
-          { name: "葡萄", amount: "一小串", grams: "150g", fist: "1个拳头", protein: "0.5g", category: "fruit" }
+          { name: "全麦馒头", amount: "2个", grams: "160g", fist: "1个拳头", protein: "10g", category: "carb" },
+          { name: "鸡蛋", amount: "6个", grams: "300g", fist: "1.5个手掌", protein: "38g", category: "protein" },
+          { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
+          { name: "葡萄", amount: "一小串", grams: "300g", fist: "1个拳头", protein: "1g", category: "fruit" }
         ],
         steps: [
           "全麦馒头蒸热",
@@ -459,13 +459,13 @@ export const week4Menus = [
       },
       lunch: {
         id: "w4-sun-lunch", mealType: "午餐", name: "鸡胸肉炒番茄木耳配米饭",
-        totalTime: "20分钟", calories: "约440大卡", protein: "约42g",
+        totalTime: "20分钟", calories: "约880大卡", protein: "约84g",
         ingredients: [
-          { name: "鸡胸肉", amount: "150g", grams: "150g", fist: "1个手掌", protein: "35g", category: "protein" },
-          { name: "米饭", amount: "1碗", grams: "熟150g", fist: "1个拳头", protein: "3.9g", category: "carb" },
-          { name: "番茄", amount: "2个", grams: "200g", fist: "2个拳头", protein: "1.8g", category: "vegetable" },
-          { name: "水发木耳", amount: "100g", grams: "100g", fist: "1个拳头", protein: "1.5g", category: "vegetable" },
-          { name: "食用油", amount: "1瓷勺", grams: "10g", fist: "—", protein: "0g", category: "oil" }
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "番茄", amount: "4个", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
+          { name: "水发木耳", amount: "200g", grams: "200g", fist: "1个拳头", protein: "3g", category: "vegetable" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
         ],
         steps: [
           "鸡胸肉切丁腌制10分钟",
@@ -478,12 +478,12 @@ export const week4Menus = [
       },
       dinner: {
         id: "w4-sun-dinner", mealType: "晚餐", name: "虾仁冬瓜蒸豆腐配红薯",
-        totalTime: "20分钟", calories: "约360大卡", protein: "约36g",
+        totalTime: "20分钟", calories: "约720大卡", protein: "约72g",
         ingredients: [
-          { name: "虾仁", amount: "120g", grams: "120g", fist: "—", protein: "29g", category: "protein" },
-          { name: "嫩豆腐", amount: "150g", grams: "150g", fist: "1个手掌", protein: "7.5g", category: "protein" },
-          { name: "红薯", amount: "1个", grams: "150g", fist: "1个拳头", protein: "2.2g", category: "carb" },
-          { name: "冬瓜", amount: "150g", grams: "150g", fist: "1.5个拳头", protein: "0.5g", category: "vegetable" },
+          { name: "虾仁", amount: "240g", grams: "240g", fist: "—", protein: "58g", category: "protein" },
+          { name: "嫩豆腐", amount: "300g", grams: "300g", fist: "1个手掌", protein: "15g", category: "protein" },
+          { name: "红薯", amount: "2个", grams: "300g", fist: "1个拳头", protein: "4.4g", category: "carb" },
+          { name: "冬瓜", amount: "300g", grams: "300g", fist: "1.5个拳头", protein: "1g", category: "vegetable" },
           { name: "蒜末、生抽", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
         ],
         steps: [
@@ -497,11 +497,11 @@ export const week4Menus = [
       },
       snack: {
         id: "w4-sun-snack", mealType: "加餐（休息日）", name: "香蕉+牛奶+蛋白粉",
-        totalTime: "2分钟", calories: "约250大卡", protein: "约20g",
+        totalTime: "2分钟", calories: "约500大卡", protein: "约40g",
         ingredients: [
-          { name: "香蕉", amount: "1根", grams: "120g", fist: "1个拳头", protein: "1.3g", category: "fruit" },
-          { name: "牛奶", amount: "250ml", grams: "250g", fist: "1杯", protein: "8g", category: "protein" },
-          { name: "蛋白粉", amount: "半勺", grams: "15g", fist: "—", protein: "12g", category: "protein" }
+          { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
+          { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
+          { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
         ],
         steps: ["直接食用"],
         tips: "休息日加餐可选，如果当天活动量不大可以省略。"
