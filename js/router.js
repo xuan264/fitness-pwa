@@ -37,15 +37,18 @@ export const router = {
     // 等待一帧让浏览器应用透明
     await new Promise(r => requestAnimationFrame(() => r()));
 
-    await handler(params);
-
-    // 滚动到顶部
-    window.scrollTo(0, 0);
-
-    // 淡入新内容
-    requestAnimationFrame(() => {
-      container.style.opacity = '1';
-    });
+    try {
+      await handler(params);
+    } catch (e) {
+      console.error('路由渲染失败:', path, e);
+      container.innerHTML = '<div class="page"><div class="card text-center"><div style="font-size:32px;">😵</div><div class="font-bold mt-8">页面加载出错</div><div class="font-sm text-secondary mt-8">' + (e.message || '未知错误') + '</div><button class="btn btn-primary mt-8" onclick="location.reload()">重新加载</button></div></div>';
+    } finally {
+      // 无论成功或失败，都恢复 opacity 并滚动到顶部
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => {
+        container.style.opacity = '1';
+      });
+    }
   },
 
   navigate(path) {
