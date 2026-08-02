@@ -357,14 +357,26 @@ export async function renderTraining(params) {
   };
 
   window.markWorkoutDone = async () => {
-    await db.add('workoutLog', {
-      date: todayStr(),
-      week: store.state.currentWeek,
-      phaseId: phase.id,
-      workoutLabel: phase.workouts[todayWorkoutIdx].label
-    });
-    alert('训练打卡成功！💪');
-    renderTraining();
+    const existing = await db.getByIndex('workoutLog', 'date', todayStr());
+    if (existing.length > 0) {
+      // 已打卡，取消打卡
+      for (const log of existing) {
+        await db.delete('workoutLog', log.id);
+      }
+      window._needRefreshDashboard = true;
+      alert('已取消训练打卡');
+    } else {
+      await db.add('workoutLog', {
+        date: todayStr(),
+        week: store.state.currentWeek,
+        phaseId: phase.id,
+        workoutLabel: phase.workouts[todayWorkoutIdx].label
+      });
+      window._needRefreshDashboard = true;
+      alert('训练打卡成功！💪');
+    }
+    // 重新渲染训练页
+    await renderTraining();
   };
 }
 
