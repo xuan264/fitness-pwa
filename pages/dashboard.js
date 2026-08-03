@@ -55,7 +55,7 @@ export async function renderDashboard(params) {
   // ===== 减脂训练独立计算 =====
   const FAT_LOSS_DAY_MAP = { 1: 0, 3: 1, 5: 2 };
   let fatLossWeek = 1, fatLossRound = 1, fatLossPhaseIdx = 0;
-  let fatLossTodayIdx = -1;
+  let fatLossTodayIdx = FAT_LOSS_DAY_MAP[dow] ?? -1;  // 不依赖数据库，直接算
   let fatLossCompleted = false;
   let fatLossAllLogs = [];
   try {
@@ -77,7 +77,6 @@ export async function renderDashboard(params) {
       else if (fatLossWeek <= 9) fatLossPhaseIdx = 2;
       else fatLossPhaseIdx = 3;
     }
-    fatLossTodayIdx = FAT_LOSS_DAY_MAP[dow] ?? -1;
     const flTodayLogs = (await db.getByIndex('workoutLog', 'date', todayStr())).filter(l => l.type === 'fat-loss');
     fatLossCompleted = flTodayLogs.length > 0;
     // 本周减脂训练统计
