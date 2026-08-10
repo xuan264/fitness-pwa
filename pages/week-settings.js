@@ -13,10 +13,17 @@ export async function renderWeekSettings() {
 
   const showOnHome = store.state.showWeekSelector !== false;
 
-  const roundOpts = (sel) => Array.from({ length: 4 }, (_, i) => `<option value="${i + 1}" ${sel === i + 1 ? 'selected' : ''}>第${i + 1}轮</option>`).join('');
-  const weekOpts = (sel) => Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}" ${sel === i + 1 ? 'selected' : ''}>第${i + 1}周</option>`).join('');
+  const roundPills = (sel) => Array.from({ length: 4 }, (_, i) => {
+    const n = i + 1;
+    const on = n === sel;
+    return `<button onclick="wsSetRound(${n})" style="flex:1;min-width:0;padding:11px 0;border:1.5px solid ${on ? 'var(--primary)' : 'var(--divider)'};border-radius:12px;background:${on ? 'var(--primary)' : 'var(--surface)'};color:${on ? '#fff' : 'var(--text-primary)'};font-size:15px;font-weight:600;cursor:pointer;">第${n}轮</button>`;
+  }).join('');
 
-  const selectStyle = "width:100%;padding:11px 12px;font-size:15px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);outline:none;";
+  const weekPills = (sel) => Array.from({ length: 12 }, (_, i) => {
+    const n = i + 1;
+    const on = n === sel;
+    return `<button onclick="wsSetWeek(${n})" style="flex:1 1 22%;min-width:0;padding:10px 0;border:1.5px solid ${on ? 'var(--primary)' : 'var(--divider)'};border-radius:12px;background:${on ? 'var(--primary)' : 'var(--surface)'};color:${on ? '#fff' : 'var(--text-primary)'};font-size:14px;font-weight:600;cursor:pointer;">${n}</button>`;
+  }).join('');
 
   let html = `<div class="page">`;
 
@@ -24,31 +31,24 @@ export async function renderWeekSettings() {
   html += `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
       <span onclick="location.hash='#/'" style="font-size:26px;line-height:1;cursor:pointer;color:var(--text-secondary);padding:0 4px;">‹</span>
-      <div style="font-size:18px;font-weight:700;">训练周期设置</div>
+      <div style="font-size:18px;font-weight:700;">训练周期</div>
     </div>
   `;
 
-  // 统一的训练周期卡片（锻炼与减脂共用一套轮次/周次）
+  // 统一的训练周期卡片（锻炼与减脂共用）
   html += `
     <div class="card" style="margin-bottom:14px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-        <span style="font-size:18px;">🗓️</span>
-        <span style="font-size:16px;font-weight:600;">训练周期</span>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px;">
+        <span style="font-size:22px;font-weight:700;">第 ${round} 轮 · 第 ${week} 周</span>
+        <span class="font-sm" style="color:var(--text-secondary);">${phase.name}</span>
       </div>
-      <div class="font-sm text-secondary mb-12">锻炼与减脂共用同一套轮次 · 当前阶段：${phase.name} · 共 ${totalRounds} 轮 12 周</div>
-      <div style="display:flex;gap:12px;">
-        <div style="flex:1;">
-          <div class="font-sm text-secondary mb-6">轮次</div>
-          <select onchange="wsSetCycle()" id="wsRound" style="${selectStyle}">${roundOpts(round)}</select>
-        </div>
-        <div style="flex:1;">
-          <div class="font-sm text-secondary mb-6">周次</div>
-          <select onchange="wsSetCycle()" id="wsWeek" style="${selectStyle}">${weekOpts(week)}</select>
-        </div>
-      </div>
-      <div class="font-sm text-secondary mt-12">
-        选定后以当天为锚点，之后每周自动顺延，无需每周手动调整。
-      </div>
+      <div class="font-sm" style="color:var(--text-secondary);margin-bottom:16px;">共 ${totalRounds} 轮 · 12 周</div>
+
+      <div class="font-sm" style="color:var(--text-secondary);margin-bottom:8px;">轮次</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">${roundPills(round)}</div>
+
+      <div class="font-sm" style="color:var(--text-secondary);margin-bottom:8px;">周次</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">${weekPills(week)}</div>
     </div>
   `;
 
@@ -56,8 +56,7 @@ export async function renderWeekSettings() {
   html += `
     <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;">
       <div style="flex:1;">
-        <div style="font-size:14px;font-weight:600;">在首页显示周期进度</div>
-        <div class="font-sm text-secondary mt-4">关闭后首页卡片更简洁</div>
+        <div style="font-size:14px;font-weight:600;">首页显示周期进度</div>
       </div>
       <div onclick="wsToggleShow()" style="flex:0 0 auto;min-width:50px;height:30px;border-radius:999px;padding:3px;cursor:pointer;transition:background .2s;${showOnHome ? 'background:var(--primary);' : 'background:var(--border);'}">
         <div style="width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s;${showOnHome ? 'transform:translateX(20px);' : 'transform:translateX(0);'}"></div>
@@ -72,11 +71,13 @@ export async function renderWeekSettings() {
   html += `</div>`;
   container.innerHTML = html;
 
-  // 全局处理函数（模块作用域内闭包，重新渲染时更新）
-  window.wsSetCycle = async () => {
-    const r = parseInt(document.getElementById('wsRound').value, 10);
-    const w = parseInt(document.getElementById('wsWeek').value, 10);
-    await store.setUnifiedWeek(w, r);
+  // 全局处理函数
+  window.wsSetRound = async (n) => {
+    await store.setUnifiedWeek(week, n);
+    await renderWeekSettings();
+  };
+  window.wsSetWeek = async (n) => {
+    await store.setUnifiedWeek(n, round);
     await renderWeekSettings();
   };
   window.wsToggleShow = async () => {
