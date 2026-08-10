@@ -1,7 +1,7 @@
 // 进度追踪页面
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
-import { todayStr, getDayOfWeek, getDayName, getWorkoutIndexForWeek } from '../js/utils.js';
+import { todayStr, dateStr, getDayOfWeek, getDayName, getWorkoutIndexForWeek } from '../js/utils.js';
 import { trainingPlan } from '../data/training-plan.js';
 import { recipes } from '../data/recipes.js';
 
@@ -23,7 +23,7 @@ export async function renderProgress(params) {
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
+    const dateStr = dateStr(d);
     const dow = getDayOfWeek(d);
 
     const workout = workoutLogs.find(l => l.date === dateStr);
@@ -43,7 +43,7 @@ export async function renderProgress(params) {
     }
 
     // 获取当日餐食内容
-    const dayMenu = recipes.getWeeklyMenus(week).find(m => m.day === dow) || recipes.getWeeklyMenus(week)[0];
+    const dayMenu = recipes.getWeeklyMenus(week, store.state.appMode).find(m => m.day === dow) || recipes.getWeeklyMenus(week, store.state.appMode)[0];
     const mealDetails = [];
     const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
     const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', snack: '加餐' };
@@ -88,8 +88,8 @@ export async function renderProgress(params) {
   if (progressRecords.length > 0) {
     const latest = progressRecords[progressRecords.length - 1];
     const first = progressRecords[0];
-    const latestWeight = latest.weight.toFixed(1);
-    const change = (latest.weight - first.weight).toFixed(1);
+    const latestWeight = latest.weight.toFixed(2);
+    const change = (latest.weight - first.weight).toFixed(2);
     const arrow = change < 0 ? '↓' : change > 0 ? '↑' : '→';
     html += `
       <div class="card" style="margin-bottom:16px;cursor:pointer;" onclick="location.hash='#/weight'">
