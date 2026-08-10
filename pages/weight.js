@@ -24,14 +24,18 @@ export async function renderWeight(params) {
   html += `
       <div class="card" style="text-align:center;padding:16px 14px;margin-bottom:12px;">
         <div class="card-title" style="text-align:center;border:none;padding:0;margin-bottom:10px;">添加体重记录</div>
-        <div style="display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:10px;">
+        <div style="display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;">
           <div style="display:flex;flex-direction:column;align-items:center;">
             <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">体重(kg)</label>
-            <input type="number" step="0.1" class="form-control" id="weight-input" style="width:120px;text-align:center;">
+            <input type="number" step="0.01" class="form-control" id="weight-input" style="width:110px;text-align:center;">
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">日期</label>
+            <input type="date" class="form-control" id="weight-date" value="${todayStr()}" style="width:140px;text-align:center;">
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;">
             <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">备注</label>
-            <input type="text" class="form-control" id="weight-note" style="width:120px;text-align:center;">
+            <input type="text" class="form-control" id="weight-note" style="width:110px;text-align:center;">
           </div>
         </div>
         <button class="btn btn-primary" style="width:60%;" onclick="addWeight()">记录</button>
@@ -42,8 +46,8 @@ export async function renderWeight(params) {
   if (progressRecords.length > 0) {
     const latest = progressRecords[progressRecords.length - 1];
     const first = progressRecords[0];
-    const latestWeight = latest.weight.toFixed(1);
-    const change = (latest.weight - first.weight).toFixed(1);
+    const latestWeight = latest.weight.toFixed(2);
+    const change = (latest.weight - first.weight).toFixed(2);
     const arrow = change < 0 ? '↓' : change > 0 ? '↑' : '→';
 
     html += `
@@ -70,14 +74,37 @@ export async function renderWeight(params) {
 
     progressRecords.slice(-5).reverse().forEach(r => {
       const isToday = r.date === todayStr();
-      const wStr = r.weight.toFixed(1);
-      html += `
-        <div class="flex-between" style="padding:6px 4px;border-bottom:1px solid var(--divider);${isToday ? 'background:var(--primary-light);border-radius:8px;' : ''}">
-          <span class="font-sm">${formatDate(r.date)}</span>
-          <span class="font-bold">${wStr} kg</span>
-          ${r.note ? `<span class="font-sm text-secondary">${r.note}</span>` : '<span></span>'}
-        </div>
-      `;
+      const wStr = r.weight.toFixed(2);
+      if (window._editingWeightId === r.id) {
+        // 编辑态
+        html += `
+          <div style="padding:8px 4px;border-bottom:1px solid var(--divider);background:var(--primary-light);border-radius:8px;">
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+              <input type="number" step="0.01" class="form-control" id="edit-weight-input" value="${r.weight}" style="width:90px;text-align:center;">
+              <input type="date" class="form-control" id="edit-weight-date" value="${r.date}" style="width:140px;text-align:center;">
+            </div>
+            <input type="text" class="form-control" id="edit-weight-note" value="${r.note || ''}" placeholder="备注" style="width:100%;margin-bottom:6px;text-align:center;">
+            <div style="display:flex;gap:8px;justify-content:center;">
+              <button class="btn btn-primary btn-sm" onclick="saveWeightRecord('${r.id}')">保存</button>
+              <button class="btn btn-outline btn-sm" onclick="cancelEditWeight()">取消</button>
+            </div>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="flex-between" style="padding:6px 4px;border-bottom:1px solid var(--divider);${isToday ? 'background:var(--primary-light);border-radius:8px;' : ''}">
+            <div style="display:flex;flex-direction:column;">
+              <span class="font-sm">${formatDate(r.date)}</span>
+              ${r.note ? `<span class="font-sm text-secondary">${r.note}</span>` : ''}
+            </div>
+            <span class="font-bold">${wStr} kg</span>
+            <div style="display:flex;gap:6px;">
+              <button onclick="editWeightRecord('${r.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;" title="编辑">✏️</button>
+              <button onclick="deleteWeightRecord('${r.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;" title="删除">🗑️</button>
+            </div>
+          </div>
+        `;
+      }
     });
 
     html += `</div>`;
@@ -101,11 +128,46 @@ export async function renderWeight(params) {
   window.addWeight = async () => {
     const weight = parseFloat(document.getElementById('weight-input').value);
     const note = document.getElementById('weight-note').value.trim();
+    const date = document.getElementById('weight-date').value || todayStr();
     if (!weight || weight <= 0) {
       alert('请输入有效体重');
       return;
     }
-    await db.add('progress', { date: todayStr(), weight, note });
+    await db.add('progress', { date, weight, note });
+    renderWeight();
+  };
+
+  window.editWeightRecord = (id) => {
+    window._editingWeightId = id;
+    renderWeight();
+  };
+
+  window.cancelEditWeight = () => {
+    window._editingWeightId = null;
+    renderWeight();
+  };
+
+  window.saveWeightRecord = async (id) => {
+    const weight = parseFloat(document.getElementById('edit-weight-input').value);
+    const date = document.getElementById('edit-weight-date').value;
+    const note = document.getElementById('edit-weight-note').value.trim();
+    if (!weight || weight <= 0) {
+      alert('请输入有效体重');
+      return;
+    }
+    if (!date) {
+      alert('请选择日期');
+      return;
+    }
+    await db.put('progress', { id, date, weight, note });
+    window._editingWeightId = null;
+    renderWeight();
+  };
+
+  window.deleteWeightRecord = async (id) => {
+    if (!confirm('确定删除这条体重记录？')) return;
+    await db.delete('progress', id);
+    window._editingWeightId = null;
     renderWeight();
   };
 }
@@ -140,7 +202,7 @@ function drawWeightChart(records) {
     ctx.moveTo(pad.left, y);
     ctx.lineTo(w - pad.right, y);
     ctx.stroke();
-    const val = (maxW - (range / 4) * i).toFixed(1);
+    const val = (maxW - (range / 4) * i).toFixed(2);
     ctx.fillStyle = '#BDBDBD';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'right';
