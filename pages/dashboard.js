@@ -300,8 +300,8 @@ export async function renderDashboard(params) {
   }
   }
 
-  // 今日餐食概览（单人版隐藏）
-  if (appMode !== 'single') {
+  // 今日餐食概览（单人版也展示，菜谱按单人份）
+  {
   const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
   const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', snack: '加餐' };
   const mealIcons = { breakfast: '🌅', lunch: '☀️', dinner: '🌙', snack: '🍎' };
