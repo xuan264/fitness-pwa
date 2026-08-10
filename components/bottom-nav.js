@@ -6,11 +6,16 @@ export function renderBottomNav() {
   if (!nav) return;
 
   const mode = store.state.activeMode || 'both';
+  const appMode = store.state.appMode || 'double';
 
   let items = [
-    { path: '/', label: '首页', emoji: '🏠' },
-    { path: '/diet', label: '饮食', emoji: '🥗' }
+    { path: '/', label: '首页', emoji: '🏠' }
   ];
+
+  // 双人版才显示饮食入口；单人版只保留训练相关
+  if (appMode !== 'single') {
+    items.push({ path: '/diet', label: '饮食', emoji: '🥗' });
+  }
 
   // 根据模式添加训练/减脂导航项
   if (mode === 'both' || mode === 'fitness') {
