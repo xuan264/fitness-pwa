@@ -401,18 +401,18 @@ export async function renderFatLoss(params) {
     await renderFatLoss();
   };
 
-  // 减脂训练轮/周手动选择
+  // 减脂训练轮/周手动选择（与锻炼共用统一周期）
   window.flSetRound = async (sel) => {
     const newRound = parseInt(sel.value);
-    const curWeek = store.state.fatLossWeek || 1;
-    await store.setFatLossWeek(curWeek, newRound);
+    const curWeek = store.state.currentWeek || 1;
+    await store.setUnifiedWeek(curWeek, newRound);
     await renderFatLoss();
   };
 
   window.flSetWeek = async (sel) => {
     const newWeek = parseInt(sel.value);
-    const curRound = store.state.fatLossRound || 1;
-    await store.setFatLossWeek(newWeek, curRound);
+    const curRound = store.state.currentRound || 1;
+    await store.setUnifiedWeek(newWeek, curRound);
     await renderFatLoss();
   };
 }
