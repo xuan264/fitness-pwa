@@ -9,7 +9,11 @@ export const store = {
     todayWorkoutCompleted: false,
     todayMealsCompleted: {},
     reminders: [],
-    activeMode: 'both'  // 'both' | 'fitness' | 'fat-loss'
+    activeMode: 'both',  // 'both' | 'fitness' | 'fat-loss'
+    // 减脂训练独立的轮/周（手动选择）
+    fatLossWeek: 1,
+    fatLossRound: 1,
+    fatLossTotalRounds: 4
   },
 
   listeners: new Set(),
@@ -36,38 +40,40 @@ export const store = {
     return 2;
   },
 
-  // 设置开始日期并计算当前周数
-  initStartDate(dateStr) {
-    if (!dateStr) {
-      dateStr = new Date().toISOString().split('T')[0];
-    }
-    this.setState({ startDate: dateStr });
-    this.updateCurrentWeek();
+  // 减脂训练：根据当前周数推算阶段
+  getFatLossPhase() {
+    const week = this.state.fatLossWeek;
+    if (week <= 3) return 0;
+    if (week <= 6) return 1;
+    if (week <= 9) return 2;
+    return 3;
   },
 
-  updateCurrentWeek() {
-    if (!this.state.startDate) return;
-    // 按自然周计算：安装的那一周是第1周，过了一个周一就进第2周
-    const startStr = this.state.startDate; // "YYYY-MM-DD"
-    const now = new Date();
-    const nowStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const startDate = new Date(startStr + 'T00:00:00');
-    const nowDate = new Date(nowStr + 'T00:00:00');
-    // 计算两个日期之间隔了几个周一
-    // 找到 startDate 那周的周一
-    const startDay = startDate.getDay(); // 0=周日
-    const startMonday = new Date(startDate);
-    startMonday.setDate(startDate.getDate() - (startDay === 0 ? 6 : startDay - 1));
-    // 找到 now 那周的周一
-    const nowDay = nowDate.getDay();
-    const nowMonday = new Date(nowDate);
-    nowMonday.setDate(nowDate.getDate() - (nowDay === 0 ? 6 : nowDay - 1));
-    // 两个周一之间的天数差 / 7 = 经过了几周
-    const weekDiff = Math.round((nowMonday - startMonday) / (1000 * 60 * 60 * 24 * 7));
-    const totalWeeks = weekDiff + 1;
-    // 12周一个循环，计算当前是第几轮的第几周
-    const round = Math.floor((totalWeeks - 1) / 12) + 1;
-    const weekInRound = ((totalWeeks - 1) % 12) + 1;
-    this.setState({ currentWeek: weekInRound, currentRound: round });
+  // 手动设置锻炼训练轮/周（持久化到 IndexedDB）
+  async setManualWeek(week, round) {
+    week = Math.max(1, Math.min(12, week));
+    round = Math.max(1, Math.min(4, round));
+    this.setState({ currentWeek: week, currentRound: round });
+    try {
+      const { db } = await import('./db.js');
+      await db.put('settings', { key: 'manualWeek', value: week });
+      await db.put('settings', { key: 'manualRound', value: round });
+    } catch (e) {
+      console.warn('保存手动轮/周失败:', e);
+    }
+  },
+
+  // 手动设置减脂训练轮/周（持久化到 IndexedDB）
+  async setFatLossWeek(week, round) {
+    week = Math.max(1, Math.min(12, week));
+    round = Math.max(1, Math.min(4, round));
+    this.setState({ fatLossWeek: week, fatLossRound: round });
+    try {
+      const { db } = await import('./db.js');
+      await db.put('settings', { key: 'flManualWeek', value: week });
+      await db.put('settings', { key: 'flManualRound', value: round });
+    } catch (e) {
+      console.warn('保存减脂手动轮/周失败:', e);
+    }
   }
 };
