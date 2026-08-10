@@ -328,7 +328,6 @@ export async function renderFatLoss(params) {
       <ul style="font-size:14px;padding-left:20px;line-height:2;">
         ${fatLossPlan.meta.principles.map(p => `<li>${p}</li>`).join('')}
       </ul>
-      <div class="font-sm text-secondary mt-8">依据：${fatLossPlan.meta.source}</div>
     </div>
   `;
 
