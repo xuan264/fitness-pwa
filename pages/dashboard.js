@@ -52,37 +52,20 @@ export async function renderDashboard(params) {
   // 用字符串比较避免时区问题：date >= 本周一
   const weekWorkouts = allWorkouts.filter(l => l.date >= mondayStr);
 
-  // ===== 减脂训练独立计算 =====
+  // ===== 减脂训练：从手动选择的轮/周读取 =====
   const FAT_LOSS_DAY_MAP = { 1: 0, 3: 1, 5: 2 };
-  let fatLossWeek = 1, fatLossRound = 1, fatLossPhaseIdx = 0;
-  let fatLossTodayIdx = FAT_LOSS_DAY_MAP[dow] ?? -1;  // 不依赖数据库，直接算
+  const fatLossWeek = store.state.fatLossWeek || 1;
+  const fatLossRound = store.state.fatLossRound || 1;
+  const fatLossPhaseIdx = store.getFatLossPhase();
+  let fatLossTodayIdx = FAT_LOSS_DAY_MAP[dow] ?? -1;
   let fatLossCompleted = false;
   let fatLossAllLogs = [];
   try {
-    const flSaved = await db.get('settings', 'fatLossStartDate');
-    let flStart;
-    if (flSaved?.value) {
-      flStart = new Date(flSaved.value);
-    } else {
-      // 未开始减脂计划，仍显示卡片但不计算周次
-      flStart = null;
-    }
-    if (flStart) {
-      const flDiffDays = Math.floor((now - flStart) / (1000 * 60 * 60 * 24));
-      const flTotalWeeks = Math.floor(flDiffDays / 7) + 1;
-      fatLossRound = Math.floor((flTotalWeeks - 1) / 12) + 1;
-      fatLossWeek = ((flTotalWeeks - 1) % 12) + 1;
-      if (fatLossWeek <= 3) fatLossPhaseIdx = 0;
-      else if (fatLossWeek <= 6) fatLossPhaseIdx = 1;
-      else if (fatLossWeek <= 9) fatLossPhaseIdx = 2;
-      else fatLossPhaseIdx = 3;
-    }
     const flTodayLogs = (await db.getByIndex('workoutLog', 'date', todayStr())).filter(l => l.type === 'fat-loss');
     fatLossCompleted = flTodayLogs.length > 0;
-    // 本周减脂训练统计
     fatLossAllLogs = (await db.getAll('workoutLog')).filter(l => l.type === 'fat-loss');
   } catch (e) {
-    console.warn('减脂训练状态计算失败:', e);
+    console.warn('减脂训练状态读取失败:', e);
   }
   const flPhase = fatLossPlan.phases[fatLossPhaseIdx];
   const flWeekCount = fatLossAllLogs.filter(l => l.date >= mondayStr).length;
@@ -97,29 +80,58 @@ export async function renderDashboard(params) {
 
   let html = `<div class="page">`;
 
-  // 顶部进度卡片（可点击跳转打卡日历）
+  // 顶部进度卡片（可点击跳转打卡日历）+ 轮/周手动选择器
+  // 生成下拉选项
+  const roundOptions = (sel) => Array.from({length: 4}, (_, i) => `<option value="${i+1}" ${sel === i+1 ? 'selected' : ''}>第${i+1}轮</option>`).join('');
+  const weekOptions = (sel) => Array.from({length: 12}, (_, i) => `<option value="${i+1}" ${sel === i+1 ? 'selected' : ''}>第${i+1}周</option>`).join('');
+
   html += `
-    <a href="#/calendar" style="text-decoration:none;color:inherit;">
-      <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:16px;position:relative;overflow:hidden;cursor:pointer;">
-        <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:0.12;">🌱</div>
-        <div style="position:absolute;bottom:-8px;left:-8px;font-size:40px;opacity:0.1;">⏱️</div>
-        <div style="font-size:12px;opacity:0.9;">📅 ${dateStr} · ${getDayName(dow)} · ${greeting}</div>
-        <div class="flex-between" style="position:relative;z-index:1;">
-          <div>
-            <div style="font-size:13px;opacity:0.9;">⭐ 第${round}轮 / 共${totalRounds}轮</div>
-            <div style="font-size:22px;font-weight:700;margin:2px 0;">第${week}周 / 12周 · ${phase.name}</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:28px;">${todayWorkouts.length > 0 ? '💪' : '⭐'}</div>
-            <div style="font-size:11px;opacity:0.8;">${todayWorkouts.length > 0 ? '已训练' : '待训练'}</div>
-          </div>
-        </div>
-        <div class="progress-bar" style="margin-top:10px;background:rgba(255,255,255,0.3);border-radius:10px;">
-          <div class="fill" style="width:${(week/12)*100}%;background:#fff;border-radius:10px;"></div>
-        </div>
-        <div style="font-size:11px;opacity:0.7;margin-top:8px;text-align:center;">点击查看打卡日历 📊</div>
+    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:12px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:0.12;">🌱</div>
+      <div style="position:absolute;bottom:-8px;left:-8px;font-size:40px;opacity:0.1;">⏱️</div>
+      <div style="font-size:12px;opacity:0.9;">📅 ${dateStr} · ${getDayName(dow)} · ${greeting}</div>
+  `;
+
+  // 锻炼训练轮/周选择器
+  if (showFitness) {
+    html += `
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;position:relative;z-index:1;">
+        <span style="font-size:13px;opacity:0.9;white-space:nowrap;">💪 锻炼</span>
+        <select onchange="setFitnessWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+          ${roundOptions(round)}
+        </select>
+        <select onchange="setFitnessWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+          ${weekOptions(week)}
+        </select>
+        <span style="font-size:13px;opacity:0.9;">/ 共${totalRounds}轮12周 · ${phase.name}</span>
       </div>
-    </a>
+    `;
+  }
+
+  // 减脂训练轮/周选择器
+  if (showFatLoss) {
+    html += `
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;position:relative;z-index:1;">
+        <span style="font-size:13px;opacity:0.9;white-space:nowrap;">🫀 减脂</span>
+        <select onchange="setFatLossWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+          ${roundOptions(fatLossRound)}
+        </select>
+        <select onchange="setFatLossWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+          ${weekOptions(fatLossWeek)}
+        </select>
+        <span style="font-size:13px;opacity:0.9;">/ 共4轮12周 · ${flPhase.name}</span>
+      </div>
+    `;
+  }
+
+  html += `
+      <a href="#/calendar" style="text-decoration:none;color:inherit;display:block;margin-top:8px;">
+        <div class="progress-bar" style="background:rgba(255,255,255,0.3);border-radius:10px;">
+          <div class="fill" style="width:${(week/12)*100}%;background:#fff;border-radius:10px;height:6px;"></div>
+        </div>
+        <div style="font-size:11px;opacity:0.7;margin-top:6px;text-align:center;">点击查看打卡日历 📊</div>
+      </a>
+    </div>
   `;
 
   // 模式切换器
@@ -511,6 +523,24 @@ export async function renderDashboard(params) {
     // 重新渲染导航栏
     renderBottomNav();
     // 重新渲染首页
+    await renderDashboard();
+  };
+
+  // 锻炼训练轮/周手动选择
+  // roundSel: 轮的 <select> 元素; weekSel: 周的 <select> 元素
+  // 调用时只传一个，另一个从 store 读取当前值
+  window.setFitnessWeek = async (roundSel, weekSel) => {
+    const newRound = roundSel ? parseInt(roundSel.value) : (store.state.currentRound || 1);
+    const newWeek = weekSel ? parseInt(weekSel.value) : (store.state.currentWeek || 1);
+    await store.setManualWeek(newWeek, newRound);
+    await renderDashboard();
+  };
+
+  // 减脂训练轮/周手动选择
+  window.setFatLossWeek = async (roundSel, weekSel) => {
+    const newRound = roundSel ? parseInt(roundSel.value) : (store.state.fatLossRound || 1);
+    const newWeek = weekSel ? parseInt(weekSel.value) : (store.state.fatLossWeek || 1);
+    await store.setFatLossWeek(newWeek, newRound);
     await renderDashboard();
   };
 }
