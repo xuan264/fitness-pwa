@@ -138,7 +138,7 @@ export async function renderWeight(params) {
   };
 
   window.editWeightRecord = (id) => {
-    window._editingWeightId = id;
+    window._editingWeightId = Number(id);
     renderWeight();
   };
 
@@ -148,6 +148,7 @@ export async function renderWeight(params) {
   };
 
   window.saveWeightRecord = async (id) => {
+    const rid = Number(id);
     const weight = parseFloat(document.getElementById('edit-weight-input').value);
     const date = document.getElementById('edit-weight-date').value;
     const note = document.getElementById('edit-weight-note').value.trim();
@@ -159,14 +160,15 @@ export async function renderWeight(params) {
       alert('请选择日期');
       return;
     }
-    await db.put('progress', { id, date, weight, note });
+    await db.put('progress', { id: rid, date, weight, note });
     window._editingWeightId = null;
     renderWeight();
   };
 
   window.deleteWeightRecord = async (id) => {
+    const rid = Number(id);
     if (!confirm('确定删除这条体重记录？')) return;
-    await db.delete('progress', id);
+    await db.delete('progress', rid);
     window._editingWeightId = null;
     renderWeight();
   };
