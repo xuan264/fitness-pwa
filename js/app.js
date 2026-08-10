@@ -1,6 +1,7 @@
 // 应用入口
 import { router, registerRoute } from './router.js';
 import { store } from './store.js';
+import { applyTheme } from './theme.js';
 import { db } from './db.js';
 import { notify } from './notify.js';
 import { renderBottomNav } from '../components/bottom-nav.js';
@@ -56,12 +57,18 @@ async function init() {
     // 根据锚点自动推算当前实际周/轮（向前一段自然周自动递增）
     store.recomputeWeek();
     store.recomputeFatLossWeek();
+    // 按当前周应用中国传统主题色
+    applyTheme(store.state.currentWeek);
 
     // 定时重算：应用长时间开着跨过一周时，周次自动前进
     setInterval(() => {
       store.recomputeWeek();
       store.recomputeFatLossWeek();
+      applyTheme(store.state.currentWeek);
     }, 60 * 1000);
+
+    // 周次变化时（手动调整或跨周）同步切换主题色
+    store.subscribe((s) => applyTheme(s.currentWeek));
 
     store.setState({ userProfile: profile || null });
   } catch (e) {
