@@ -285,6 +285,9 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   z-index: 1000; opacity: 0; transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast { padding-right: 34px; }
+.toast-close { position: absolute; top: 4px; right: 6px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: none; border: none; font-size: 20px; line-height: 1; color: var(--text-hint); cursor: pointer; border-radius: 50%; }
+.toast-close:active { background: rgba(0,0,0,0.06); }
 .toast-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .toast-body { font-size: 13px; color: var(--text-secondary); white-space: pre-line; }
 .toast-action { margin-top: 8px; }
