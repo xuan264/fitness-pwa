@@ -2,7 +2,8 @@
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
 import { recipes } from '../data/recipes.js';
-import { icons, getDayOfWeek, getDayName, todayStr } from '../js/utils.js';
+import { trainingPlan } from '../data/training-plan.js';
+import { icons, getDayOfWeek, getDayName, getWorkoutIndexForWeek, todayStr } from '../js/utils.js';
 
 let selectedDay = getDayOfWeek();
 let viewWeek = null; // null=当前周，否则为查看的周数
@@ -15,8 +16,12 @@ export async function renderDiet(params) {
   // viewWeek 为 null 时显示当前周，否则显示指定周
   if (viewWeek === null) viewWeek = currentWeek;
   const week = viewWeek;
-  const currentMenus = recipes.getWeeklyMenus(week);
+  const currentMenus = recipes.getWeeklyMenus(week, store.state.appMode);
   const dayMenu = currentMenus.find(m => m.day === selectedDay) || currentMenus[0];
+
+  // 当天是否有训练（用于决定是否显示"训练后加餐"）
+  const phase = trainingPlan.phases[store.getCurrentPhase()];
+  const isTrainingDay = getWorkoutIndexForWeek(selectedDay, phase.split) >= 0;
 
   // 计算全天蛋白质（protein 格式如 "约20g"，需要提取数字）
   let totalProtein = 0;
@@ -65,7 +70,7 @@ export async function renderDiet(params) {
     <div class="stat-grid">
       <div class="stat-card">
         <div class="stat-value">${totalProtein}g</div>
-        <div class="stat-label">今日蛋白质（双人）</div>
+        <div class="stat-label">今日蛋白质（${store.state.appMode === 'single' ? '单人' : '双人'}）</div>
       </div>
       <div class="stat-card accent">
         <div class="stat-value">${proteinTarget}</div>
@@ -81,17 +86,19 @@ export async function renderDiet(params) {
   for (const mealType of mealOrder) {
     const meal = dayMenu.meals[mealType];
     if (!meal) continue;
+    // 没有训练的日子不显示加餐（训练后加餐无意义）
+    if (mealType === 'snack' && !isTrainingDay) continue;
 
     const completed = await checkMealCompleted(meal.id);
 
     html += `
       <div class="meal-card" id="meal-${meal.id}">
         <div class="meal-header ${mealType === 'snack' ? 'accent' : ''}" style="${completed ? 'border-left-color:var(--primary);background:var(--primary-light);' : ''}">
-          <div class="flex-between">
+          <div class="flex-between" style="align-items:center;">
             <div class="meal-name">${mealIcons[mealType]} ${meal.mealType} · ${meal.name}</div>
-            <div style="display:flex;align-items:center;gap:8px;line-height:1;">
-              ${completed ? '<span class="badge badge-primary" style="display:inline-flex;align-items:center;">✓ 已打卡</span>' : ''}
-              ${completed ? `<button onclick="toggleMealDetail('${meal.id}')" id="toggle-btn-${meal.id}" style="background:none;border:none;color:var(--primary);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:2px;padding:3px 0;line-height:1;">查看详情 ${icons.chevronDown}</button>` : ''}
+            <div style="display:flex;align-items:center;gap:8px;line-height:1;flex-wrap:nowrap;white-space:nowrap;">
+              ${completed ? '<span class="badge badge-primary" style="display:inline-flex;align-items:center;white-space:nowrap;">✓ 已打卡</span>' : ''}
+              ${completed ? `<button onclick="toggleMealDetail('${meal.id}')" id="toggle-btn-${meal.id}" style="background:none;border:none;color:var(--primary);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:2px;padding:3px 0;line-height:1;white-space:nowrap;">查看详情 ${icons.chevronDown}</button>` : ''}
             </div>
           </div>
           ${!completed ? `<div class="meal-meta">
@@ -161,7 +168,7 @@ export async function renderDiet(params) {
   // 下一周食材采购清单（如果有的话）
   if (week < 4) {
     const nextWeekNum = week + 1;
-    const nextWeekMenus = recipes.getWeeklyMenus(nextWeekNum);
+    const nextWeekMenus = recipes.getWeeklyMenus(nextWeekNum, store.state.appMode);
     html += `
       <div class="card mt-16" style="border-left:4px solid var(--accent);">
         <div class="flex-between">
