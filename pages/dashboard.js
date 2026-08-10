@@ -5,7 +5,7 @@ import { trainingPlan } from '../data/training-plan.js';
 import { fatLossPlan } from '../data/fat-loss-plan.js';
 import { recipes } from '../data/recipes.js';
 import { renderBottomNav } from '../components/bottom-nav.js';
-import { icons, getDayOfWeek, getWorkoutIndexForWeek, getDayName, todayStr } from '../js/utils.js';
+import { icons, getDayOfWeek, getWorkoutIndexForWeek, getDayName, todayStr, kgToJin } from '../js/utils.js';
 
 // 全局打卡刷新标记 - 其他页面打卡后设置，首页渲染时检查
 window._needRefreshDashboard = false;
@@ -175,7 +175,7 @@ export async function renderDashboard(params) {
   const todayMealCount = todayMeals.length;
   const expectedMeals = todayIsTraining ? 4 : 3; // 非训练日无加餐，当天只有 3 餐
   const weightDisplay = progressRecords.length > 0
-    ? `${progressRecords[progressRecords.length - 1].weight}kg`
+    ? `${kgToJin(progressRecords[progressRecords.length - 1].weight)}斤`
     : '—';
 
   const statItems = [];
@@ -338,18 +338,18 @@ export async function renderDashboard(params) {
   if (progressRecords.length > 0) {
     const latest = progressRecords[progressRecords.length - 1];
     const first = progressRecords[0];
-    const change = (latest.weight - first.weight).toFixed(2);
+    const change = latest.weight - first.weight;
     html += `
       <a href="#/progress" style="text-decoration:none;color:inherit;">
         <div class="card" style="margin-bottom:12px;">
           <div class="flex-between">
             <div>
               <div class="font-sm text-secondary">${icons.scale} 当前体重</div>
-              <div class="font-lg font-bold text-primary">${latest.weight.toFixed(2)} kg</div>
+              <div class="font-lg font-bold text-primary">${kgToJin(latest.weight)} 斤</div>
             </div>
             <div class="text-right">
               <div class="font-sm text-secondary">变化</div>
-              <div class="font-bold ${change < 0 ? 'text-primary' : change > 0 ? 'text-danger' : ''}">${change < 0 ? '↓' : change > 0 ? '↑' : '→'} ${Math.abs(change)}kg</div>
+              <div class="font-bold ${change < 0 ? 'text-primary' : change > 0 ? 'text-danger' : ''}">${change < 0 ? '↓' : change > 0 ? '↑' : '→'} ${kgToJin(Math.abs(change))}斤</div>
             </div>
           </div>
         </div>
