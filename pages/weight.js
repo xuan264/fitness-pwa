@@ -20,29 +20,7 @@ export async function renderWeight(params) {
       </div>
   `;
 
-  // ===== 添加体重记录（紧凑居中） =====
-  html += `
-      <div class="card" style="text-align:center;padding:16px 14px;margin-bottom:12px;">
-        <div class="card-title" style="text-align:center;border:none;padding:0;margin-bottom:10px;">添加体重记录</div>
-        <div style="display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;">
-          <div style="display:flex;flex-direction:column;align-items:center;">
-            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">体重(kg)</label>
-            <input type="number" step="0.01" class="form-control" id="weight-input" style="width:110px;text-align:center;">
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;">
-            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">日期</label>
-            <input type="date" class="form-control" id="weight-date" value="${todayStr()}" style="width:140px;text-align:center;">
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;">
-            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">备注</label>
-            <input type="text" class="form-control" id="weight-note" style="width:110px;text-align:center;">
-          </div>
-        </div>
-        <button class="btn btn-primary" style="width:60%;" onclick="addWeight()">记录</button>
-      </div>
-  `;
-
-  // ===== 当前体重 + 总变化 + 折线图 =====
+  // ===== 当前体重 + 总变化 + 折线图（置顶） =====
   if (progressRecords.length > 0) {
     const latest = progressRecords[progressRecords.length - 1];
     const first = progressRecords[0];
@@ -68,7 +46,7 @@ export async function renderWeight(params) {
 
     // ===== 最近记录（倒序，今天在最上面） =====
     html += `
-      <div class="card" style="padding:12px 14px;">
+      <div class="card" style="padding:12px 14px;margin-bottom:12px;">
         <div class="font-sm text-secondary" style="text-align:center;margin-bottom:8px;">最近记录</div>
     `;
 
@@ -110,13 +88,35 @@ export async function renderWeight(params) {
     html += `</div>`;
   } else {
     html += `
-      <div class="card" style="text-align:center;padding:24px 14px;">
+      <div class="card" style="text-align:center;padding:24px 14px;margin-bottom:12px;">
         <div style="font-size:36px;margin-bottom:8px;">🌱</div>
         <div class="text-secondary">还没有体重记录</div>
-        <div class="font-sm text-secondary mt-8">在上方添加第一条记录吧</div>
+        <div class="font-sm text-secondary mt-8">在下方添加第一条记录吧</div>
       </div>
     `;
   }
+
+  // ===== 添加体重记录（紧凑居中，置于图表之后） =====
+  html += `
+      <div class="card" style="text-align:center;padding:16px 14px;margin-bottom:12px;">
+        <div class="card-title" style="text-align:center;border:none;padding:0;margin-bottom:10px;">添加体重记录</div>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">体重(kg)</label>
+            <input type="number" step="0.01" class="form-control" id="weight-input" style="width:110px;text-align:center;">
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">日期</label>
+            <input type="date" class="form-control" id="weight-date" value="${todayStr()}" style="width:140px;text-align:center;">
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">备注</label>
+            <input type="text" class="form-control" id="weight-note" style="width:110px;text-align:center;">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:60%;" onclick="addWeight()">记录</button>
+      </div>
+  `;
 
   html += `</div>`;
   container.innerHTML = html;
