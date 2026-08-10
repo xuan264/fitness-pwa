@@ -94,6 +94,15 @@ export function applyRound(entry, round) {
   return { sets, reps, weight, note };
 }
 
+// 体重单位换算：内部存储统一为 kg，展示/输入用斤（1 kg = 2 斤）
+export function kgToJin(kg) {
+  const j = (Number(kg) || 0) * 2;
+  return (Math.round(j * 10) / 10).toString();
+}
+export function jinToKg(jin) {
+  return (Number(jin) || 0) / 2;
+}
+
 // SVG 图标库
 export const icons = {
   home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1V9.5z"/></svg>',
