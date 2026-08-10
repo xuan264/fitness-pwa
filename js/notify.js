@@ -249,20 +249,69 @@ class NotificationManager {
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.innerHTML = `
+      <button class="toast-close" aria-label="关闭">×</button>
       <div class="toast-title">${content.title}</div>
       <div class="toast-body">${content.body}</div>
       <div class="toast-action">
-        <button class="btn btn-primary btn-sm" onclick="window.location.hash='${content.url}'; this.closest('.toast').classList.remove('show'); setTimeout(()=>this.closest('.toast').remove(),300)">查看详情</button>
+        <button class="btn btn-primary btn-sm toast-detail" data-url="${content.url}">查看详情</button>
       </div>
     `;
     container.appendChild(toast);
 
-    requestAnimationFrame(() => toast.classList.add('show'));
-
-    setTimeout(() => {
+    let dismissed = false;
+    const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 350);
-    }, 10000);
+    };
+
+    requestAnimationFrame(() => toast.classList.add('show'));
+
+    const timer = setTimeout(dismiss, 10000);
+
+    // 关闭按钮
+    toast.querySelector('.toast-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearTimeout(timer);
+      dismiss();
+    });
+
+    // 查看详情
+    toast.querySelector('.toast-detail').addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearTimeout(timer);
+      window.location.hash = toast.querySelector('.toast-detail').getAttribute('data-url');
+      dismiss();
+    });
+
+    // 滑动关闭（触摸 + 鼠标拖拽，水平拖动超过 80px 即关闭）
+    let startX = 0, dx = 0, dragging = false;
+    const onStart = (x) => { dragging = true; startX = x; dx = 0; toast.style.transition = 'none'; };
+    const onMove = (x) => {
+      if (!dragging) return;
+      dx = x - startX;
+      toast.style.transform = `translateX(-50%) translateY(0) translateX(${dx}px)`;
+    };
+    const onEnd = () => {
+      if (!dragging) return;
+      dragging = false;
+      toast.style.transition = '';
+      if (Math.abs(dx) > 80) {
+        clearTimeout(timer);
+        dismiss();
+      } else {
+        toast.style.transform = '';
+      }
+    };
+
+    toast.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+    toast.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX), { passive: true });
+    toast.addEventListener('touchend', onEnd);
+    toast.addEventListener('mousedown', (e) => onStart(e.clientX));
+    toast.addEventListener('mousemove', (e) => onMove(e.clientX));
+    toast.addEventListener('mouseup', onEnd);
+    toast.addEventListener('mouseleave', () => { if (dragging) onEnd(); });
   }
 
   async checkMissed() {
