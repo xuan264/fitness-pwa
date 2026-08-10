@@ -23,8 +23,14 @@ export async function renderDashboard(params) {
     }
   } catch (e) {}
 
-  const showFitness = activeMode === 'both' || activeMode === 'fitness';
-  const showFatLoss = activeMode === 'both' || activeMode === 'fat-loss';
+  // 读取 APP 模式（双人版 / 单人版）
+  const appMode = store.state.appMode || 'double';
+
+  // 单人版下，训练模式只提供 锻炼 / 减脂 二选一（不显示"全部"）
+  // 若单人版且当前为"全部"，默认归一显示到 锻炼 这一个轨道
+  const displayMode = (appMode === 'single' && activeMode === 'both') ? 'fitness' : activeMode;
+  const showFitness = displayMode === 'both' || displayMode === 'fitness';
+  const showFatLoss = displayMode === 'both' || displayMode === 'fat-loss';
 
   const week = store.state.currentWeek;
   const round = store.state.currentRound || 1;
@@ -104,6 +110,14 @@ export async function renderDashboard(params) {
         </div>
       `;
     }
+  } else {
+    // 关闭首页进度后，仍保留一个进入周期设置的入口
+    html += `
+      <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.08);border-radius:10px;padding:7px 12px;cursor:pointer;">
+        <span style="font-size:12px;opacity:0.85;">📅 训练周期设置</span>
+        <span style="font-size:16px;opacity:0.7;line-height:1;">›</span>
+      </div>
+    `;
   }
 
   html += `
@@ -117,7 +131,6 @@ export async function renderDashboard(params) {
   `;
 
   // APP 模式（双人版 / 单人版）：只显示当前模式，点击切换到另一种模式
-  const appMode = store.state.appMode || 'double';
   const isDouble = appMode === 'double';
   const curEmoji = isDouble ? '👫' : '🧍';
   const curLabel = isDouble ? '双人版' : '单人版';
@@ -133,17 +146,22 @@ export async function renderDashboard(params) {
     </div>
   `;
 
-  // 模式切换器
-  const modeOptions = [
-    { key: 'both', label: '全部', emoji: '⚡' },
-    { key: 'fitness', label: '锻炼', emoji: '💪' },
-    { key: 'fat-loss', label: '减脂', emoji: '🫀' }
-  ];
+  // 模式切换器：双人版显示 全部/锻炼/减脂；单人版只显示 锻炼/减脂 两个选项
+  const modeOptions = appMode === 'single'
+    ? [
+        { key: 'fitness', label: '锻炼', emoji: '💪' },
+        { key: 'fat-loss', label: '减脂', emoji: '🫀' }
+      ]
+    : [
+        { key: 'both', label: '全部', emoji: '⚡' },
+        { key: 'fitness', label: '锻炼', emoji: '💪' },
+        { key: 'fat-loss', label: '减脂', emoji: '🫀' }
+      ];
   html += `
     <div style="display:flex;gap:0;margin-bottom:12px;background:var(--surface);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow);">
   `;
   modeOptions.forEach(opt => {
-    const isActive = activeMode === opt.key;
+    const isActive = displayMode === opt.key;
     const activeStyle = isActive
       ? (opt.key === 'fat-loss' ? 'background:#4A90D9;color:#fff;font-weight:600;'
       : opt.key === 'fitness' ? 'background:var(--primary);color:#fff;font-weight:600;'
