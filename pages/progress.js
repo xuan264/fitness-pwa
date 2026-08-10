@@ -23,12 +23,12 @@ export async function renderProgress(params) {
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    const dateStr = dateStr(d);
+    const ds = dateStr(d);
     const dow = getDayOfWeek(d);
 
-    const workout = workoutLogs.find(l => l.date === dateStr);
-    const meals = mealLogs.filter(l => l.date === dateStr);
-    const weight = progressRecords.find(r => r.date === dateStr);
+    const workout = workoutLogs.find(l => l.date === ds);
+    const meals = mealLogs.filter(l => l.date === ds);
+    const weight = progressRecords.find(r => r.date === ds);
 
     // 获取当日训练内容
     const todayWorkoutIdx = getWorkoutIndexForWeek(dow, phase.split);
@@ -59,7 +59,7 @@ export async function renderProgress(params) {
     });
 
     last7Days.push({
-      dateStr,
+      dateStr: ds,
       dayName: getDayName(dow),
       isToday: i === 0,
       workoutContent,
