@@ -140,6 +140,30 @@ export const store = {
     }
   },
 
+  // 统一训练周期：锻炼与减脂共用同一套轮/周设定（无论哪种模式只需设置一次）
+  async setUnifiedWeek(week, round) {
+    week = Math.max(1, Math.min(12, week));
+    round = Math.max(1, Math.min(4, round));
+    const anchor = new Date().toISOString().split('T')[0];
+    this.setState({
+      manualWeek: week, manualRound: round, manualAnchorDate: anchor,
+      fatLossBaseWeek: week, fatLossBaseRound: round, fatLossAnchorDate: anchor
+    });
+    this.recomputeWeek();
+    this.recomputeFatLossWeek();
+    try {
+      const { db } = await import('./db.js');
+      await db.put('settings', { key: 'manualWeek', value: week });
+      await db.put('settings', { key: 'manualRound', value: round });
+      await db.put('settings', { key: 'manualAnchorDate', value: anchor });
+      await db.put('settings', { key: 'flManualWeek', value: week });
+      await db.put('settings', { key: 'flManualRound', value: round });
+      await db.put('settings', { key: 'flManualAnchorDate', value: anchor });
+    } catch (e) {
+      console.warn('保存统一轮/周失败:', e);
+    }
+  },
+
   // 切换 APP 模式（双人版 / 单人版）
   async setAppMode(mode) {
     mode = mode === 'single' ? 'single' : 'double';
