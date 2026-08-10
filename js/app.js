@@ -25,7 +25,7 @@ async function init() {
     }
 
     // 2. 读取用户设置
-    let profile, manualWeek, manualRound, manualAnchor, flManualWeek, flManualRound, flManualAnchor, appMode;
+    let profile, manualWeek, manualRound, manualAnchor, flManualWeek, flManualRound, flManualAnchor, appMode, showWeekSelector;
     try {
       profile = await db.get('userProfile', 'profile');
       manualWeek = await db.get('settings', 'manualWeek');
@@ -35,6 +35,7 @@ async function init() {
       flManualRound = await db.get('settings', 'flManualRound');
       flManualAnchor = await db.get('settings', 'flManualAnchorDate');
       appMode = await db.get('settings', 'appMode');
+      showWeekSelector = await db.get('settings', 'showWeekSelector');
     } catch (e) {
       console.warn('读取设置失败:', e);
     }
@@ -47,7 +48,8 @@ async function init() {
       fatLossBaseWeek: flManualWeek?.value || 1,
       fatLossBaseRound: flManualRound?.value || 1,
       fatLossAnchorDate: flManualAnchor?.value || null,
-      appMode: appMode?.value || 'double'
+      appMode: appMode?.value || 'double',
+      showWeekSelector: showWeekSelector?.value !== false
     });
 
     // 根据锚点自动推算当前实际周/轮（向前一段自然周自动递增）
