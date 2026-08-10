@@ -10,6 +10,7 @@ export const store = {
     todayMealsCompleted: {},
     reminders: [],
     activeMode: 'both',    // 'both' | 'fitness' | 'fat-loss'
+    appMode: 'double',     // 'double' 双人版（默认） | 'single' 单人版
     // 锻炼训练：手动选择的"起点" + 锚点日期（选的那天=该周）
     manualWeek: 1,
     manualRound: 1,
@@ -136,5 +137,20 @@ export const store = {
     } catch (e) {
       console.warn('保存减脂手动轮/周失败:', e);
     }
+  },
+
+  // 切换 APP 模式（双人版 / 单人版）
+  async setAppMode(mode) {
+    mode = mode === 'single' ? 'single' : 'double';
+    this.setState({ appMode: mode });
+    try {
+      const { db } = await import('./db.js');
+      await db.put('settings', { key: 'appMode', value: mode });
+    } catch (e) {
+      console.warn('保存 APP 模式失败:', e);
+    }
   }
 };
+
+// 暴露给依赖全局状态的模块（如 recipes.getCurrentWeekMenus）
+if (typeof window !== 'undefined') window.__store = store;
