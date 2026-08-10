@@ -33,7 +33,7 @@ export async function renderDashboard(params) {
   const phase = trainingPlan.phases[phaseIdx];
   const dow = getDayOfWeek();
   const todayWorkoutIdx = getWorkoutIndexForWeek(dow, phase.split);
-  const dayMenu = recipes.getWeeklyMenus(store.state.currentWeek || 1).find(m => m.day === dow) || recipes.getWeeklyMenus(store.state.currentWeek || 1)[0];
+  const dayMenu = recipes.getWeeklyMenus(store.state.currentWeek || 1, store.state.appMode).find(m => m.day === dow) || recipes.getWeeklyMenus(store.state.currentWeek || 1, store.state.appMode)[0];
 
   // 今日打卡状态（只统计原有训练计划，排除减脂训练 type='fat-loss'）
   const todayWorkouts = (await db.getByIndex('workoutLog', 'date', todayStr())).filter(l => l.type !== 'fat-loss');
@@ -133,6 +133,25 @@ export async function renderDashboard(params) {
       </a>
     </div>
   `;
+
+  // APP 模式选择器（双人版 / 单人版）
+  const appMode = store.state.appMode || 'double';
+  const appModeOptions = [
+    { key: 'double', label: '双人版', emoji: '👫' },
+    { key: 'single', label: '单人版', emoji: '🧍' }
+  ];
+  html += `
+    <div style="display:flex;gap:0;margin-bottom:10px;background:var(--surface);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow);">
+  `;
+  appModeOptions.forEach(opt => {
+    const isActive = appMode === opt.key;
+    html += `
+      <div onclick="switchAppMode('${opt.key}')" style="flex:1;padding:8px 4px;text-align:center;font-size:12px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;${isActive ? 'background:var(--primary);color:#fff;font-weight:600;' : 'color:var(--text-secondary);'}">
+        ${opt.emoji} ${opt.label}
+      </div>
+    `;
+  });
+  html += `</div>`;
 
   // 模式切换器
   const modeOptions = [
@@ -283,10 +302,12 @@ export async function renderDashboard(params) {
   }
   }
 
-  // 今日餐食概览
+  // 今日餐食概览（单人版隐藏）
+  if (appMode !== 'single') {
   const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
   const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', snack: '加餐' };
   const mealIcons = { breakfast: '🌅', lunch: '☀️', dinner: '🌙', snack: '🍎' };
+  const todayIsTraining = todayWorkoutIdx >= 0; // 今天有训练才显示加餐
 
   html += `
     <a href="#/diet" style="text-decoration:none;color:inherit;">
@@ -301,6 +322,8 @@ export async function renderDashboard(params) {
   mealTypes.forEach(mt => {
     const meal = dayMenu.meals[mt];
     if (!meal) return;
+    // 没有训练的日子不显示加餐
+    if (mt === 'snack' && !todayIsTraining) return;
     const done = todayMeals.some(m => m.recipeId === meal.id);
     html += `
       <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--divider);">
@@ -315,19 +338,20 @@ export async function renderDashboard(params) {
   });
 
   html += `</div></a>`;
+  }
 
   // 体重追踪
   if (progressRecords.length > 0) {
     const latest = progressRecords[progressRecords.length - 1];
     const first = progressRecords[0];
-    const change = (latest.weight - first.weight).toFixed(1);
+    const change = (latest.weight - first.weight).toFixed(2);
     html += `
       <a href="#/progress" style="text-decoration:none;color:inherit;">
         <div class="card" style="margin-bottom:12px;">
           <div class="flex-between">
             <div>
               <div class="font-sm text-secondary">${icons.scale} 当前体重</div>
-              <div class="font-lg font-bold text-primary">${latest.weight} kg</div>
+              <div class="font-lg font-bold text-primary">${latest.weight.toFixed(2)} kg</div>
             </div>
             <div class="text-right">
               <div class="font-sm text-secondary">变化</div>
@@ -339,7 +363,8 @@ export async function renderDashboard(params) {
     `;
   }
 
-  // 备孕运动入口
+  // 备孕运动入口（减脂模式 或 单人版下隐藏）
+  if (activeMode !== 'fat-loss' && appMode !== 'single') {
   html += `
     <a href="#/prepregnancy" style="text-decoration:none;color:inherit;">
       <div class="card" style="margin-bottom:12px;border-left:4px solid #FF9A8B;background:linear-gradient(135deg,#FFF5F3,var(--surface));">
@@ -353,10 +378,12 @@ export async function renderDashboard(params) {
       </div>
     </a>
   `;
+  }
 
-  // 热量计算器（内嵌可展开）
+  // 热量计算器（内嵌可展开，单人版隐藏）
   const profile = store.state.userProfile;
   const hasProfile = profile && profile.weight && profile.height && profile.age;
+  if (appMode !== 'single') {
   html += `
     <div class="card" style="margin-bottom:12px;">
       <div class="flex-between" onclick="toggleCalcCard()" style="cursor:pointer;">
@@ -404,6 +431,7 @@ export async function renderDashboard(params) {
       </div>
     </div>
   `;
+  }
 
   // 提醒入口（放在页面最底部）
   html += `
@@ -523,6 +551,13 @@ export async function renderDashboard(params) {
     // 重新渲染导航栏
     renderBottomNav();
     // 重新渲染首页
+    await renderDashboard();
+  };
+
+  // APP 模式切换（单人版 / 双人版）
+  window.switchAppMode = async (mode) => {
+    await store.setAppMode(mode);
+    renderBottomNav();
     await renderDashboard();
   };
 
