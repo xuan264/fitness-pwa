@@ -12,7 +12,7 @@
   --text-hint: #C4C4C4;
   --danger: #FF6B6B;
   --warning: #FFD93D;
-  --info: #6BCB77;
+  --info: var(--primary);
   --divider: #F0EBE3;
   --radius: 18px;
   --radius-sm: 12px;
