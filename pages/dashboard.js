@@ -89,10 +89,10 @@ export async function renderDashboard(params) {
   // 顶部进度卡片（可点击跳转打卡日历）+ 轮/周手动选择器
 
   html += `
-    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:12px;position:relative;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:12px;position:relative;overflow:hidden;text-align:center;">
       <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:0.12;">🌱</div>
       <div style="position:absolute;bottom:-8px;left:-8px;font-size:40px;opacity:0.1;">⏱️</div>
-      <div style="font-size:12px;opacity:0.9;">📅 ${dateStr} · ${getDayName(dow)} · ${greeting}</div>
+      <div style="font-size:12px;opacity:0.9;text-align:center;">📅 ${dateStr} · ${getDayName(dow)} · ${greeting}</div>
   `;
 
   // 轮/周进度：以紧凑一行展示，点击进入独立设置页（避免在卡片内展开下拉导致拥挤）
@@ -101,7 +101,7 @@ export async function renderDashboard(params) {
   if (showWeekSelector) {
     const wlabel = `第${round}轮 · 第${week}周`;
     html += `
-      <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;cursor:pointer;">
+      <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:4px;background:rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;cursor:pointer;">
         <span style="font-size:12px;opacity:0.95;">📅 ${wlabel}</span>
         <span style="font-size:16px;opacity:0.8;line-height:1;">›</span>
       </div>
@@ -109,7 +109,7 @@ export async function renderDashboard(params) {
   } else {
     // 关闭首页进度后，仍保留一个进入周期设置的入口
     html += `
-      <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.08);border-radius:10px;padding:7px 12px;cursor:pointer;">
+      <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:4px;background:rgba(255,255,255,0.08);border-radius:10px;padding:7px 12px;cursor:pointer;">
         <span style="font-size:12px;opacity:0.85;">📅 训练周期设置</span>
         <span style="font-size:16px;opacity:0.7;line-height:1;">›</span>
       </div>
