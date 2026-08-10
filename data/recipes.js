@@ -531,17 +531,49 @@ recipes.allWeeklyMenus = [
   week4Menus             // 第4周
 ];
 
+// ===== 单人份食谱：在双人份基础上把用量减半 =====
+function halfNumInStr(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/-?\d+(\.\d+)?/g, (m) => {
+    const n = parseFloat(m);
+    if (isNaN(n)) return m;
+    let h = Math.round((n / 2) * 10) / 10;
+    return String(h).endsWith('.0') ? String(Math.round(h)) : String(h);
+  });
+}
+
+function scaleMenusToSingle(menus) {
+  const clone = JSON.parse(JSON.stringify(menus));
+  const fields = ['amount', 'grams', 'protein', 'calories'];
+  clone.forEach(day => {
+    ['breakfast', 'lunch', 'dinner', 'snack'].forEach(mt => {
+      const meal = day.meals[mt];
+      if (!meal) return;
+      fields.forEach(f => { if (meal[f]) meal[f] = halfNumInStr(meal[f]); });
+      if (meal.ingredients) meal.ingredients.forEach(ing => {
+        ['amount', 'grams', 'protein'].forEach(f => { if (ing[f]) ing[f] = halfNumInStr(ing[f]); });
+      });
+    });
+  });
+  return clone;
+}
+
+recipes.allWeeklyMenusSingle = recipes.allWeeklyMenus.map(m => scaleMenusToSingle(m));
+
 // 根据当前周数获取对应周的食谱（4周轮换）
 // weekInRound: 1-12（一个周期12周），每4周换一轮食谱
-recipes.getWeeklyMenus = function(weekInRound) {
+// mode: 'double'（双人份，默认）| 'single'（单人份）
+recipes.getWeeklyMenus = function(weekInRound, mode) {
   if (!weekInRound || weekInRound < 1) weekInRound = 1;
   const weekIdx = (weekInRound - 1) % 4;  // 0-3 对应第1-4周食谱
-  return this.allWeeklyMenus[weekIdx];
+  const single = mode === 'single';
+  return single ? this.allWeeklyMenusSingle[weekIdx] : this.allWeeklyMenus[weekIdx];
 };
 
 // 获取当前是第几周（从store中获取）
 recipes.getCurrentWeekMenus = function() {
   // 从全局状态获取当前周数
   const week = (window.__store?.state?.currentWeek) || 1;
-  return this.getWeeklyMenus(week);
+  const mode = (window.__store?.state?.appMode) || 'double';
+  return this.getWeeklyMenus(week, mode);
 };
