@@ -132,8 +132,9 @@ function renderTodayPlan(todayDow, weekInRound) {
   const plan = prepregnancyPlan.dailyPlan;
   const today = plan.find(d => d.day === todayDow) || plan[0];
   const exMap = buildExerciseMap();
-  const typeColor = today.type === '训练日' ? '#6BCB77' : '#FF9A8B';
-  const typeBg = today.type === '训练日' ? '#E8F5E9' : '#FFF5F3';
+  const themePrimary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6BCB77';
+  const typeColor = today.type === '训练日' ? themePrimary : '#FF9A8B';
+  const typeBg = today.type === '训练日' ? 'var(--primary-light)' : '#FFF5F3';
 
   let html = `
     <div class="card" style="border-left:4px solid ${typeColor};background:${typeBg};">
