@@ -178,14 +178,6 @@ function renderTodayPlan(todayDow, weekInRound) {
     `;
   });
 
-  // 底部提示
-  html += `
-    <div class="card" style="text-align:center;padding:12px;background:var(--bg);">
-      <div class="font-sm text-secondary">💡 点击上方动作可查看详细介绍和动作要领</div>
-      <div class="font-sm text-secondary mt-8">📅 切换上方Tab可浏览全部备孕运动</div>
-    </div>
-  `;
-
   el.innerHTML = html;
 }
 
