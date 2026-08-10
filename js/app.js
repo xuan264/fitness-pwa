@@ -14,6 +14,7 @@ import { renderWeight } from '../pages/weight.js';
 import { renderPrepregnancy } from '../pages/prepregnancy.js';
 import { renderWeekWorkout } from '../pages/week-workout.js';
 import { renderFatLoss } from '../pages/fat-loss.js';
+import { renderWeekSettings } from '../pages/week-settings.js';
 
 async function init() {
   try {
@@ -89,6 +90,7 @@ async function init() {
   registerRoute('/prepregnancy', renderPrepregnancy);
   registerRoute('/week-workout', renderWeekWorkout);
   registerRoute('/fat-loss', renderFatLoss);
+  registerRoute('/week-settings', renderWeekSettings);
 
   // 5. 初始化路由
   router.init();
