@@ -171,7 +171,9 @@ export async function renderDashboard(params) {
   html += `</div>`;
 
   // 统计卡片（根据模式动态生成）
+  const todayIsTraining = todayWorkoutIdx >= 0; // 今天有训练才显示加餐
   const todayMealCount = todayMeals.length;
+  const expectedMeals = todayIsTraining ? 4 : 3; // 非训练日无加餐，当天只有 3 餐
   const weightDisplay = progressRecords.length > 0
     ? `${progressRecords[progressRecords.length - 1].weight}kg`
     : '—';
@@ -205,7 +207,7 @@ export async function renderDashboard(params) {
     <div class="stat-card accent" style="position:relative;overflow:hidden;">
       <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">🍽️</div>
       <div style="font-size:16px;margin-bottom:2px;">🥗</div>
-      <div class="stat-value" style="font-size:20px;">${todayMealCount}/4</div>
+      <div class="stat-value" style="font-size:20px;">${todayMealCount}/${expectedMeals}</div>
       <div class="stat-label">今日餐食</div>
     </div>
   `);
@@ -300,7 +302,6 @@ export async function renderDashboard(params) {
   const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
   const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', snack: '加餐' };
   const mealIcons = { breakfast: '🌅', lunch: '☀️', dinner: '🌙', snack: '🍎' };
-  const todayIsTraining = todayWorkoutIdx >= 0; // 今天有训练才显示加餐
 
   html += `
     <a href="#/diet" style="text-decoration:none;color:inherit;">
