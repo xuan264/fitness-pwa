@@ -4,7 +4,7 @@ import { db } from '../js/db.js';
 import { trainingPlan } from '../data/training-plan.js';
 import { fatLossPlan } from '../data/fat-loss-plan.js';
 import { recipes } from '../data/recipes.js';
-import { getDayOfWeek, getDayName, getWorkoutIndexForWeek, todayStr } from '../js/utils.js';
+import { getDayOfWeek, getDayName, getWorkoutIndexForWeek, todayStr, kgToJin } from '../js/utils.js';
 
 // 模块级状态：当前查看的年月
 let viewYear, viewMonth;
@@ -305,7 +305,7 @@ export async function renderCalendar(params) {
 
     // 体重
     if (weight) {
-      detailHtml += `<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">⚖️</span><span class="font-bold">${weight}kg</span></div>`;
+      detailHtml += `<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">⚖️</span><span class="font-bold">${kgToJin(weight)}斤</span></div>`;
     }
 
     detailHtml += `</div>`;
