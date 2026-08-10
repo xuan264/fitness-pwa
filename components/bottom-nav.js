@@ -12,10 +12,8 @@ export function renderBottomNav() {
     { path: '/', label: '首页', emoji: '🏠' }
   ];
 
-  // 双人版才显示饮食入口；单人版只保留训练相关
-  if (appMode !== 'single') {
-    items.push({ path: '/diet', label: '饮食', emoji: '🥗' });
-  }
+  // 饮食入口（单人版也保留，菜谱按单人份展示）
+  items.push({ path: '/diet', label: '饮食', emoji: '🥗' });
 
   // 根据模式添加训练/减脂导航项
   if (mode === 'both' || mode === 'fitness') {
