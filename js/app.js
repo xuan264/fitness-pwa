@@ -14,7 +14,6 @@ import { renderWeight } from '../pages/weight.js';
 import { renderPrepregnancy } from '../pages/prepregnancy.js';
 import { renderWeekWorkout } from '../pages/week-workout.js';
 import { renderFatLoss } from '../pages/fat-loss.js';
-import { todayStr } from './utils.js';
 
 async function init() {
   try {
@@ -26,28 +25,28 @@ async function init() {
     }
 
     // 2. 读取用户设置
-    let profile, settings;
+    let profile, manualWeek, manualRound, flManualWeek, flManualRound;
     try {
       profile = await db.get('userProfile', 'profile');
-      settings = await db.get('settings', 'startDate');
+      manualWeek = await db.get('settings', 'manualWeek');
+      manualRound = await db.get('settings', 'manualRound');
+      flManualWeek = await db.get('settings', 'flManualWeek');
+      flManualRound = await db.get('settings', 'flManualRound');
     } catch (e) {
       console.warn('读取设置失败:', e);
     }
 
-    if (settings?.value) {
-      store.setState({ startDate: settings.value });
-      store.updateCurrentWeek();
-    } else {
-      // 首次安装：无论何时安装，都设置为第1轮第1周
-      const today = todayStr();
-      store.setState({ startDate: today });
-      try {
-        await db.put('settings', { key: 'startDate', value: today });
-      } catch (e) {
-        // 忽略
-      }
-      store.setState({ currentWeek: 1, currentRound: 1 });
-    }
+    // 锻炼训练：手动选择的轮/周，默认第1轮第1周
+    store.setState({
+      currentWeek: manualWeek?.value || 1,
+      currentRound: manualRound?.value || 1
+    });
+
+    // 减脂训练：手动选择的轮/周，默认第1轮第1周
+    store.setState({
+      fatLossWeek: flManualWeek?.value || 1,
+      fatLossRound: flManualRound?.value || 1
+    });
 
     store.setState({ userProfile: profile || null });
   } catch (e) {
