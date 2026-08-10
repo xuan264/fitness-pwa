@@ -66,6 +66,14 @@ export async function renderCalendar(params) {
   const phaseIdx = store.getCurrentPhase();
   const phase = trainingPlan.phases[phaseIdx];
 
+  // 某天计划餐数：训练日 4 餐（含加餐），休息日 3 餐（无加餐）
+  // 与饮食页一致：getWorkoutIndexForWeek(dow, phase.split) >= 0 即训练日
+  const plannedMealsForDate = (dateStr) => {
+    const [Y, M, D] = dateStr.split('-').map(Number);
+    const idx = getWorkoutIndexForWeek(getDayOfWeek(new Date(Y, M - 1, D)), phase.split);
+    return idx >= 0 ? 4 : 3;
+  };
+
   let html = `
     <div class="page">
       <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:16px;position:relative;overflow:hidden;">
@@ -93,13 +101,13 @@ export async function renderCalendar(params) {
         </div>
         <div class="stat-card accent">
           <div style="font-size:18px;margin-bottom:2px;">🥗</div>
-          <div class="stat-value">${allMealDays.filter(d => d.startsWith(monthPrefix) && mealByDate[d].length >= 4).length}</div>
-          <div class="stat-label">四餐全打卡</div>
+          <div class="stat-value">${allMealDays.filter(d => d.startsWith(monthPrefix) && mealByDate[d].length > 0 && mealByDate[d].length >= plannedMealsForDate(d)).length}</div>
+          <div class="stat-label">全部餐食打卡</div>
         </div>
         <div class="stat-card">
           <div style="font-size:18px;margin-bottom:2px;">🍽️</div>
-          <div class="stat-value">${allMealDays.filter(d => d.startsWith(monthPrefix) && mealByDate[d].length > 0 && mealByDate[d].length < 4).length}</div>
-          <div class="stat-label">部分打卡</div>
+          <div class="stat-value">${allMealDays.filter(d => d.startsWith(monthPrefix) && mealByDate[d].length > 0 && mealByDate[d].length < plannedMealsForDate(d)).length}</div>
+          <div class="stat-label">部分餐食打卡</div>
         </div>
       </div>
 
@@ -132,20 +140,24 @@ export async function renderCalendar(params) {
     const hasWorkout = !!workout;
     const hasFatLoss = !!fatLoss;
     const mealCount = meals.length;
+    const plannedMeals = plannedMealsForDate(dateStr);
+    const allMealsDone = mealCount > 0 && mealCount >= plannedMeals;
+    const partialMeals = mealCount > 0 && mealCount < plannedMeals;
 
     // 背景色
     let bg = 'var(--bg)';
     if (isToday) bg = 'var(--primary-light)';
-    else if ((hasWorkout || hasFatLoss) && mealCount >= 4) bg = '#E8F5E9';
+    else if ((hasWorkout || hasFatLoss) && allMealsDone) bg = '#E8F5E9';
     else if (hasWorkout || hasFatLoss) bg = '#F1F8E9';
-    else if (mealCount > 0) bg = '#FFF8E1';
+    else if (allMealsDone) bg = '#E8F5E9';
+    else if (partialMeals) bg = '#FFF8E1';
 
     // 打卡图标
     let marks = '';
     if (hasWorkout) marks += '💪';
     if (hasFatLoss) marks += '🫀';
-    if (mealCount >= 4) marks += '🥗';
-    else if (mealCount > 0) marks += '🍽️';
+    if (allMealsDone) marks += '🥗';
+    else if (partialMeals) marks += '🍽️';
     if (weight) marks += '⚖️';
 
     html += `
@@ -271,9 +283,12 @@ export async function renderCalendar(params) {
 
     // 餐食详情
     detailHtml += `<div style="margin-bottom:12px;">`;
+    const isTrainingDay = getWorkoutIndexForWeek(dow, phase.split) >= 0;
     const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
     const mealLabelsMap = { breakfast: '🌅 早餐', lunch: '☀️ 午餐', dinner: '🌙 晚餐', snack: '🍎 加餐' };
     mealTypes.forEach(mt => {
+      // 休息日没有加餐（与饮食页一致）
+      if (mt === 'snack' && !isTrainingDay) return;
       const meal = dayMenu.meals[mt];
       const done = meals.some(m => m.mealType === mt);
       if (meal) {
