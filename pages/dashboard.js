@@ -92,34 +92,51 @@ export async function renderDashboard(params) {
       <div style="font-size:12px;opacity:0.9;">📅 ${dateStr} · ${getDayName(dow)} · ${greeting}</div>
   `;
 
-  // 锻炼训练轮/周选择器
-  if (showFitness) {
-    html += `
-      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;position:relative;z-index:1;">
-        <span style="font-size:13px;opacity:0.9;white-space:nowrap;">💪 锻炼</span>
-        <select onchange="setFitnessWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-          ${roundOptions(round)}
-        </select>
-        <select onchange="setFitnessWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-          ${weekOptions(week)}
-        </select>
-        <span style="font-size:13px;opacity:0.9;">/ 共${totalRounds}轮12周 · ${phase.name}</span>
-      </div>
-    `;
-  }
+  // 轮/周选择器（可在设置中隐藏）
+  const showWeekSelector = store.state.showWeekSelector !== false;
+  if (showWeekSelector) {
+    // 锻炼训练轮/周选择器
+    if (showFitness) {
+      html += `
+        <div style="display:flex;align-items:center;gap:8px;margin-top:10px;position:relative;z-index:1;">
+          <span style="font-size:13px;opacity:0.9;white-space:nowrap;">💪 锻炼</span>
+          <select onchange="setFitnessWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+            ${roundOptions(round)}
+          </select>
+          <select onchange="setFitnessWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+            ${weekOptions(week)}
+          </select>
+          <span style="font-size:13px;opacity:0.9;">/ 共${totalRounds}轮12周 · ${phase.name}</span>
+        </div>
+      `;
+    }
 
-  // 减脂训练轮/周选择器
-  if (showFatLoss) {
+    // 减脂训练轮/周选择器
+    if (showFatLoss) {
+      html += `
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;position:relative;z-index:1;">
+          <span style="font-size:13px;opacity:0.9;white-space:nowrap;">🫀 减脂</span>
+          <select onchange="setFatLossWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+            ${roundOptions(fatLossRound)}
+          </select>
+          <select onchange="setFatLossWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+            ${weekOptions(fatLossWeek)}
+          </select>
+          <span style="font-size:13px;opacity:0.9;">/ 共4轮12周 · ${flPhase.name}</span>
+        </div>
+      `;
+    }
+
+    html += `<div style="text-align:right;margin-top:4px;"><span onclick="toggleWeekSelector(false)" style="font-size:11px;opacity:0.8;cursor:pointer;text-decoration:underline;">🙈 隐藏轮/周选择</span></div>`;
+  } else {
+    // 隐藏态：仅显示当前进度，点击可重新展开
+    const label = (showFitness && showFatLoss)
+      ? `📅 锻炼 第${round}轮第${week}周 · 减脂 第${fatLossRound}轮第${fatLossWeek}周`
+      : showFitness ? `📅 锻炼 第${round}轮第${week}周`
+      : showFatLoss ? `📅 减脂 第${fatLossRound}轮第${fatLossWeek}周` : '';
     html += `
-      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;position:relative;z-index:1;">
-        <span style="font-size:13px;opacity:0.9;white-space:nowrap;">🫀 减脂</span>
-        <select onchange="setFatLossWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-          ${roundOptions(fatLossRound)}
-        </select>
-        <select onchange="setFatLossWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-          ${weekOptions(fatLossWeek)}
-        </select>
-        <span style="font-size:13px;opacity:0.9;">/ 共4轮12周 · ${flPhase.name}</span>
+      <div onclick="toggleWeekSelector(true)" style="margin-top:10px;background:rgba(255,255,255,0.15);border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;text-align:center;">
+        ${label} · 点击修改 🔧
       </div>
     `;
   }
@@ -558,6 +575,12 @@ export async function renderDashboard(params) {
   window.switchAppMode = async (mode) => {
     await store.setAppMode(mode);
     renderBottomNav();
+    await renderDashboard();
+  };
+
+  // 显示/隐藏 首页轮/周选择器
+  window.toggleWeekSelector = async (show) => {
+    await store.setShowWeekSelector(show);
     await renderDashboard();
   };
 
