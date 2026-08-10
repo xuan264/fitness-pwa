@@ -1,6 +1,13 @@
 // 工具函数
+// 返回本地时区的 YYYY-MM-DD（避免 UTC 导致的跨天边界错位，导致打卡状态"第二天消失"）
 export function todayStr() {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// 任意 Date 转本地 YYYY-MM-DD
+export function dateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 export function formatDate(dateStr) {
