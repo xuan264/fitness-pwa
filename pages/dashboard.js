@@ -81,9 +81,6 @@ export async function renderDashboard(params) {
   let html = `<div class="page">`;
 
   // 顶部进度卡片（可点击跳转打卡日历）+ 轮/周手动选择器
-  // 生成下拉选项
-  const roundOptions = (sel) => Array.from({length: 4}, (_, i) => `<option value="${i+1}" ${sel === i+1 ? 'selected' : ''}>第${i+1}轮</option>`).join('');
-  const weekOptions = (sel) => Array.from({length: 12}, (_, i) => `<option value="${i+1}" ${sel === i+1 ? 'selected' : ''}>第${i+1}周</option>`).join('');
 
   html += `
     <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:12px;position:relative;overflow:hidden;">
@@ -92,53 +89,21 @@ export async function renderDashboard(params) {
       <div style="font-size:12px;opacity:0.9;">📅 ${dateStr} · ${getDayName(dow)} · ${greeting}</div>
   `;
 
-  // 轮/周选择器（可在设置中隐藏）
+  // 轮/周进度：以紧凑一行展示，点击进入独立设置页（避免在卡片内展开下拉导致拥挤）
   const showWeekSelector = store.state.showWeekSelector !== false;
   if (showWeekSelector) {
-    // 锻炼训练轮/周选择器
-    if (showFitness) {
+    const wlabel = (showFitness && showFatLoss)
+      ? `💪 第${round}轮第${week}周 · 🫀 第${fatLossRound}轮第${fatLossWeek}周`
+      : showFitness ? `💪 锻炼 第${round}轮第${week}周`
+      : showFatLoss ? `🫀 减脂 第${fatLossRound}轮第${fatLossWeek}周` : '';
+    if (wlabel) {
       html += `
-        <div style="display:flex;align-items:center;gap:8px;margin-top:10px;position:relative;z-index:1;">
-          <span style="font-size:13px;opacity:0.9;white-space:nowrap;">💪 锻炼</span>
-          <select onchange="setFitnessWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-            ${roundOptions(round)}
-          </select>
-          <select onchange="setFitnessWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-            ${weekOptions(week)}
-          </select>
-          <span style="font-size:13px;opacity:0.9;">/ 共${totalRounds}轮12周 · ${phase.name}</span>
+        <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;cursor:pointer;">
+          <span style="font-size:12px;opacity:0.95;">📅 ${wlabel}</span>
+          <span style="font-size:16px;opacity:0.8;line-height:1;">›</span>
         </div>
       `;
     }
-
-    // 减脂训练轮/周选择器
-    if (showFatLoss) {
-      html += `
-        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;position:relative;z-index:1;">
-          <span style="font-size:13px;opacity:0.9;white-space:nowrap;">🫀 减脂</span>
-          <select onchange="setFatLossWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-            ${roundOptions(fatLossRound)}
-          </select>
-          <select onchange="setFatLossWeek(undefined, this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
-            ${weekOptions(fatLossWeek)}
-          </select>
-          <span style="font-size:13px;opacity:0.9;">/ 共4轮12周 · ${flPhase.name}</span>
-        </div>
-      `;
-    }
-
-    html += `<div style="text-align:right;margin-top:4px;"><span onclick="toggleWeekSelector(false)" style="font-size:11px;opacity:0.8;cursor:pointer;text-decoration:underline;">🙈 隐藏轮/周选择</span></div>`;
-  } else {
-    // 隐藏态：仅显示当前进度，点击可重新展开
-    const label = (showFitness && showFatLoss)
-      ? `📅 锻炼 第${round}轮第${week}周 · 减脂 第${fatLossRound}轮第${fatLossWeek}周`
-      : showFitness ? `📅 锻炼 第${round}轮第${week}周`
-      : showFatLoss ? `📅 减脂 第${fatLossRound}轮第${fatLossWeek}周` : '';
-    html += `
-      <div onclick="toggleWeekSelector(true)" style="margin-top:10px;background:rgba(255,255,255,0.15);border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;text-align:center;">
-        ${label} · 点击修改 🔧
-      </div>
-    `;
   }
 
   html += `
@@ -151,24 +116,22 @@ export async function renderDashboard(params) {
     </div>
   `;
 
-  // APP 模式选择器（双人版 / 单人版）
+  // APP 模式（双人版 / 单人版）：只显示当前模式，点击切换到另一种模式
   const appMode = store.state.appMode || 'double';
-  const appModeOptions = [
-    { key: 'double', label: '双人版', emoji: '👫' },
-    { key: 'single', label: '单人版', emoji: '🧍' }
-  ];
+  const isDouble = appMode === 'double';
+  const curEmoji = isDouble ? '👫' : '🧍';
+  const curLabel = isDouble ? '双人版' : '单人版';
+  const targetMode = isDouble ? 'single' : 'double';
+  const targetLabel = isDouble ? '单人版' : '双人版';
   html += `
-    <div style="display:flex;gap:0;margin-bottom:10px;background:var(--surface);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow);">
-  `;
-  appModeOptions.forEach(opt => {
-    const isActive = appMode === opt.key;
-    html += `
-      <div onclick="switchAppMode('${opt.key}')" style="flex:1;padding:8px 4px;text-align:center;font-size:12px;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;${isActive ? 'background:var(--primary);color:#fff;font-weight:600;' : 'color:var(--text-secondary);'}">
-        ${opt.emoji} ${opt.label}
+    <div onclick="switchAppMode('${targetMode}')" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;background:var(--surface);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:18px;">${curEmoji}</span>
+        <span style="font-size:14px;font-weight:600;">${curLabel}</span>
       </div>
-    `;
-  });
-  html += `</div>`;
+      <span style="font-size:12px;color:var(--text-secondary);">切换${targetLabel} ›</span>
+    </div>
+  `;
 
   // 模式切换器
   const modeOptions = [
@@ -575,30 +538,6 @@ export async function renderDashboard(params) {
   window.switchAppMode = async (mode) => {
     await store.setAppMode(mode);
     renderBottomNav();
-    await renderDashboard();
-  };
-
-  // 显示/隐藏 首页轮/周选择器
-  window.toggleWeekSelector = async (show) => {
-    await store.setShowWeekSelector(show);
-    await renderDashboard();
-  };
-
-  // 锻炼训练轮/周手动选择
-  // roundSel: 轮的 <select> 元素; weekSel: 周的 <select> 元素
-  // 调用时只传一个，另一个从 store 读取当前值
-  window.setFitnessWeek = async (roundSel, weekSel) => {
-    const newRound = roundSel ? parseInt(roundSel.value) : (store.state.currentRound || 1);
-    const newWeek = weekSel ? parseInt(weekSel.value) : (store.state.currentWeek || 1);
-    await store.setManualWeek(newWeek, newRound);
-    await renderDashboard();
-  };
-
-  // 减脂训练轮/周手动选择
-  window.setFatLossWeek = async (roundSel, weekSel) => {
-    const newRound = roundSel ? parseInt(roundSel.value) : (store.state.fatLossRound || 1);
-    const newWeek = weekSel ? parseInt(weekSel.value) : (store.state.fatLossWeek || 1);
-    await store.setFatLossWeek(newWeek, newRound);
     await renderDashboard();
   };
 }
