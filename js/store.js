@@ -11,6 +11,7 @@ export const store = {
     reminders: [],
     activeMode: 'both',    // 'both' | 'fitness' | 'fat-loss'
     appMode: 'double',     // 'double' 双人版（默认） | 'single' 单人版
+    showWeekSelector: true, // 首页是否显示"第几轮第几周"选择器
     // 锻炼训练：手动选择的"起点" + 锚点日期（选的那天=该周）
     manualWeek: 1,
     manualRound: 1,
@@ -148,6 +149,18 @@ export const store = {
       await db.put('settings', { key: 'appMode', value: mode });
     } catch (e) {
       console.warn('保存 APP 模式失败:', e);
+    }
+  },
+
+  // 首页轮/周选择器 显示/隐藏
+  async setShowWeekSelector(show) {
+    show = !!show;
+    this.setState({ showWeekSelector: show });
+    try {
+      const { db } = await import('./db.js');
+      await db.put('settings', { key: 'showWeekSelector', value: show });
+    } catch (e) {
+      console.warn('保存选择器显示设置失败:', e);
     }
   }
 };
