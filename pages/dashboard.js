@@ -96,20 +96,16 @@ export async function renderDashboard(params) {
   `;
 
   // 轮/周进度：以紧凑一行展示，点击进入独立设置页（避免在卡片内展开下拉导致拥挤）
+  // 锻炼与减脂共用同一套周期，故只展示一组轮/周
   const showWeekSelector = store.state.showWeekSelector !== false;
   if (showWeekSelector) {
-    const wlabel = (showFitness && showFatLoss)
-      ? `💪 第${round}轮第${week}周 · 🫀 第${fatLossRound}轮第${fatLossWeek}周`
-      : showFitness ? `💪 锻炼 第${round}轮第${week}周`
-      : showFatLoss ? `🫀 减脂 第${fatLossRound}轮第${fatLossWeek}周` : '';
-    if (wlabel) {
-      html += `
-        <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;cursor:pointer;">
-          <span style="font-size:12px;opacity:0.95;">📅 ${wlabel}</span>
-          <span style="font-size:16px;opacity:0.8;line-height:1;">›</span>
-        </div>
-      `;
-    }
+    const wlabel = `第${round}轮 · 第${week}周`;
+    html += `
+      <div onclick="location.hash='#/week-settings'" style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;cursor:pointer;">
+        <span style="font-size:12px;opacity:0.95;">📅 ${wlabel}</span>
+        <span style="font-size:16px;opacity:0.8;line-height:1;">›</span>
+      </div>
+    `;
   } else {
     // 关闭首页进度后，仍保留一个进入周期设置的入口
     html += `
