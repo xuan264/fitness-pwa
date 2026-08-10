@@ -121,7 +121,7 @@ export async function renderDashboard(params) {
         <div class="progress-bar" style="background:rgba(255,255,255,0.3);border-radius:10px;">
           <div class="fill" style="width:${(week/12)*100}%;background:#fff;border-radius:10px;height:6px;"></div>
         </div>
-        <div style="font-size:11px;opacity:0.7;margin-top:6px;text-align:center;">点击查看打卡日历 📊</div>
+        <div style="font-size:11px;opacity:0.7;margin-top:6px;text-align:center;">查看打卡日历</div>
       </a>
     </div>
   `;
@@ -181,7 +181,7 @@ export async function renderDashboard(params) {
   if (showFitness) {
     statItems.push(`
       <a href="#/week-workout" style="text-decoration:none;color:inherit;">
-        <div class="stat-card" style="cursor:pointer;padding:10px;position:relative;overflow:hidden;">
+        <div class="stat-card" style="cursor:pointer;position:relative;overflow:hidden;">
           <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">💪</div>
           <div style="font-size:16px;margin-bottom:2px;">🏃‍♀️</div>
           <div class="stat-value" style="font-size:20px;">${weekWorkouts.length}/${phase.frequency}</div>
@@ -193,7 +193,7 @@ export async function renderDashboard(params) {
   if (showFatLoss) {
     statItems.push(`
       <a href="#/fat-loss" style="text-decoration:none;color:inherit;">
-        <div class="stat-card" style="cursor:pointer;padding:10px;position:relative;overflow:hidden;border-top:3px solid #4A90D9;">
+        <div class="stat-card" style="cursor:pointer;position:relative;overflow:hidden;border-top:3px solid #4A90D9;">
           <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">🫀</div>
           <div style="font-size:16px;margin-bottom:2px;">🫀</div>
           <div class="stat-value" style="font-size:20px;color:#2563EB;">${flWeekCount}/3</div>
@@ -203,7 +203,7 @@ export async function renderDashboard(params) {
     `);
   }
   statItems.push(`
-    <div class="stat-card accent" style="padding:10px;position:relative;overflow:hidden;">
+    <div class="stat-card accent" style="position:relative;overflow:hidden;">
       <div style="position:absolute;top:-4px;right:-4px;font-size:20px;opacity:0.1;">🍽️</div>
       <div style="font-size:16px;margin-bottom:2px;">🥗</div>
       <div class="stat-value" style="font-size:20px;">${todayMealCount}/4</div>
@@ -384,7 +384,7 @@ export async function renderDashboard(params) {
         <div class="card-title" style="margin:0;">${icons.calc} 热量计算器</div>
         <span class="text-secondary" id="calc-chevron">${icons.chevronDown}</span>
       </div>
-      <div class="font-sm text-secondary mt-8">${hasProfile ? '点击查看你的减脂方案' : '计算你的BMR和减脂期热量'}</div>
+      <div class="font-sm text-secondary mt-8">${hasProfile ? '你的减脂热量方案' : '估算减脂期热量'}</div>
       <div id="calc-expand" class="exercise-detail" style="padding-top:12px;">
         <div class="form-group">
           <label>性别</label>
@@ -435,7 +435,7 @@ export async function renderDashboard(params) {
           <div class="card-title" style="margin:0;">${icons.bell} 提醒设置</div>
           <span class="text-secondary">${icons.chevron}</span>
         </div>
-        <div class="font-sm text-secondary mt-8">管理用餐和训练提醒</div>
+        <div class="font-sm text-secondary mt-8">用餐与训练提醒</div>
       </div>
     </a>
   `;
