@@ -1,6 +1,6 @@
-// 每周主题色：直接取自用户提供的 3 张中国传统文物配色图 + 13 个衍生色
-// 规则：4 轮 × 12 周 = 48 种组合，全部唯一；
-//       按色相轮均匀分布到 4 轮中，避免‘一轮一个颜色’的感觉。
+// 每周主题色：取自 3 张传统文物配色参考图 + 13 衍生色（48 色，全唯一）
+// 分配：按色相排序后每 4 个一组轮转划分到 4 轮（每轮覆盖全色相，避免‘一轮一个颜色’）；
+//       整体旋转避开红色，使每轮第一周都不是红色；显眼位(第1/2周)优先高活力非红色，闷色挪后。
 
 function hexToHsl(hex) {
   const v = parseInt(hex.slice(1), 16);
@@ -42,20 +42,15 @@ function lum(hex) {
   return 0.2126 * f((v >> 16) & 255) + 0.7152 * f((v >> 8) & 255) + 0.0722 * f(v & 255);
 }
 
-function contrastWithWhite(hex) {
-  return (1 + 0.05) / (lum(hex) + 0.05);
-}
+function contrastWithWhite(hex) { return (1 + 0.05) / (lum(hex) + 0.05); }
 
-// 深档：确保与白字对比度 ≥3.0（黄色会自动压得更深）
 function makeDark(primary) {
   const [h, s, l] = hexToHsl(primary);
   let ld = Math.max(28, Math.min(42, l * 0.58));
   let sd = Math.min(90, s * 1.1);
   let dark = hslToHex(h, sd, ld);
-  // 若仍不达标，继续降低明度或微调色相（黄转橙棕）
   for (let step = 0; step < 20 && contrastWithWhite(dark) < 3.0; step++) {
-    ld = Math.max(18, ld - 1.5);
-    dark = hslToHex(h, sd, ld);
+    ld = Math.max(18, ld - 1.5); dark = hslToHex(h, sd, ld);
   }
   return dark;
 }
@@ -68,63 +63,63 @@ function makeLight(primary) {
 export const PALETTE = [
   // 第 1 轮
   [
-    { name: '绯霞', primary: '#e05c58' },
-    { name: '珠子褐', primary: '#BEA89D' },
+    { name: '鹅黄', primary: '#e8c27c' },
+    { name: '藕荷', primary: '#d285df' },
+    { name: '苹果', primary: '#A0BF52' },
+    { name: '油绿', primary: '#647A60' },
+    { name: '沧浪', primary: '#B1D5C8' },
+    { name: '湖蓝', primary: '#8ad0da' },
+    { name: '星郎', primary: '#BCD4E7' },
+    { name: '靛青', primary: '#6376c4' },
+    { name: '天球', primary: '#E0DFC6' },
+    { name: '霞光红', primary: '#EE819F' },
+    { name: '嫣红', primary: '#E2767D' },
+    { name: '瓜瓤红', primary: '#F68C60' },
+  ],
+  // 第 2 轮
+  [
     { name: '茉莉黄', primary: '#F8DF72' },
+    { name: '水绿', primary: '#81cc7a' },
+    { name: '柳绿', primary: '#aacd7c' },
     { name: '绮钱', primary: '#D8DE8A' },
-    { name: '柳绿', primary: '#a9c980' },
-    { name: '水绿', primary: '#86c681' },
-    { name: '天青', primary: '#8fcfc5' },
+    { name: '天青', primary: '#8cd3c7' },
     { name: '湖水蓝', primary: '#BBDFE8' },
     { name: '蝶翅蓝', primary: '#4E7CA1' },
     { name: '紫苑', primary: '#757CBB' },
     { name: '靠红', primary: '#F7CDE3' },
     { name: '出炉银', primary: '#EDD2D8' },
-  ],
-  // 第 2 轮
-  [
-    { name: '瓜瓤红', primary: '#F68C60' },
-    { name: '鹅黄', primary: '#ecca8c' },
-    { name: '天球', primary: '#E0DFC6' },
-    { name: '苹果', primary: '#A0BF52' },
-    { name: '油绿', primary: '#647A60' },
-    { name: '沧浪', primary: '#B1D5C8' },
-    { name: '湖蓝', primary: '#99d6df' },
-    { name: '星郎', primary: '#BCD4E7' },
-    { name: '靛青', primary: '#6578c2' },
-    { name: '藕荷', primary: '#d895e3' },
-    { name: '霞光红', primary: '#EE819F' },
-    { name: '嫣红', primary: '#E2767D' },
+    { name: '绯霞', primary: '#e05c58' },
+    { name: '珠子褐', primary: '#BEA89D' },
   ],
   // 第 3 轮
   [
-    { name: '绯霞2', primary: '#e37254' },
-    { name: '荷花白', primary: '#FBECDE' },
-    { name: '黄白游', primary: '#FFFAA3' },
-    { name: '艾绿', primary: '#9DAA6C' },
-    { name: '竹青', primary: '#86be6f' },
-    { name: '薄荷', primary: '#a3d5b3' },
-    { name: '海天蓝', primary: '#C6E6E8' },
-    { name: '鹊白', primary: '#EBEEF0' },
-    { name: '苍苍', primary: '#5976BA' },
-    { name: '雪青', primary: '#A59AC9' },
-    { name: '初荷红', primary: '#E16C96' },
-    { name: '桃夭', primary: '#F6BEC8' },
-  ],
-  // 第 4 轮
-  [
-    { name: '茜红', primary: '#CC5D4E' },
     { name: '海螺橙', primary: '#F0945D' },
-    { name: '莺儿', primary: '#EBE1A9' },
-    { name: '断肠', primary: '#E8EDB9' },
+    { name: '窃蓝', primary: '#88ABDA' },
     { name: '无心绿', primary: '#BFD1B2' },
     { name: '豆白', primary: '#D5E0D5' },
     { name: '松石', primary: '#75C1C4' },
     { name: '井天蓝', primary: '#C3D7DF' },
-    { name: '窃蓝', primary: '#88ABDA' },
-    { name: '藤紫', primary: '#8782c7' },
-    { name: '桃夭', primary: '#ec8cb7' },
+    { name: '断肠', primary: '#E8EDB9' },
+    { name: '藤紫', primary: '#817ccd' },
+    { name: '桃夭', primary: '#e87cac' },
     { name: '长春', primary: '#DC6B82' },
+    { name: '茜红', primary: '#CC5D4E' },
+    { name: '莺儿', primary: '#EBE1A9' },
+  ],
+  // 第 4 轮
+  [
+    { name: '黄白游', primary: '#FFFAA3' },
+    { name: '苍苍', primary: '#5976BA' },
+    { name: '竹青', primary: '#83c568' },
+    { name: '薄荷', primary: '#90d4a6' },
+    { name: '海天蓝', primary: '#C6E6E8' },
+    { name: '鹊白', primary: '#EBEEF0' },
+    { name: '艾绿', primary: '#9DAA6C' },
+    { name: '雪青', primary: '#A59AC9' },
+    { name: '初荷红', primary: '#E16C96' },
+    { name: '桃夭', primary: '#F6BEC8' },
+    { name: '绯霞2', primary: '#e17356' },
+    { name: '荷花白', primary: '#FBECDE' },
   ],
 ];
 
@@ -135,9 +130,7 @@ export function themeForRoundWeek(round, week) {
   return { name: t.name, primary: t.primary, dark: makeDark(t.primary), light: makeLight(t.primary) };
 }
 
-export function themeForWeek(week) {
-  return themeForRoundWeek(1, week);
-}
+export function themeForWeek(week) { return themeForRoundWeek(1, week); }
 
 export function applyTheme(week, round) {
   if (typeof document === 'undefined') return;
