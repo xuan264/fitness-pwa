@@ -177,6 +177,7 @@ export async function renderWeight(params) {
 function drawWeightChart(records) {
   const canvas = document.getElementById('weight-chart');
   if (!canvas) return;
+  const themePrimary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6BCB77';
 
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
@@ -213,7 +214,7 @@ function drawWeightChart(records) {
 
   // 折线
   if (records.length >= 2) {
-    ctx.strokeStyle = '#6BCB77';
+    ctx.strokeStyle = themePrimary;
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     records.forEach((r, i) => {
@@ -233,7 +234,7 @@ function drawWeightChart(records) {
     // 数据点
     ctx.beginPath();
     ctx.arc(x, y, 4, 0, Math.PI * 2);
-    ctx.fillStyle = '#6BCB77';
+    ctx.fillStyle = themePrimary;
     ctx.fill();
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
