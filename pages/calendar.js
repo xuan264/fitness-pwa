@@ -201,7 +201,7 @@ export async function renderCalendar(params) {
     const weight = weightByDate[dateStr];
     const dateObj = new Date(dateStr);
     const dow = getDayOfWeek(dateObj);
-    const dayMenu = recipes.getWeeklyMenus(store.state.currentWeek || 1).find(m => m.day === dow) || recipes.getWeeklyMenus(store.state.currentWeek || 1)[0];
+    const dayMenu = recipes.getWeeklyMenus(store.state.currentWeek || 1, store.state.appMode).find(m => m.day === dow) || recipes.getWeeklyMenus(store.state.currentWeek || 1, store.state.appMode)[0];
 
     let detailHtml = `<div class="card"><div class="card-title">📋 ${dateStr} ${getDayName(dow)}</div>`;
 
