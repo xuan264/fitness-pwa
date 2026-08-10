@@ -38,6 +38,17 @@
 
   <!-- 白屏检测脚本：如果 5 秒后 page-container 仍只有 loading-fallback，说明 app.js 加载失败 -->
   <script>
+    function clearCachesAndReload() {
+      try {
+        if (typeof caches !== 'undefined' && caches.keys) {
+          caches.keys().then(function(keys) {
+            return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+          }).then(function() { location.reload(); });
+          return;
+        }
+      } catch (e) {}
+      location.reload();
+    }
     (function() {
       var startTime = Date.now();
       var checkInterval = setInterval(function() {
@@ -51,7 +62,7 @@
         // 5 秒后还没加载出来，显示错误提示和刷新按钮
         if (Date.now() - startTime > 5000) {
           clearInterval(checkInterval);
-          container.innerHTML = '<div class="page"><div class="card text-center"><div style="font-size:36px;">😵</div><div class="font-bold mt-8" style="font-size:16px;">加载失败</div><div class="font-sm text-secondary mt-8" style="line-height:1.6;">可能是缓存版本不匹配<br>请点击下方按钮刷新</div><button class="btn btn-primary mt-8" onclick="location.reload(true)" style="margin-top:16px;">🔄 重新加载</button><button class="btn mt-8" onclick="if(confirm(\\'清除缓存并重新加载？\\')){caches.keys().then(function(k){Promise.all(k.map(function(c){return caches.delete(c)})).then(function(){location.reload()})})}" style="margin-left:8px;border:1px solid var(--divider);background:var(--surface);">🧹 清除缓存</button></div></div>';
+          container.innerHTML = '<div class="page"><div class="card text-center"><div style="font-size:36px;">😵</div><div class="font-bold mt-8" style="font-size:16px;">加载失败</div><div class="font-sm text-secondary mt-8" style="line-height:1.6;">可能是缓存版本不匹配<br>请点击下方按钮刷新</div><button class="btn btn-primary mt-8" onclick="location.reload(true)" style="margin-top:16px;">🔄 重新加载</button><button class="btn mt-8" onclick="clearCachesAndReload()" style="margin-left:8px;border:1px solid var(--divider);background:var(--surface);">🧹 清除缓存</button></div></div>';
         }
       }, 1000);
     })();
