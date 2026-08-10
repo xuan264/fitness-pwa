@@ -94,10 +94,10 @@ body {
 .page { padding: 12px 16px; animation: fadeIn 0.15s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* ===== 卡片（iOS 分组卡片：无边框、轻阴影、大圆角） ===== */
+/* ===== 卡片（iOS 分组卡片：无边框、轻阴影、统一圆角） ===== */
 .card {
   background: var(--surface);
-  border-radius: 20px;
+  border-radius: var(--radius);
   box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.04);
   padding: 16px;
   margin-bottom: 12px;
@@ -305,10 +305,10 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .hidden { display: none !important; }
 
 /* ===== 统计卡片 ===== */
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.stat-card { background: var(--surface); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); text-align: center; }
-.stat-value { font-size: 24px; font-weight: 700; color: var(--primary); }
-.stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.stat-card { background: var(--surface); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 92px; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--primary); line-height: 1.1; }
+.stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
 .stat-card.accent .stat-value { color: var(--accent); }
 
 /* ===== 标签页 ===== */
