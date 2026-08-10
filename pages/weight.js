@@ -1,7 +1,7 @@
 // 体重记录独立页面
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
-import { todayStr, formatDate } from '../js/utils.js';
+import { todayStr, formatDate, kgToJin, jinToKg } from '../js/utils.js';
 
 export async function renderWeight(params) {
   const container = document.getElementById('page-container');
@@ -24,8 +24,8 @@ export async function renderWeight(params) {
   if (progressRecords.length > 0) {
     const latest = progressRecords[progressRecords.length - 1];
     const first = progressRecords[0];
-    const latestWeight = latest.weight.toFixed(2);
-    const change = (latest.weight - first.weight).toFixed(2);
+    const latestWeight = kgToJin(latest.weight);
+    const change = latest.weight - first.weight;
     const arrow = change < 0 ? '↓' : change > 0 ? '↑' : '→';
 
     html += `
@@ -33,32 +33,73 @@ export async function renderWeight(params) {
         <div style="display:flex;justify-content:center;gap:32px;margin-bottom:8px;">
           <div>
             <div class="font-sm text-secondary" style="text-align:center;">当前体重</div>
-            <div style="font-size:26px;font-weight:700;color:var(--primary);">${latestWeight} kg</div>
+            <div style="font-size:26px;font-weight:700;color:var(--primary);">${latestWeight} 斤</div>
           </div>
           <div>
             <div class="font-sm text-secondary" style="text-align:center;">总变化</div>
-            <div style="font-size:22px;font-weight:600;color:${change < 0 ? 'var(--primary)' : 'var(--danger)'};">${arrow} ${Math.abs(change)} kg</div>
+            <div style="font-size:22px;font-weight:600;color:${change < 0 ? 'var(--primary)' : 'var(--danger)'};">${arrow} ${kgToJin(Math.abs(change))} 斤</div>
           </div>
         </div>
         <canvas id="weight-chart" style="width:100%;height:160px;"></canvas>
       </div>
     `;
+  } else {
+    html += `
+      <div class="card" style="text-align:center;padding:24px 14px;margin-bottom:12px;">
+        <div style="font-size:36px;margin-bottom:8px;">🌱</div>
+        <div class="text-secondary">还没有体重记录</div>
+        <div class="font-sm text-secondary mt-8">在下方添加第一条记录吧</div>
+      </div>
+    `;
+  }
 
-    // ===== 最近记录（倒序，今天在最上面） =====
+  // ===== 添加体重记录（置于折线图与最近体重之间） =====
+  html += `
+      <div class="card" style="text-align:center;padding:16px 14px;margin-bottom:12px;">
+        <div class="card-title" style="text-align:center;border:none;padding:0;margin-bottom:10px;">添加体重记录</div>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">体重(斤)</label>
+            <input type="number" step="0.1" class="form-control" id="weight-input" style="width:110px;text-align:center;">
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">日期</label>
+            <input type="date" class="form-control" id="weight-date" value="${todayStr()}" style="width:140px;text-align:center;">
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">备注</label>
+            <input type="text" class="form-control" id="weight-note" style="width:110px;text-align:center;">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:60%;" onclick="addWeight()">记录</button>
+      </div>
+  `;
+
+  // ===== 最近体重（最多显示最近 15 天） =====
+  if (progressRecords.length > 0) {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 14); // 含今天共 15 天
+    const cutoffStr = cutoff.toISOString().split('T')[0];
+    const recent = progressRecords.filter(r => r.date >= cutoffStr).slice(-15).reverse();
+
     html += `
       <div class="card" style="padding:12px 14px;margin-bottom:12px;">
-        <div class="font-sm text-secondary" style="text-align:center;margin-bottom:8px;">最近记录</div>
+        <div class="font-sm text-secondary" style="text-align:center;margin-bottom:8px;">最近体重（15天）</div>
     `;
 
-    progressRecords.slice(-5).reverse().forEach(r => {
+    if (recent.length === 0) {
+      html += `<div class="text-secondary" style="text-align:center;padding:8px 0;">近 15 天暂无记录</div>`;
+    }
+
+    recent.forEach(r => {
       const isToday = r.date === todayStr();
-      const wStr = r.weight.toFixed(2);
+      const wStr = kgToJin(r.weight);
       if (window._editingWeightId === r.id) {
         // 编辑态
         html += `
           <div style="padding:8px 4px;border-bottom:1px solid var(--divider);background:var(--primary-light);border-radius:8px;">
             <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
-              <input type="number" step="0.01" class="form-control" id="edit-weight-input" value="${r.weight}" style="width:90px;text-align:center;">
+              <input type="number" step="0.1" class="form-control" id="edit-weight-input" value="${kgToJin(r.weight)}" style="width:90px;text-align:center;">
               <input type="date" class="form-control" id="edit-weight-date" value="${r.date}" style="width:140px;text-align:center;">
             </div>
             <input type="text" class="form-control" id="edit-weight-note" value="${r.note || ''}" placeholder="备注" style="width:100%;margin-bottom:6px;text-align:center;">
@@ -75,7 +116,7 @@ export async function renderWeight(params) {
               <span class="font-sm">${formatDate(r.date)}</span>
               ${r.note ? `<span class="font-sm text-secondary">${r.note}</span>` : ''}
             </div>
-            <span class="font-bold">${wStr} kg</span>
+            <span class="font-bold">${wStr} 斤</span>
             <div style="display:flex;gap:6px;">
               <button onclick="editWeightRecord('${r.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;" title="编辑">✏️</button>
               <button onclick="deleteWeightRecord('${r.id}')" style="background:none;border:none;font-size:16px;cursor:pointer;" title="删除">🗑️</button>
@@ -86,37 +127,7 @@ export async function renderWeight(params) {
     });
 
     html += `</div>`;
-  } else {
-    html += `
-      <div class="card" style="text-align:center;padding:24px 14px;margin-bottom:12px;">
-        <div style="font-size:36px;margin-bottom:8px;">🌱</div>
-        <div class="text-secondary">还没有体重记录</div>
-        <div class="font-sm text-secondary mt-8">在下方添加第一条记录吧</div>
-      </div>
-    `;
   }
-
-  // ===== 添加体重记录（紧凑居中，置于图表之后） =====
-  html += `
-      <div class="card" style="text-align:center;padding:16px 14px;margin-bottom:12px;">
-        <div class="card-title" style="text-align:center;border:none;padding:0;margin-bottom:10px;">添加体重记录</div>
-        <div style="display:flex;gap:8px;justify-content:center;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;">
-          <div style="display:flex;flex-direction:column;align-items:center;">
-            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">体重(kg)</label>
-            <input type="number" step="0.01" class="form-control" id="weight-input" style="width:110px;text-align:center;">
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;">
-            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">日期</label>
-            <input type="date" class="form-control" id="weight-date" value="${todayStr()}" style="width:140px;text-align:center;">
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;">
-            <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">备注</label>
-            <input type="text" class="form-control" id="weight-note" style="width:110px;text-align:center;">
-          </div>
-        </div>
-        <button class="btn btn-primary" style="width:60%;" onclick="addWeight()">记录</button>
-      </div>
-  `;
 
   html += `</div>`;
   container.innerHTML = html;
@@ -126,7 +137,7 @@ export async function renderWeight(params) {
   }
 
   window.addWeight = async () => {
-    const weight = parseFloat(document.getElementById('weight-input').value);
+    const weight = jinToKg(document.getElementById('weight-input').value);
     const note = document.getElementById('weight-note').value.trim();
     const date = document.getElementById('weight-date').value || todayStr();
     if (!weight || weight <= 0) {
@@ -149,7 +160,7 @@ export async function renderWeight(params) {
 
   window.saveWeightRecord = async (id) => {
     const rid = Number(id);
-    const weight = parseFloat(document.getElementById('edit-weight-input').value);
+    const weight = jinToKg(document.getElementById('edit-weight-input').value);
     const date = document.getElementById('edit-weight-date').value;
     const note = document.getElementById('edit-weight-note').value.trim();
     if (!weight || weight <= 0) {
@@ -187,16 +198,16 @@ function drawWeightChart(records) {
   canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
 
-  const weights = records.map(r => r.weight);
-  const minW = Math.min(...weights) - 1;
-  const maxW = Math.max(...weights) + 1;
+  const weights = records.map(r => r.weight * 2); // 转为斤绘图
+  const minW = Math.min(...weights) - 2;
+  const maxW = Math.max(...weights) + 2;
   const range = Math.max(0.1, maxW - minW);
 
   const pad = { top: 12, right: 14, bottom: 28, left: 36 };
   const cw = w - pad.left - pad.right;
   const ch = h - pad.top - pad.bottom;
 
-  // 横向网格 + Y轴标签
+  // 横向网格 + Y轴标签（斤）
   ctx.strokeStyle = '#EEE';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
@@ -205,7 +216,7 @@ function drawWeightChart(records) {
     ctx.moveTo(pad.left, y);
     ctx.lineTo(w - pad.right, y);
     ctx.stroke();
-    const val = (maxW - (range / 4) * i).toFixed(2);
+    const val = (maxW - (range / 4) * i).toFixed(1);
     ctx.fillStyle = '#BDBDBD';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'right';
@@ -219,7 +230,7 @@ function drawWeightChart(records) {
     ctx.beginPath();
     records.forEach((r, i) => {
       const x = pad.left + (cw / Math.max(1, records.length - 1)) * i;
-      const y = pad.top + ch - ((r.weight - minW) / range) * ch;
+      const y = pad.top + ch - ((r.weight * 2 - minW) / range) * ch;
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
@@ -229,7 +240,7 @@ function drawWeightChart(records) {
   // 数据点 + X轴日期标签
   records.forEach((r, i) => {
     const x = pad.left + (cw / Math.max(1, records.length - 1)) * i;
-    const y = pad.top + ch - ((r.weight - minW) / range) * ch;
+    const y = pad.top + ch - ((r.weight * 2 - minW) / range) * ch;
 
     // 数据点
     ctx.beginPath();
