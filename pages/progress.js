@@ -1,7 +1,7 @@
 // 进度追踪页面
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
-import { todayStr, dateStr, getDayOfWeek, getDayName, getWorkoutIndexForWeek } from '../js/utils.js';
+import { todayStr, dateStr, getDayOfWeek, getDayName, getWorkoutIndexForWeek, kgToJin } from '../js/utils.js';
 import { trainingPlan } from '../data/training-plan.js';
 import { recipes } from '../data/recipes.js';
 
@@ -88,16 +88,16 @@ export async function renderProgress(params) {
   if (progressRecords.length > 0) {
     const latest = progressRecords[progressRecords.length - 1];
     const first = progressRecords[0];
-    const latestWeight = latest.weight.toFixed(2);
-    const change = (latest.weight - first.weight).toFixed(2);
+    const latestWeight = kgToJin(latest.weight);
+    const change = latest.weight - first.weight;
     const arrow = change < 0 ? '↓' : change > 0 ? '↑' : '→';
     html += `
       <div class="card" style="margin-bottom:16px;cursor:pointer;" onclick="location.hash='#/weight'">
         <div class="flex-between">
           <div>
             <div class="font-sm text-secondary">⚖️ 体重记录</div>
-            <div style="font-size:22px;font-weight:700;color:var(--primary);">${latestWeight} kg</div>
-            <div class="font-sm text-secondary">${arrow} ${Math.abs(change)} kg · 点击查看详情</div>
+            <div style="font-size:22px;font-weight:700;color:var(--primary);">${latestWeight} 斤</div>
+            <div class="font-sm text-secondary">${arrow} ${kgToJin(Math.abs(change))} 斤 · 点击查看详情</div>
           </div>
           <div style="font-size:28px;color:var(--text-hint);">›</div>
         </div>
@@ -133,7 +133,7 @@ export async function renderProgress(params) {
             ${day.isToday ? '<span class="badge badge-primary" style="margin-left:6px;">今天</span>' : ''}
             <span class="font-sm text-secondary" style="margin-left:6px;">${day.dateStr.substring(5)}</span>
           </div>
-          ${day.weight ? `<span class="badge badge-accent">⚖️ ${day.weight}kg</span>` : ''}
+          ${day.weight ? `<span class="badge badge-accent">⚖️ ${kgToJin(day.weight)}斤</span>` : ''}
         </div>
 
         <!-- 训练打卡 -->
