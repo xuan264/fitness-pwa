@@ -5,62 +5,15 @@ import { fatLossPlan } from '../data/fat-loss-plan.js';
 import { icons, getDayOfWeek, getWeeklyParams } from '../js/utils.js';
 import { todayStr } from '../js/utils.js';
 
-// 减脂训练的周次/轮次独立计算
-// 使用独立的 startDate 存储，首次访问时自动设置
-let fatLossState = {
-  startDate: null,
-  currentWeek: 1,
-  currentRound: 1,
-  totalRounds: 4
-};
-
 // 训练日映射：周一→0, 周三→1, 周五→2
 const FAT_LOSS_DAY_MAP = { 1: 0, 3: 1, 5: 2 };
 
-async function initFatLossState() {
-  // 读取独立的开始日期
-  try {
-    const saved = await db.get('settings', 'fatLossStartDate');
-    if (saved?.value) {
-      fatLossState.startDate = saved.value;
-    } else {
-      // 首次访问：设为今天
-      const today = todayStr();
-      fatLossState.startDate = today;
-      await db.put('settings', { key: 'fatLossStartDate', value: today });
-      fatLossState.currentWeek = 1;
-      fatLossState.currentRound = 1;
-      return;
-    }
-  } catch (e) {
-    // 降级：用今天
-    fatLossState.startDate = todayStr();
-  }
-
-  // 计算当前周数和轮次
-  const start = new Date(fatLossState.startDate);
-  const now = new Date();
-  const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-  const totalWeeks = Math.floor(diffDays / 7) + 1;
-  fatLossState.currentRound = Math.floor((totalWeeks - 1) / 12) + 1;
-  fatLossState.currentWeek = ((totalWeeks - 1) % 12) + 1;
-}
-
-function getFatLossPhase() {
-  const week = fatLossState.currentWeek;
-  if (week <= 3) return 0;
-  if (week <= 6) return 1;
-  if (week <= 9) return 2;
-  return 3;
-}
-
 export async function renderFatLoss(params) {
-  await initFatLossState();
-
-  const week = fatLossState.currentWeek;
-  const round = fatLossState.currentRound;
-  const totalRounds = fatLossState.totalRounds;
-  const currentPhaseIdx = getFatLossPhase();
+  // 从 store 读取手动选择的轮/周（已在 app.js 初始化时从 IndexedDB 加载）
+  const week = store.state.fatLossWeek || 1;
+  const round = store.state.fatLossRound || 1;
+  const totalRounds = store.state.fatLossTotalRounds || 4;
+  const currentPhaseIdx = store.getFatLossPhase();
   const phase = fatLossPlan.phases[currentPhaseIdx];
   const dow = getDayOfWeek();
   const todayWorkoutIdx = FAT_LOSS_DAY_MAP[dow] ?? -1;
@@ -78,13 +31,23 @@ export async function renderFatLoss(params) {
 
   let html = `<div class="page">`;
 
-  // ===== 顶部进度条 =====
+  // ===== 顶部进度条 + 轮/周选择器 =====
+  const roundOpts = (sel) => Array.from({length: 4}, (_, i) => `<option value="${i+1}" ${sel === i+1 ? 'selected' : ''}>第${i+1}轮</option>`).join('');
+  const weekOpts = (sel) => Array.from({length: 12}, (_, i) => `<option value="${i+1}" ${sel === i+1 ? 'selected' : ''}>第${i+1}周</option>`).join('');
+
   html += `
     <div style="background:linear-gradient(135deg,#4A90D9,#2563EB);color:#fff;padding:16px;border-radius:20px;margin-bottom:16px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-8px;right:-8px;font-size:50px;opacity:0.15;">🫀</div>
-      <div style="font-size:13px;opacity:0.9;">⭐ 第${round}轮 / 共${totalRounds}轮 · 第${week}周/12周</div>
-      <div style="font-size:24px;font-weight:700;margin:4px 0;">${phase.name}</div>
-      <div style="font-size:14px;opacity:0.9;">🎯 ${fatLossPlan.meta.target}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px;position:relative;z-index:1;flex-wrap:wrap;">
+        <select onchange="flSetRound(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+          ${roundOpts(round)}
+        </select>
+        <select onchange="flSetWeek(this)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;outline:none;">
+          ${weekOpts(week)}
+        </select>
+        <span style="font-size:13px;opacity:0.9;">/ 共${totalRounds}轮12周 · ${phase.name}</span>
+      </div>
+      <div style="font-size:14px;opacity:0.9;margin-top:6px;">🎯 ${fatLossPlan.meta.target}</div>
       <div class="progress-bar" style="margin-top:10px;background:rgba(255,255,255,0.3);border-radius:10px;">
         <div class="fill" style="width:${(week/12)*100}%;background:#fff;border-radius:10px;"></div>
       </div>
@@ -427,7 +390,7 @@ export async function renderFatLoss(params) {
     } else {
       await db.add('workoutLog', {
         date: todayStr(),
-        week: fatLossState.currentWeek,
+        week: store.state.fatLossWeek || 1,
         phaseId: phase.id,
         workoutLabel: phase.workouts[todayWorkoutIdx].label,
         type: 'fat-loss'
@@ -435,6 +398,21 @@ export async function renderFatLoss(params) {
       window._needRefreshDashboard = true;
       alert('减脂训练打卡成功！🫀 坚持就是胜利！');
     }
+    await renderFatLoss();
+  };
+
+  // 减脂训练轮/周手动选择
+  window.flSetRound = async (sel) => {
+    const newRound = parseInt(sel.value);
+    const curWeek = store.state.fatLossWeek || 1;
+    await store.setFatLossWeek(curWeek, newRound);
+    await renderFatLoss();
+  };
+
+  window.flSetWeek = async (sel) => {
+    const newWeek = parseInt(sel.value);
+    const curRound = store.state.fatLossRound || 1;
+    await store.setFatLossWeek(newWeek, curRound);
     await renderFatLoss();
   };
 }
