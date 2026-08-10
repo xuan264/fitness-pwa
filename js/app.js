@@ -25,28 +25,38 @@ async function init() {
     }
 
     // 2. 读取用户设置
-    let profile, manualWeek, manualRound, flManualWeek, flManualRound;
+    let profile, manualWeek, manualRound, manualAnchor, flManualWeek, flManualRound, flManualAnchor;
     try {
       profile = await db.get('userProfile', 'profile');
       manualWeek = await db.get('settings', 'manualWeek');
       manualRound = await db.get('settings', 'manualRound');
+      manualAnchor = await db.get('settings', 'manualAnchorDate');
       flManualWeek = await db.get('settings', 'flManualWeek');
       flManualRound = await db.get('settings', 'flManualRound');
+      flManualAnchor = await db.get('settings', 'flManualAnchorDate');
     } catch (e) {
       console.warn('读取设置失败:', e);
     }
 
-    // 锻炼训练：手动选择的轮/周，默认第1轮第1周
+    // 设置手动起点（默认第1轮第1周），锚点不存在则留空
     store.setState({
-      currentWeek: manualWeek?.value || 1,
-      currentRound: manualRound?.value || 1
+      manualWeek: manualWeek?.value || 1,
+      manualRound: manualRound?.value || 1,
+      manualAnchorDate: manualAnchor?.value || null,
+      fatLossBaseWeek: flManualWeek?.value || 1,
+      fatLossBaseRound: flManualRound?.value || 1,
+      fatLossAnchorDate: flManualAnchor?.value || null
     });
 
-    // 减脂训练：手动选择的轮/周，默认第1轮第1周
-    store.setState({
-      fatLossWeek: flManualWeek?.value || 1,
-      fatLossRound: flManualRound?.value || 1
-    });
+    // 根据锚点自动推算当前实际周/轮（向前一段自然周自动递增）
+    store.recomputeWeek();
+    store.recomputeFatLossWeek();
+
+    // 定时重算：应用长时间开着跨过一周时，周次自动前进
+    setInterval(() => {
+      store.recomputeWeek();
+      store.recomputeFatLossWeek();
+    }, 60 * 1000);
 
     store.setState({ userProfile: profile || null });
   } catch (e) {
