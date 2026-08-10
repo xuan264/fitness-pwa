@@ -57,18 +57,18 @@ async function init() {
     // 根据锚点自动推算当前实际周/轮（向前一段自然周自动递增）
     store.recomputeWeek();
     store.recomputeFatLossWeek();
-    // 按当前周应用中国传统主题色
-    applyTheme(store.state.currentWeek);
+    // 按当前 (轮, 周) 应用每周主题色（每轮每周各不相同）
+    applyTheme(store.state.currentWeek, store.state.currentRound);
 
     // 定时重算：应用长时间开着跨过一周时，周次自动前进
     setInterval(() => {
       store.recomputeWeek();
       store.recomputeFatLossWeek();
-      applyTheme(store.state.currentWeek);
+      applyTheme(store.state.currentWeek, store.state.currentRound);
     }, 60 * 1000);
 
-    // 周次变化时（手动调整或跨周）同步切换主题色
-    store.subscribe((s) => applyTheme(s.currentWeek));
+    // 周次/轮次变化时（手动调整或跨周）同步切换主题色
+    store.subscribe((s) => applyTheme(s.currentWeek, s.currentRound));
 
     store.setState({ userProfile: profile || null });
   } catch (e) {
