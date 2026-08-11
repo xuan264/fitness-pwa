@@ -1,4 +1,5 @@
 // 全局状态管理 - 发布/订阅模式
+import { bnow, parseBJDate, bjDateStr, todayStr } from './utils.js';
 export const store = {
   state: {
     currentWeek: 1,        // 实际显示的周（自动推算）
@@ -41,17 +42,17 @@ export const store = {
     return this.state;
   },
 
-  // 计算两个日期之间隔了多少个自然周（以周一为界）
+  // 计算两个日期之间隔了多少个自然周（以周一为界，全部按北京时间）
   naturalWeeksBetween(startStr, nowDate) {
-    const start = new Date(startStr + 'T00:00:00');
-    const sDay = start.getDay(); // 0=周日
+    const start = parseBJDate(startStr);          // 北京该日 00:00 墙钟
+    const sDay = start.getUTCDay(); // 0=周日
     const sMonday = new Date(start);
-    sMonday.setDate(start.getDate() - (sDay === 0 ? 6 : sDay - 1));
-    sMonday.setHours(0, 0, 0, 0);
-    const nDay = nowDate.getDay();
+    sMonday.setUTCDate(start.getUTCDate() - (sDay === 0 ? 6 : sDay - 1));
+    sMonday.setUTCHours(0, 0, 0, 0);
+    const nDay = nowDate.getUTCDay();
     const nMonday = new Date(nowDate);
-    nMonday.setDate(nowDate.getDate() - (nDay === 0 ? 6 : nDay - 1));
-    nMonday.setHours(0, 0, 0, 0);
+    nMonday.setUTCDate(nowDate.getUTCDate() - (nDay === 0 ? 6 : nDay - 1));
+    nMonday.setUTCHours(0, 0, 0, 0);
     return Math.round((nMonday - sMonday) / (1000 * 60 * 60 * 24 * 7));
   },
 
@@ -64,7 +65,7 @@ export const store = {
       this.setState({ currentWeek: baseWeek, currentRound: baseRound });
       return;
     }
-    const elapsed = this.naturalWeeksBetween(anchor, new Date());
+    const elapsed = this.naturalWeeksBetween(anchor, bnow());
     let total = (baseRound - 1) * 12 + (baseWeek - 1) + elapsed;
     total = Math.max(0, Math.min(total, 4 * 12 - 1)); // 封顶 第4轮第12周
     const round = Math.floor(total / 12) + 1;
@@ -81,7 +82,7 @@ export const store = {
       this.setState({ fatLossWeek: baseWeek, fatLossRound: baseRound });
       return;
     }
-    const elapsed = this.naturalWeeksBetween(anchor, new Date());
+    const elapsed = this.naturalWeeksBetween(anchor, bnow());
     let total = (baseRound - 1) * 12 + (baseWeek - 1) + elapsed;
     total = Math.max(0, Math.min(total, 4 * 12 - 1));
     const round = Math.floor(total / 12) + 1;
@@ -110,7 +111,7 @@ export const store = {
   async setManualWeek(week, round) {
     week = Math.max(1, Math.min(12, week));
     round = Math.max(1, Math.min(4, round));
-    const anchor = new Date().toISOString().split('T')[0];
+    const anchor = todayStr();
     this.setState({ manualWeek: week, manualRound: round, manualAnchorDate: anchor });
     this.recomputeWeek();
     try {
@@ -127,7 +128,7 @@ export const store = {
   async setFatLossWeek(week, round) {
     week = Math.max(1, Math.min(12, week));
     round = Math.max(1, Math.min(4, round));
-    const anchor = new Date().toISOString().split('T')[0];
+    const anchor = todayStr();
     this.setState({ fatLossBaseWeek: week, fatLossBaseRound: round, fatLossAnchorDate: anchor });
     this.recomputeFatLossWeek();
     try {
@@ -144,7 +145,7 @@ export const store = {
   async setUnifiedWeek(week, round) {
     week = Math.max(1, Math.min(12, week));
     round = Math.max(1, Math.min(4, round));
-    const anchor = new Date().toISOString().split('T')[0];
+    const anchor = todayStr();
     this.setState({
       manualWeek: week, manualRound: round, manualAnchorDate: anchor,
       fatLossBaseWeek: week, fatLossBaseRound: round, fatLossAnchorDate: anchor
