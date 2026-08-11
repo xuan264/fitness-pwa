@@ -1,5 +1,5 @@
 // Service Worker - 离线缓存 + 通知 + 后台提醒检查
-const CACHE_NAME = 'fitness-pwa-v57';
+const CACHE_NAME = 'fitness-pwa-v58';
 const CACHE_URLS = [
   './',
   './index.html',
@@ -84,20 +84,29 @@ async function idbPut(storeName, value) {
   });
 }
 
+// 北京时间(GMT+8)助手（SW 无 ES import，内联实现）
+const BJ_OFFSET_SW = 8 * 3600 * 1000;
+function bjSw(d) { return new Date(d.getTime() + BJ_OFFSET_SW); }
+function bjDateStrSw(d) {
+  const t = bjSw(d);
+  return `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`;
+}
+
 // SW 中检查到期提醒并直接发通知
 async function checkAndFireReminders() {
   try {
     const now = new Date();
-    const todayKey = now.toISOString().split('T')[0];
-    const dayOfWeek = now.getDay(); // 0=周日, 1=周一...
+    const nowBJ = bjSw(now);
+    const todayKey = bjDateStrSw(now);
+    const dayOfWeek = nowBJ.getUTCDay(); // 0=周日, 1=周一...（按北京时间）
 
     const reminders = await idbGetAll('reminders');
     const enabled = reminders.filter(r => r.enabled && r.days.includes(dayOfWeek));
 
     for (const r of enabled) {
       const [h, m] = r.time.split(':').map(Number);
-      const scheduled = new Date();
-      scheduled.setHours(h, m, 0, 0);
+      const scheduled = bjSw(now); // 北京时间 h:m
+      scheduled.setUTCHours(h, m, 0, 0);
 
       // 当前时间 >= 提醒时间，且今天还没触发过
       if (now >= scheduled) {
