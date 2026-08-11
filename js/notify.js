@@ -1,7 +1,7 @@
 // 通知管理
 import { db } from './db.js';
 import { store } from './store.js';
-import { getDayOfWeek, icons } from './utils.js';
+import { getDayOfWeek, icons, bj, bjDateStr } from './utils.js';
 import { trainingPlan } from '../data/training-plan.js';
 import { recipes } from '../data/recipes.js';
 
@@ -94,15 +94,15 @@ class NotificationManager {
   scheduleNext(reminder) {
     const now = new Date();
     const [h, m] = reminder.time.split(':').map(Number);
-    let next = new Date();
-    next.setHours(h, m, 0, 0);
+    let next = bj(now); // 北京时间墙钟
+    next.setUTCHours(h, m, 0, 0);
 
     if (next <= now) {
-      next.setDate(next.getDate() + 1);
+      next.setUTCDate(next.getUTCDate() + 1);
     }
 
-    while (!reminder.days.includes(next.getDay())) {
-      next.setDate(next.getDate() + 1);
+    while (!reminder.days.includes(next.getUTCDay())) {
+      next.setUTCDate(next.getUTCDate() + 1);
     }
 
     const delay = next - now;
@@ -120,7 +120,8 @@ class NotificationManager {
 
   async checkDueReminders() {
     const now = new Date();
-    const todayKey = now.toISOString().split('T')[0];
+    const nowBJ = bj(now);
+    const todayKey = bjDateStr(now);
 
     let reminders;
     try {
@@ -132,11 +133,11 @@ class NotificationManager {
     const enabled = reminders.filter(r => r.enabled);
 
     for (const r of enabled) {
-      if (!r.days.includes(now.getDay())) continue;
+      if (!r.days.includes(nowBJ.getUTCDay())) continue;
 
       const [h, m] = r.time.split(':').map(Number);
-      const scheduled = new Date();
-      scheduled.setHours(h, m, 0, 0);
+      const scheduled = bj(now); // 北京时间 h:m
+      scheduled.setUTCHours(h, m, 0, 0);
 
       if (now >= scheduled) {
         const firedKey = `fired_${todayKey}_${r.id}`;
@@ -152,8 +153,8 @@ class NotificationManager {
   async fire(reminder) {
     const content = await this.getContent(reminder);
 
-    // 标记今天已触发
-    const todayKey = new Date().toISOString().split('T')[0];
+    // 标记今天已触发（北京时间）
+    const todayKey = bjDateStr(new Date());
     const firedKey = `fired_${todayKey}_${reminder.id}`;
     try {
       await db.put('settings', { key: firedKey, value: true });
