@@ -23,6 +23,9 @@ let cdCustomSec = null;
 let cdTimer = null;
 let cdEndTime = 0;
 let cdLastSpoken = -1;
+let cdPrep = false;           // 是否处于 3 秒准备倒计时
+let cdPrepTimer = null;
+let cdPrepLeft = 0;
 let cdAudio = null;
 let cdVoice = null;
 let cdFrom = 'training';
@@ -110,12 +113,62 @@ function cdPlayFinish() {
 // ===== 计时逻辑 =====
 function cdStart() {
   cdEnsureAudio();
-  if (cdRunning) return;
+  if (cdRunning || cdPrep) return;
   if (cdRemaining <= 0) cdRemaining = cdTotal;
+  // 全新开始（停在满时长，而非从暂停续接）先走 3 秒准备倒计时
+  const fresh = cdRemaining >= cdTotal;
+  if (fresh) { cdEnterPrep(); return; }
+  cdBeginCountdown();
+}
+// 3 秒准备倒计时：3 → 2 → 1，每秒一声提示，再正式开始
+function cdEnterPrep() {
+  cdPrep = true;
+  cdPrepLeft = 3;
+  cdRemaining = cdTotal;     // 环保持满
+  cdLastSpoken = -1;
+  cdUpdateDisplayPrep();
+  cdUpdateControls();
+  cdPlayPrepCue();
+  cdPrepTimer = setInterval(() => {
+    cdPrepLeft -= 1;
+    if (cdPrepLeft > 0) {
+      cdUpdateDisplayPrep();
+      cdPlayPrepCue();
+    } else {
+      if (cdPrepTimer) clearInterval(cdPrepTimer);
+      cdPrepTimer = null;
+      cdPrep = false;
+      cdBeginCountdown();
+    }
+  }, 1000);
+}
+function cdUpdateDisplayPrep() {
+  const t = document.getElementById('cd-time');
+  const status = document.getElementById('cd-status');
+  const ring = document.getElementById('cd-ring');
+  if (t) t.textContent = String(cdPrepLeft);
+  if (status) status.textContent = '准备…';
+  if (ring) ring.style.strokeDashoffset = '0'; // 满环
+}
+function cdPlayPrepCue() {
+  if (cdMode === 'mute') return;
+  if (cdMode === 'count') cdSpeak(String(cdPrepLeft));
+  else cdBeep(880, 90, 'sine', 0.2);
+}
+// 正式开始（跳过准备）
+function cdBeginCountdown() {
   cdRunning = true;
   cdLastSpoken = -1;
   cdEndTime = Date.now() + cdRemaining * 1000;
   cdTimer = setInterval(cdTick, 200);
+  cdUpdateControls();
+}
+function cdCancelPrep() {
+  cdPrep = false;
+  if (cdPrepTimer) clearInterval(cdPrepTimer);
+  cdPrepTimer = null;
+  cdRemaining = cdTotal;
+  cdUpdateDisplay(cdRemaining);
   cdUpdateControls();
 }
 function cdTick() {
@@ -129,6 +182,7 @@ function cdTick() {
   }
 }
 function cdPause() {
+  if (cdPrep) { cdCancelPrep(); return; }
   if (!cdRunning) return;
   cdRunning = false;
   if (cdTimer) clearInterval(cdTimer);
@@ -136,6 +190,7 @@ function cdPause() {
   cdUpdateControls();
 }
 function cdReset() {
+  if (cdPrep) { cdCancelPrep(); return; }
   cdPause();
   cdRemaining = cdTotal;
   cdUpdateDisplay(cdRemaining);
@@ -152,8 +207,11 @@ function cdFinish() {
 }
 function cdStopAll() {
   if (cdTimer) clearInterval(cdTimer);
+  if (cdPrepTimer) clearInterval(cdPrepTimer);
   cdTimer = null;
+  cdPrepTimer = null;
   cdRunning = false;
+  cdPrep = false;
   if ('speechSynthesis' in window) speechSynthesis.cancel();
 }
 
@@ -183,6 +241,13 @@ function cdUpdateControls(finished = false) {
   const startBtn = document.getElementById('cd-start');
   const pauseBtn = document.getElementById('cd-pause');
   const resetBtn = document.getElementById('cd-reset');
+  // 准备倒计时期间隐藏全部控制按钮，圆环即控制器
+  if (cdPrep) {
+    if (startBtn) startBtn.style.display = 'none';
+    if (pauseBtn) pauseBtn.style.display = 'none';
+    if (resetBtn) resetBtn.style.display = 'none';
+    return;
+  }
   if (startBtn) startBtn.style.display = (cdRunning || finished) ? 'none' : 'inline-block';
   if (pauseBtn) pauseBtn.style.display = cdRunning ? 'inline-block' : 'none';
   if (resetBtn) resetBtn.style.display = (cdRunning || cdRemaining < cdTotal || finished) ? 'inline-block' : 'none';
@@ -251,7 +316,7 @@ window.cdEditDuration = () => {
   }
   ed.style.display = willShow ? 'block' : 'none';
 };
-window.cdToggle = () => { if (cdRunning) cdPause(); else cdStart(); };
+window.cdToggle = () => { if (cdRunning) cdPause(); else if (cdPrep) cdCancelPrep(); else cdStart(); };
 window.cdStart = () => cdStart();
 window.cdPause = () => cdPause();
 window.cdReset = () => cdReset();
@@ -308,7 +373,7 @@ export async function renderCountdown(params) {
         <div id="cd-status" class="font-sm text-secondary" style="margin-top:2px;">准备就绪</div>
       </div>
     </div>
-    <div class="font-sm text-hint" style="text-align:center;margin-top:6px;">点击圆环开始/暂停 · 点击时间调整时长</div>
+    <div class="font-sm text-hint" style="text-align:center;margin-top:6px;">点击圆环开始/暂停 · 点击时间调整时长 · 开始后 3 秒准备</div>
   `;
 
   // 滑动自定义时长（点时间后展开）
