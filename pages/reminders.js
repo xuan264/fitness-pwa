@@ -1,7 +1,7 @@
 // 提醒设置页面
 import { db } from '../js/db.js';
 import { notify } from '../js/notify.js';
-import { icons, getWorkoutIndexForWeek } from '../js/utils.js';
+import { icons, getWorkoutIndexForWeek, bj, bjDateStr, todayStr } from '../js/utils.js';
 import { store } from '../js/store.js';
 import { trainingPlan } from '../data/training-plan.js';
 
@@ -340,9 +340,10 @@ export async function renderReminders(params) {
     let log = [];
 
     const now = new Date();
-    const todayKey = now.toISOString().split('T')[0];
-    const dayOfWeek = now.getDay();
-    log.push('当前: ' + now.toTimeString().substring(0, 8) + ' 周' + dayOfWeek);
+    const nowBJ = bj(now);
+    const todayKey = bjDateStr(now);
+    const dayOfWeek = nowBJ.getUTCDay();
+    log.push('当前(北京): ' + now.toTimeString().substring(0, 8) + ' 周' + dayOfWeek);
 
     let reminders;
     try {
@@ -362,8 +363,8 @@ export async function renderReminders(params) {
         continue;
       }
       const [h, m] = r.time.split(':').map(Number);
-      const scheduled = new Date();
-      scheduled.setHours(h, m, 0, 0);
+      const scheduled = bj(now); // 北京时间 h:m
+      scheduled.setUTCHours(h, m, 0, 0);
 
       if (now >= scheduled) {
         const firedKey = `fired_${todayKey}_${r.id}`;
@@ -390,7 +391,7 @@ export async function renderReminders(params) {
       const json = JSON.stringify(exportObj, null, 2);
       const blob = new Blob([json], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const dateStr = new Date().toISOString().split('T')[0];
+      const dateStr = todayStr();
       const a = document.createElement('a');
       a.href = url;
       a.download = `健身数据备份_${dateStr}.json`;
