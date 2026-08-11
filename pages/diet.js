@@ -3,7 +3,7 @@ import { store } from '../js/store.js';
 import { db } from '../js/db.js';
 import { recipes } from '../data/recipes.js';
 import { trainingPlan } from '../data/training-plan.js';
-import { icons, getDayOfWeek, getDayName, getWorkoutIndexForWeek, todayStr } from '../js/utils.js';
+import { icons, getDayOfWeek, getDayName, getWorkoutIndexForWeek, dateStr } from '../js/utils.js';
 
 let selectedDay = getDayOfWeek();
 let viewWeek = null; // null=当前周，否则为查看的周数
@@ -221,13 +221,14 @@ export async function renderDiet(params) {
   window.scrollTo(0, scrollY);
 
   window.markMealDone = async (mealId, mealType, mealName) => {
-    const logs = await db.getByIndex('mealLog', 'date', todayStr());
+    const selDate = getSelectedMealDate();
+    const logs = await db.getByIndex('mealLog', 'date', selDate);
     const exists = logs.find(l => l.recipeId === mealId);
     if (exists) {
       await db.delete('mealLog', exists.id);
     } else {
       await db.add('mealLog', {
-        date: todayStr(),
+        date: selDate,
         mealType,
         recipeId: mealId,
         mealName
@@ -411,7 +412,31 @@ function renderShoppingList(menus, isNextWeek) {
   return html;
 }
 
+// 计算当前所选“星期几”对应的真实日历日期（落在当前计划周，基于锚点推算）
+function getSelectedMealDate() {
+  const dow = selectedDay;                 // 1=周一 ... 7=周日
+  const planWeek = viewWeek || store.state.currentWeek || 1;  // 以当前"查看周"为准（用户可能切到别的周）
+  const baseWeek = store.state.manualWeek || 1;
+  const anchor = store.state.manualAnchorDate;
+  let monday;
+  if (anchor) {
+    const base = new Date(anchor + 'T00:00:00');
+    const bd = base.getDay();
+    const off = (bd === 0 ? -6 : 1 - bd);
+    monday = new Date(base); monday.setDate(base.getDate() + off); monday.setHours(0, 0, 0, 0);
+    monday.setDate(monday.getDate() + (planWeek - baseWeek) * 7);
+  } else {
+    const now = new Date();
+    const d = now.getDay();
+    const off = (d === 0 ? -6 : 1 - d);
+    monday = new Date(now); monday.setDate(now.getDate() + off); monday.setHours(0, 0, 0, 0);
+  }
+  const target = new Date(monday);
+  target.setDate(monday.getDate() + (dow - 1));
+  return dateStr(target);
+}
+
 async function checkMealCompleted(mealId) {
-  const logs = await db.getByIndex('mealLog', 'date', todayStr());
+  const logs = await db.getByIndex('mealLog', 'date', getSelectedMealDate());
   return logs.some(l => l.recipeId === mealId);
 }
