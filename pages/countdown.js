@@ -283,7 +283,7 @@ window.cdSelectPreset = (sec) => {
   cdUpdateControls();
   // 选中预设时收起滑动条
   const ed = document.getElementById('cd-edit');
-  if (ed) ed.style.display = 'none';
+  if (ed) ed.classList.remove('open');
 };
 window.cdSelectSound = (m) => {
   cdMode = m;
@@ -308,13 +308,13 @@ window.cdEditDuration = () => {
   const sl = document.getElementById('cd-slider');
   if (!ed || !sl) return;
   cdPause();
-  const willShow = ed.style.display === 'none';
+  const willShow = !ed.classList.contains('open');
   if (willShow) {
     sl.value = String(Math.min(600, Math.max(5, cdTotal)));
     const val = document.getElementById('cd-slider-val');
     if (val) val.textContent = cdFmt(cdTotal);
   }
-  ed.style.display = willShow ? 'block' : 'none';
+  ed.classList.toggle('open', willShow);
 };
 window.cdToggle = () => { if (cdRunning) cdPause(); else if (cdPrep) cdCancelPrep(); else cdStart(); };
 window.cdStart = () => cdStart();
@@ -369,18 +369,20 @@ export async function renderCountdown(params) {
                 stroke-dasharray="${RING_C.toFixed(2)}" stroke-dashoffset="0"/>
       </svg>
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-        <div id="cd-time" onclick="event.stopPropagation(); cdEditDuration()" style="font-size:42px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px;cursor:pointer;padding:0 8px;">${cdFmt(cdRemaining)}</div>
+        <div id="cd-time" onclick="event.stopPropagation(); cdEditDuration()" style="font-size:50px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px;cursor:pointer;padding:0 8px;">${cdFmt(cdRemaining)}</div>
         <div id="cd-status" class="font-sm text-secondary" style="margin-top:2px;">准备就绪</div>
       </div>
     </div>
     <div class="font-sm text-hint" style="text-align:center;margin-top:6px;">点击圆环开始/暂停 · 点击时间调整时长 · 开始后 3 秒准备</div>
   `;
 
-  // 滑动自定义时长（点时间后展开）
+  // 滑动自定义时长（点时间后展开）。外层槽位高度恒定，开合只切透明度，避免整页重新居中导致圆环跳动
   html += `
-    <div id="cd-edit" style="display:none;width:240px;margin:10px auto 0;">
-      <input id="cd-slider" class="cd-range" type="range" min="5" max="600" step="5" value="${Math.min(600, Math.max(5, cdTotal))}" style="width:100%;" oninput="cdSlider(this.value)">
-      <div style="text-align:center;font-size:13px;color:var(--text-secondary);margin-top:4px;"><span id="cd-slider-val">${cdFmt(cdTotal)}</span> · 拖动调整</div>
+    <div id="cd-edit-slot" class="cd-edit-slot">
+      <div id="cd-edit" class="cd-edit">
+        <input id="cd-slider" class="cd-range" type="range" min="5" max="600" step="5" value="${Math.min(600, Math.max(5, cdTotal))}" style="width:100%;" oninput="cdSlider(this.value)">
+        <div class="cd-edit-label"><span id="cd-slider-val">${cdFmt(cdTotal)}</span> · 拖动调整</div>
+      </div>
     </div>
   `;
 
