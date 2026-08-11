@@ -54,6 +54,15 @@ export async function renderFatLoss(params) {
     </div>
   `;
 
+  // ===== 倒计时胶囊 =====
+  html += `
+    <a href="#/countdown?from=fat-loss" style="display:flex;justify-content:center;margin-bottom:16px;text-decoration:none;">
+      <span style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4A90D9,#2563EB);color:#fff;border:none;border-radius:999px;padding:11px 26px;font-size:15px;font-weight:600;box-shadow:0 4px 14px rgba(37,99,235,0.35);">
+        <span style="font-size:18px;">⏱️</span> 减脂倒计时
+      </span>
+    </a>
+  `;
+
   // ===== 减脂目标提示卡 =====
   html += `
     <div class="card" style="margin-bottom:16px;border-left:4px solid #4A90D9;background:linear-gradient(135deg,#EBF5FF,var(--surface));">
