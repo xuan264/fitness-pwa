@@ -184,6 +184,7 @@ body {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  white-space: nowrap;
   transition: all .15s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -197,6 +198,72 @@ body {
 .cd-pill.rest.active {
   background: linear-gradient(135deg, #4A90D9, #2563EB);
   box-shadow: 0 3px 10px rgba(37,99,235,0.32);
+}
+
+/* ===== 倒计时整页（固定、不滚动、居中） ===== */
+.cd-page {
+  height: calc(100vh - var(--nav-height) - var(--safe-bottom) - 48px);
+  height: calc(100dvh - var(--nav-height) - var(--safe-bottom) - 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 8px;
+  overflow: hidden;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px !important;
+}
+/* 矮屏（小手机）进一步压缩，保证整页不溢出、不滚动 */
+@media (max-height: 740px) {
+  .cd-page { gap: 4px; }
+  .cd-page #cd-ring-wrap { width: 150px !important; height: 150px !important; }
+  .cd-page #cd-time { font-size: 34px !important; }
+  .cd-page .card { padding: 8px 12px; }
+  .cd-page .card-title { margin-bottom: 8px; font-size: 14px; }
+  .cd-page .cd-pill { padding: 7px 12px; font-size: 13px; }
+  .cd-page .font-sm.text-hint { display: none; }
+  .cd-page > div:first-child { margin-bottom: 0 !important; }
+}
+/* 进入倒计时页面时锁死整页滚动 */
+body.cd-lock { overflow: hidden; height: 100vh; }
+
+/* 整页内的卡片更紧凑，确保小屏也不溢出 */
+.cd-page .card { margin: 0 !important; padding: 12px 14px; }
+.cd-page #cd-ring-wrap { width: 200px; height: 200px; margin-top: 0; margin-bottom: 0; flex-shrink: 0; }
+.cd-page > div { flex-shrink: 1; }
+
+/* ===== 倒计时滑动条 ===== */
+.cd-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--divider);
+  outline: none;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.cd-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary-dark);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+.cd-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary-dark);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
 }
 
 /* ===== 进度条 ===== */
