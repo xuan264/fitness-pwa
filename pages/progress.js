@@ -47,7 +47,10 @@ export async function renderProgress(params) {
     const mealDetails = [];
     const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
     const mealLabels = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', snack: '加餐' };
+    // 休息日没有加餐（与饮食页、日历一致）
+    const isTrainingDay = todayWorkoutIdx >= 0;
     mealTypes.forEach(mt => {
+      if (mt === 'snack' && !isTrainingDay) return;
       if (dayMenu && dayMenu.meals[mt]) {
         const done = meals.some(m => m.mealType === mt);
         mealDetails.push({
