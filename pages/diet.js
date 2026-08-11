@@ -3,7 +3,7 @@ import { store } from '../js/store.js';
 import { db } from '../js/db.js';
 import { recipes } from '../data/recipes.js';
 import { trainingPlan } from '../data/training-plan.js';
-import { icons, getDayOfWeek, getDayName, getWorkoutIndexForWeek, dateStr } from '../js/utils.js';
+import { icons, getDayOfWeek, getDayName, getWorkoutIndexForWeek, bjDateStr, bnow, parseBJDate } from '../js/utils.js';
 
 let selectedDay = getDayOfWeek();
 let viewWeek = null; // null=当前周，否则为查看的周数
@@ -420,20 +420,20 @@ function getSelectedMealDate() {
   const anchor = store.state.manualAnchorDate;
   let monday;
   if (anchor) {
-    const base = new Date(anchor + 'T00:00:00');
-    const bd = base.getDay();
+    const base = parseBJDate(anchor);      // 北京该日 00:00 墙钟
+    const bd = base.getUTCDay();
     const off = (bd === 0 ? -6 : 1 - bd);
-    monday = new Date(base); monday.setDate(base.getDate() + off); monday.setHours(0, 0, 0, 0);
-    monday.setDate(monday.getDate() + (planWeek - baseWeek) * 7);
+    monday = new Date(base); monday.setUTCDate(base.getUTCDate() + off); monday.setUTCHours(0, 0, 0, 0);
+    monday.setUTCDate(monday.getUTCDate() + (planWeek - baseWeek) * 7);
   } else {
-    const now = new Date();
-    const d = now.getDay();
+    const now = bnow();                    // 北京当前时刻
+    const d = now.getUTCDay();
     const off = (d === 0 ? -6 : 1 - d);
-    monday = new Date(now); monday.setDate(now.getDate() + off); monday.setHours(0, 0, 0, 0);
+    monday = new Date(now); monday.setUTCDate(now.getUTCDate() + off); monday.setUTCHours(0, 0, 0, 0);
   }
   const target = new Date(monday);
-  target.setDate(monday.getDate() + (dow - 1));
-  return dateStr(target);
+  target.setUTCDate(monday.getUTCDate() + (dow - 1));
+  return bjDateStr(target);                // 北京墙钟 Date -> YYYY-MM-DD
 }
 
 async function checkMealCompleted(mealId) {
