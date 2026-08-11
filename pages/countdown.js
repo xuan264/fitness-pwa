@@ -20,6 +20,7 @@ let cdRemaining = 60;
 let cdRunning = false;
 let cdMode = 'beat';          // 'beat' 节拍音乐 | 'count' 数数 | 'mute' 静音
 let cdCustomSec = null;
+let cdStepSec = 15;          // 步进按钮的步长（秒）
 let cdTimer = null;
 let cdEndTime = 0;
 let cdLastSpoken = -1;
@@ -38,12 +39,13 @@ function cdLoadPrefs() {
     const p = JSON.parse(localStorage.getItem('xuan_countdown_prefs') || '{}');
     if (p.duration && p.duration > 0) cdTotal = p.duration;
     if (p.sound && ['beat', 'count', 'mute'].includes(p.sound)) cdMode = p.sound;
+    if (p.step && p.step > 0) cdStepSec = p.step;
   } catch (e) {}
   cdCustomSec = CD_PRESETS.find(p => p.sec === cdTotal) ? null : cdTotal;
   cdRemaining = cdTotal;
 }
 function cdSavePrefs() {
-  try { localStorage.setItem('xuan_countdown_prefs', JSON.stringify({ duration: cdTotal, sound: cdMode })); } catch (e) {}
+  try { localStorage.setItem('xuan_countdown_prefs', JSON.stringify({ duration: cdTotal, sound: cdMode, step: cdStepSec })); } catch (e) {}
 }
 
 // ===== 音频引擎 =====
@@ -290,29 +292,33 @@ window.cdSelectSound = (m) => {
   cdSavePrefs();
   cdRenderSounds();
 };
-window.cdSlider = (v) => {
-  const sec = parseInt(v, 10) || 5;
+window.cdStep = (dir) => {
   cdPause();
-  cdTotal = sec;
-  cdCustomSec = sec;
-  cdRemaining = sec;
+  let v = cdTotal + dir * cdStepSec;
+  if (v < 5) v = 5;
+  if (v > 600) v = 600;
+  cdTotal = v; cdCustomSec = v; cdRemaining = v;
   cdSavePrefs();
   cdRenderPresets();
-  cdUpdateDisplay(cdRemaining);
+  cdUpdateDisplay(v);
   cdUpdateControls();
-  const val = document.getElementById('cd-slider-val');
-  if (val) val.textContent = cdFmt(sec);
+  const sv = document.getElementById('cd-step-val');
+  if (sv) sv.textContent = cdFmt(v);
+};
+window.cdSetStep = (sec) => {
+  cdStepSec = sec;
+  cdSavePrefs();
+  const box = document.getElementById('cd-step-steps');
+  if (box) [...box.children].forEach(b => b.classList.toggle('active', Number(b.getAttribute('data-step')) === sec));
 };
 window.cdEditDuration = () => {
   const ed = document.getElementById('cd-edit');
-  const sl = document.getElementById('cd-slider');
-  if (!ed || !sl) return;
+  if (!ed) return;
   cdPause();
   const willShow = !ed.classList.contains('open');
   if (willShow) {
-    sl.value = String(Math.min(600, Math.max(5, cdTotal)));
-    const val = document.getElementById('cd-slider-val');
-    if (val) val.textContent = cdFmt(cdTotal);
+    const sv = document.getElementById('cd-step-val');
+    if (sv) sv.textContent = cdFmt(cdTotal);
   }
   ed.classList.toggle('open', willShow);
 };
@@ -373,15 +379,20 @@ export async function renderCountdown(params) {
         <div id="cd-status" class="font-sm text-secondary" style="margin-top:2px;">准备就绪</div>
       </div>
     </div>
-    <div class="font-sm text-hint" style="text-align:center;margin-top:6px;">点击圆环开始/暂停 · 点击时间调整时长 · 开始后 3 秒准备</div>
   `;
 
-  // 滑动自定义时长（点时间后展开）。外层槽位高度恒定，开合只切透明度，避免整页重新居中导致圆环跳动
+  // 自定义时长：步进按钮（点时间后展开）。外层槽位高度恒定，开合只切透明度，避免整页重新居中导致圆环跳动
   html += `
     <div id="cd-edit-slot" class="cd-edit-slot">
       <div id="cd-edit" class="cd-edit">
-        <input id="cd-slider" class="cd-range" type="range" min="5" max="600" step="5" value="${Math.min(600, Math.max(5, cdTotal))}" style="width:100%;" oninput="cdSlider(this.value)">
-        <div class="cd-edit-label"><span id="cd-slider-val">${cdFmt(cdTotal)}</span> · 拖动调整</div>
+        <div class="cd-step-row">
+          <button class="cd-step-btn" onclick="cdStep(-1)" aria-label="减少时长">−</button>
+          <div class="cd-step-val" id="cd-step-val">${cdFmt(cdTotal)}</div>
+          <button class="cd-step-btn" onclick="cdStep(1)" aria-label="增加时长">+</button>
+        </div>
+        <div class="cd-step-steps" id="cd-step-steps">
+          ${[5,15,30,60].map(s => `<button class="cd-pill cd-step-pill${s===cdStepSec?' active':''}" data-step="${s}" onclick="cdSetStep(${s})">${s>=60?'1分':s+'秒'}</button>`).join('')}
+        </div>
       </div>
     </div>
   `;
@@ -399,7 +410,7 @@ export async function renderCountdown(params) {
     <div class="card" style="margin-bottom:14px;">
       <div class="card-title">🔊 倒计时声音</div>
       <div id="cd-sounds" style="display:flex;gap:8px;flex-wrap:nowrap;"></div>
-      <div class="font-sm text-secondary" style="margin-top:8px;">节拍：每秒蜂鸣，最后3秒提速；数数：语音逐秒报数。</div>
+      <div class="font-sm text-secondary cd-sound-desc" style="margin-top:8px;">节拍：每秒蜂鸣，最后3秒提速；数数：语音逐秒报数。</div>
     </div>
   `;
 
