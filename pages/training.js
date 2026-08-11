@@ -29,7 +29,7 @@ export async function renderTraining(params) {
 
   // ===== 顶部进度条 =====
   html += `
-    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:16px;position:relative;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:16px;border-radius:20px;margin-bottom:16px;position:relative;overflow:hidden;text-align:center;">
       <div style="position:absolute;top:-8px;right:-8px;font-size:50px;opacity:0.15;">🎯</div>
       <div style="font-size:13px;opacity:0.9;">⭐ 第${round}轮 / 共${totalRounds}轮 · 第${week}周/12周</div>
       <div style="font-size:24px;font-weight:700;margin:4px 0;">${phase.name}</div>
