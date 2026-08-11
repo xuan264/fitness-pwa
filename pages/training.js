@@ -40,6 +40,15 @@ export async function renderTraining(params) {
     </div>
   `;
 
+  // ===== 倒计时胶囊 =====
+  html += `
+    <a href="#/countdown?from=training" style="display:flex;justify-content:center;margin-bottom:16px;text-decoration:none;">
+      <span style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FF9A8B,#FF6B6B);color:#fff;border:none;border-radius:999px;padding:11px 26px;font-size:15px;font-weight:600;box-shadow:0 4px 14px rgba(255,107,107,0.35);">
+        <span style="font-size:18px;">⏱️</span> 训练倒计时
+      </span>
+    </a>
+  `;
+
   // ===== 今日训练（最显眼区域）=====
   if (todayWorkoutIdx >= 0 && phase.workouts[todayWorkoutIdx]) {
     const workout = phase.workouts[todayWorkoutIdx];
