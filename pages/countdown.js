@@ -401,14 +401,7 @@ export async function renderCountdown(params) {
     </div>
   `;
 
-  // 控制按钮
-  html += `
-    <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="cd-start" class="btn btn-primary" style="flex:1;max-width:160px;font-size:16px;padding:14px;" onclick="cdStart()">▶ 开始</button>
-      <button id="cd-pause" class="btn btn-accent" style="flex:1;max-width:160px;font-size:16px;padding:14px;display:none;" onclick="cdPause()">⏸ 暂停</button>
-      <button id="cd-reset" class="btn btn-outline" style="flex:1;max-width:160px;font-size:16px;padding:14px;display:none;" onclick="cdReset()">↺ 重置</button>
-    </div>
-  `;
+  // 注：开始/暂停/续接/结束后重开 全部由圆环点击完成，故不再放置底部按钮
 
   html += `</div>`;
 
