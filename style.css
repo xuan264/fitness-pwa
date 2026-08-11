@@ -217,7 +217,7 @@ body {
 /* 矮屏（小手机）进一步压缩，保证整页不溢出、不滚动 */
 @media (max-height: 740px) {
   .cd-page { gap: 4px; }
-  .cd-page #cd-ring-wrap { width: 150px !important; height: 150px !important; }
+  .cd-page #cd-ring-wrap { width: 175px !important; height: 175px !important; }
   .cd-page #cd-time { font-size: 34px !important; }
   .cd-page .card { padding: 8px 12px; }
   .cd-page .card-title { margin-bottom: 8px; font-size: 14px; }
@@ -230,8 +230,14 @@ body.cd-lock { overflow: hidden; height: 100vh; }
 
 /* 整页内的卡片更紧凑，确保小屏也不溢出 */
 .cd-page .card { margin: 0 !important; padding: 12px 14px; }
-.cd-page #cd-ring-wrap { width: 200px; height: 200px; margin-top: 0; margin-bottom: 0; flex-shrink: 0; }
+.cd-page #cd-ring-wrap { width: 230px; height: 230px; max-width: 72vw; margin-top: 0; margin-bottom: 0; flex-shrink: 0; }
 .cd-page > div { flex-shrink: 1; }
+
+/* 编辑时长槽位：高度恒定，开合只切透明度，避免整页重新居中导致圆环跳动 */
+.cd-edit-slot { width: 250px; max-width: 82vw; height: 46px; margin: 4px auto 0; overflow: hidden; }
+.cd-edit { opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+.cd-edit.open { opacity: 1; pointer-events: auto; }
+.cd-edit-label { text-align: center; font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
 
 /* ===== 倒计时滑动条 ===== */
 .cd-range {
