@@ -1,7 +1,7 @@
 // 体重记录独立页面
 import { store } from '../js/store.js';
 import { db } from '../js/db.js';
-import { todayStr, formatDate, kgToJin, jinToKg } from '../js/utils.js';
+import { todayStr, formatDate, kgToJin, jinToKg, bnow, bjDateStr } from '../js/utils.js';
 
 export async function renderWeight(params) {
   const container = document.getElementById('page-container');
@@ -77,9 +77,9 @@ export async function renderWeight(params) {
 
   // ===== 最近体重（最多显示最近 15 天） =====
   if (progressRecords.length > 0) {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 14); // 含今天共 15 天
-    const cutoffStr = cutoff.toISOString().split('T')[0];
+    const cutoff = bnow();
+    cutoff.setUTCDate(cutoff.getUTCDate() - 14); // 含今天共 15 天（按北京时间）
+    const cutoffStr = bjDateStr(cutoff);
     const recent = progressRecords.filter(r => r.date >= cutoffStr).slice(-15).reverse();
 
     html += `
