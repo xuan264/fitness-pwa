@@ -1,23 +1,50 @@
 // 工具函数
-// 返回本地时区的 YYYY-MM-DD（避免 UTC 导致的跨天边界错位，导致打卡状态"第二天消失"）
+// 全站统一使用「北京时间(GMT+8)」作为时区基准：用户设备可能非北京时区（出国/设备设错），
+// 若按设备本地时间算"今天/本周/落库日期"会错位。模型：把任一时刻转成「以北京墙钟解读」的
+// Date（其 UTC 字段等于北京时间），统一用 getUTC* 读取；解析 "YYYY-MM-DD" 时当作北京当天 00:00。
+const BJ_OFFSET = 8 * 3600 * 1000;
+// 设备时刻 -> 北京墙钟 Date（UTC 字段 = 北京时间）
+export function bj(d = new Date()) { return new Date(d.getTime() + BJ_OFFSET); }
+// 别名：当前北京时刻
+export const bnow = bj;
+// 'YYYY-MM-DD' -> 北京该日 00:00 的北京墙钟 Date（UTC 字段 = 该日 y/m/d）
+export function parseBJDate(s) {
+  const [y, m, d] = String(s).split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
+// 格式化「北京墙钟 Date」为 YYYY-MM-DD（直接读 UTC 字段，不做时区换算）
+export function bjDateStr(d) {
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
+// 返回北京时间的 YYYY-MM-DD（today）
 export function todayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return bjDateStr(bj());
 }
 
-// 任意 Date 转本地 YYYY-MM-DD
+// 任意设备时刻 Date 转北京时间 YYYY-MM-DD
 export function dateStr(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return bjDateStr(bj(d));
 }
 
-export function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  return `${d.getMonth() + 1}月${d.getDate()}日`;
+export function formatDate(s) {
+  const d = parseBJDate(s);
+  return `${d.getUTCMonth() + 1}月${d.getUTCDate()}日`;
 }
 
 export function getDayOfWeek(date = new Date()) {
-  // 返回 1-7（周一到周日）
-  const day = date.getDay();
+  // 返回 1-7（周一到周日）。
+  // 无参=北京时间"今天"；传入某时刻 Date=该时刻的北京时间星期。
+  // 注意：传入"具体日历日"构造的 Date(年,月,日) 在极端时区(UTC+12+)下会因 +8h 跨日而错位，
+  // 那种场景请用 getDayOfWeekOfDate(年,月,日)。
+  const day = bj(date).getUTCDay();
+  return day === 0 ? 7 : day;
+}
+
+// 返回具体日历日(年,月,日)的星期 1-7，与时区完全无关（用于日历网格等明确日期）
+export function getDayOfWeekOfDate(y, m, d) {
+  const t = parseBJDate(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`);
+  const day = t.getUTCDay();
   return day === 0 ? 7 : day;
 }
 
