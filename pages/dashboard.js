@@ -5,7 +5,7 @@ import { trainingPlan } from '../data/training-plan.js';
 import { fatLossPlan } from '../data/fat-loss-plan.js';
 import { recipes } from '../data/recipes.js';
 import { renderBottomNav } from '../components/bottom-nav.js';
-import { icons, getDayOfWeek, getWorkoutIndexForWeek, getDayName, todayStr, kgToJin } from '../js/utils.js';
+import { icons, getDayOfWeek, getWorkoutIndexForWeek, getDayName, todayStr, kgToJin, bnow, bjDateStr } from '../js/utils.js';
 
 // 全局打卡刷新标记 - 其他页面打卡后设置，首页渲染时检查
 window._needRefreshDashboard = false;
@@ -46,14 +46,14 @@ export async function renderDashboard(params) {
   const todayMeals = await db.getByIndex('mealLog', 'date', todayStr());
   const progressRecords = (await db.getAll('progress')).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  // 本周训练统计（周一为一周开始，排除减脂训练）
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // 0=周日
+  // 本周训练统计（周一为一周开始，排除减脂训练）—— 按北京时间
+  const nowBJ = bnow();
+  const dayOfWeek = nowBJ.getUTCDay(); // 0=周日
   // 计算本周一日期：周日时往前推6天，其他天往前推 dayOfWeek-1 天
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-  monday.setHours(0, 0, 0, 0);
-  const mondayStr = monday.toISOString().split('T')[0];
+  const monday = new Date(nowBJ);
+  monday.setUTCDate(nowBJ.getUTCDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  monday.setUTCHours(0, 0, 0, 0);
+  const mondayStr = bjDateStr(monday);
   const allWorkouts = (await db.getAll('workoutLog')).filter(l => l.type !== 'fat-loss');
   // 用字符串比较避免时区问题：date >= 本周一
   const weekWorkouts = allWorkouts.filter(l => l.date >= mondayStr);
@@ -76,13 +76,12 @@ export async function renderDashboard(params) {
   const flPhase = fatLossPlan.phases[fatLossPhaseIdx];
   const flWeekCount = fatLossAllLogs.filter(l => l.date >= mondayStr).length;
 
-  // 今日日期
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const date = now.getDate();
+  // 今日日期（北京时间）
+  const month = nowBJ.getUTCMonth() + 1;
+  const date = nowBJ.getUTCDate();
   const dateStr = `${month}月${date}日`;
   const greetings = ['周日好呀～ 🌿', '周一加油！ 💪', '周二继续冲～ 🔥', '周三过半啦！ ⭐', '周四坚持住！ 🌈', '周五辛苦啦！ 🎉', '周六愉快～ 🍰'];
-  const greeting = greetings[now.getDay()];
+  const greeting = greetings[nowBJ.getUTCDay()];
 
   let html = `<div class="page">`;
 
