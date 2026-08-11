@@ -4,25 +4,25 @@ import { db } from '../js/db.js';
 import { trainingPlan } from '../data/training-plan.js';
 import { fatLossPlan } from '../data/fat-loss-plan.js';
 import { recipes } from '../data/recipes.js';
-import { getDayOfWeek, getDayName, getWorkoutIndexForWeek, todayStr, kgToJin } from '../js/utils.js';
+import { getDayOfWeekOfDate, getDayName, getWorkoutIndexForWeek, todayStr, kgToJin, bnow } from '../js/utils.js';
 
 // 模块级状态：当前查看的年月
 let viewYear, viewMonth;
 
 export async function renderCalendar(params) {
   const container = document.getElementById('page-container');
-  const now = new Date();
+  const now = bnow(); // 北京时间
 
   // 如果没有指定或跨年了，初始化为当月
   if (viewYear === undefined || viewMonth === undefined) {
-    viewYear = now.getFullYear();
-    viewMonth = now.getMonth();
+    viewYear = now.getUTCFullYear();
+    viewMonth = now.getUTCMonth();
   }
 
   const year = viewYear;
   const month = viewMonth;
-  const today = now.getDate();
-  const isCurrentMonth = (year === now.getFullYear() && month === now.getMonth());
+  const today = now.getUTCDate();
+  const isCurrentMonth = (year === now.getUTCFullYear() && month === now.getUTCMonth());
 
   const monthStart = new Date(year, month, 1);
   const monthEnd = new Date(year, month + 1, 0);
@@ -70,7 +70,7 @@ export async function renderCalendar(params) {
   // 与饮食页一致：getWorkoutIndexForWeek(dow, phase.split) >= 0 即训练日
   const plannedMealsForDate = (dateStr) => {
     const [Y, M, D] = dateStr.split('-').map(Number);
-    const idx = getWorkoutIndexForWeek(getDayOfWeek(new Date(Y, M - 1, D)), phase.split);
+    const idx = getWorkoutIndexForWeek(getDayOfWeekOfDate(Y, M, D), phase.split);
     return idx >= 0 ? 4 : 3;
   };
 
@@ -126,9 +126,8 @@ export async function renderCalendar(params) {
 
   // 日期格
   for (let d = 1; d <= daysInMonth; d++) {
-    const dateObj = new Date(year, month, d);
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dow = getDayOfWeek(dateObj);
+    const dow = getDayOfWeekOfDate(year, month + 1, d);
     const isToday = isCurrentMonth && d === today;
     const isFuture = isCurrentMonth && d > today;
 
@@ -211,8 +210,8 @@ export async function renderCalendar(params) {
     const fatLoss = fatLossByDate[dateStr];
     const meals = mealByDate[dateStr] || [];
     const weight = weightByDate[dateStr];
-    const dateObj = new Date(dateStr);
-    const dow = getDayOfWeek(dateObj);
+    const [cdY, cdM, cdD] = dateStr.split('-').map(Number);
+    const dow = getDayOfWeekOfDate(cdY, cdM, cdD);
     const dayMenu = recipes.getWeeklyMenus(store.state.currentWeek || 1, store.state.appMode).find(m => m.day === dow) || recipes.getWeeklyMenus(store.state.currentWeek || 1, store.state.appMode)[0];
 
     let detailHtml = `<div class="card"><div class="card-title">📋 ${dateStr} ${getDayName(dow)}</div>`;
