@@ -1,9 +1,12 @@
-// 食谱数据（家常减脂健身版 · v65d）
-// 设计目标（回归初心：家常、不花里胡哨、适合自己做饭）：
+// 食谱数据（家常减脂健身版 · v65f）
+// 设计目标（初心：家常、不花里胡哨、适合自己做饭）：
 //  - 减脂健身框架：足量蛋白 + 适量主食（也可用水果/坚果替代部分主食）+ 足量蔬菜
 //  - 烹饪以蒸、煮、凉拌、少油快炒、家常小炒为主，清淡少油
-//  - 全部为普通人家里随手能做的一日三餐；三文鱼（买鱼柳煎）、牛油果（切开即食）、藜麦（煮饭一样煮）属日常买来即做的食材，保留
-//  - 仅去除“豆腐脑”这类需要自己磨浆点卤、几乎不会在家自制的菜
+//  - “家常”硬标准：蔬菜店/菜场能买到、不需要复杂处理、不那么昂贵、烹饪方便
+//  - 据此剔除：豆腐脑（需自制）、三文鱼（贵、非菜场常见）、牛油果（偏贵、非菜场常见）、
+//    藜麦/奇亚籽（小众网红食材，多数人不熟悉也不常买）
+//  - 保留：鸡胸/鸡腿/瘦猪肉/牛肉、普通鱼/虾/蛤蜊、豆腐/豆浆、蛋奶、米面杂粮、各类常见蔬菜，
+//    以及健身常用的蛋白粉/蛋白棒
 //  - 每周 7 天不重样，相邻周不同，循环 8 周后再重复
 //  - 蛋白质/蔬菜种类丰富（香菇、蒜毫/蒜苗、油麦菜、秋葵、荷兰豆、紫甘蓝、木耳、海带…）
 
@@ -132,16 +135,6 @@ export const recipes = {
         ],
         steps: ["糙米煮熟", "鸡胸煮熟撕条", "西兰花焯水，拌饭捏团"],
         tips: "糙米GI低。"
-      },
-      {
-        mealType: "早餐", name: "牛油果蛋吐司", totalTime: "10分钟", calories: "约620大卡", protein: "约42g",
-        ingredients: [
-          { name: "全麦面包", amount: "2片", grams: "70g", fist: "0.5个拳头", protein: "6.3g", category: "carb" },
-          { name: "鸡蛋", amount: "3个", grams: "150g", fist: "0.8个手掌", protein: "18.9g", category: "protein" },
-          { name: "牛油果", amount: "半个", grams: "100g", fist: "0.3个拳头", protein: "2g", category: "fruit" }
-        ],
-        steps: ["面包烤脆", "鸡蛋水煮", "牛油果压泥涂面包"],
-        tips: "牛油果提供优质脂肪，切开即食。"
       }
     ],
 
@@ -295,16 +288,6 @@ export const recipes = {
         ],
         steps: ["豆腐海带同煮成汤", "少盐", "配米饭"],
         tips: "海带补碘，清淡。"
-      },
-      {
-        mealType: "午餐", name: "香煎三文鱼配芦笋藜麦", totalTime: "25分钟", calories: "约780大卡", protein: "约70g",
-        ingredients: [
-          { name: "三文鱼", amount: "200g", grams: "200g", fist: "0.7个手掌", protein: "42g", category: "protein" },
-          { name: "藜麦", amount: "80g生", grams: "80g", fist: "0.6个拳头", protein: "11g", category: "carb" },
-          { name: "芦笋", amount: "200g", grams: "200g", fist: "1个拳头", protein: "4.4g", category: "vegetable" }
-        ],
-        steps: ["藜麦煮熟", "三文鱼少油每面煎3分钟", "芦笋焯水摆盘"],
-        tips: "三文鱼买鱼柳煎即可，优质脂肪。"
       }
     ],
 
@@ -465,17 +448,6 @@ export const recipes = {
         ],
         steps: ["全麦面煮熟", "番茄炒出汁下肉丝鸡蛋", "浇面"],
         tips: "一碗面搞定晚餐。"
-      },
-      {
-        mealType: "晚餐", name: "三文鱼蔬菜卷", totalTime: "25分钟", calories: "约620大卡", protein: "约54g",
-        ingredients: [
-          { name: "三文鱼", amount: "150g", grams: "150g", fist: "0.5个手掌", protein: "31g", category: "protein" },
-          { name: "全麦饼", amount: "2张", grams: "100g", fist: "0.7个拳头", protein: "10g", category: "carb" },
-          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
-          { name: "紫甘蓝", amount: "120g", grams: "120g", fist: "0.6个拳头", protein: "1.9g", category: "vegetable" }
-        ],
-        steps: ["三文鱼微煎切条", "黄瓜紫甘蓝切丝", "卷饼"],
-        tips: "清爽适合晚餐，买来即做。"
       }
     ],
 
@@ -577,23 +549,13 @@ export const recipes = {
         tips: "植物蛋白+钙。"
       },
       {
-        mealType: "加餐（休息日）", name: "希腊酸奶+奇亚籽", totalTime: "3分钟", calories: "约320大卡", protein: "约30g",
+        mealType: "加餐（休息日）", name: "希腊酸奶+草莓", totalTime: "3分钟", calories: "约250大卡", protein: "约26g",
         ingredients: [
           { name: "希腊酸奶", amount: "250g", grams: "250g", fist: "0.7杯", protein: "25g", category: "protein" },
-          { name: "奇亚籽", amount: "15g", grams: "15g", fist: "—", protein: "2.6g", category: "vegetable" },
           { name: "草莓", amount: "120g", grams: "120g", fist: "0.6个拳头", protein: "0.8g", category: "fruit" }
         ],
-        steps: ["奇亚籽泡酸奶", "草莓摆上"],
-        tips: "奇亚籽补纤维。"
-      },
-      {
-        mealType: "加餐（休息日）", name: "虾仁+牛油果", totalTime: "8分钟", calories: "约300大卡", protein: "约28g",
-        ingredients: [
-          { name: "虾仁", amount: "100g", grams: "100g", fist: "0.4个手掌", protein: "19g", category: "protein" },
-          { name: "牛油果", amount: "半个", grams: "100g", fist: "0.3个拳头", protein: "2g", category: "fruit" }
-        ],
-        steps: ["虾仁煮熟", "牛油果切片撒黑胡椒"],
-        tips: "优质蛋白配好脂肪，懒人加餐。"
+        steps: ["草莓切块拌入酸奶"],
+        tips: "简单快手加餐。"
       }
     ]
   },
