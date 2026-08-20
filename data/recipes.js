@@ -1,13 +1,12 @@
-// 食谱数据（家常减脂健身版 · v65f）
+// 食谱数据（家常减脂健身版 · v65g）
 // 设计目标（初心：家常、不花里胡哨、适合自己做饭）：
 //  - 减脂健身框架：足量蛋白 + 适量主食（也可用水果/坚果替代部分主食）+ 足量蔬菜
 //  - 烹饪以蒸、煮、凉拌、少油快炒、家常小炒为主，清淡少油
 //  - “家常”硬标准：蔬菜店/菜场能买到、不需要复杂处理、不那么昂贵、烹饪方便
-//  - 据此剔除：豆腐脑（需自制）、三文鱼（贵、非菜场常见）、牛油果（偏贵、非菜场常见）、
-//    藜麦/奇亚籽（小众网红食材，多数人不熟悉也不常买）
-//  - 保留：鸡胸/鸡腿/瘦猪肉/牛肉、普通鱼/虾/蛤蜊、豆腐/豆浆、蛋奶、米面杂粮、各类常见蔬菜，
-//    以及健身常用的蛋白粉/蛋白棒
-//  - 每周 7 天不重样，相邻周不同，循环 8 周后再重复
+//  - 剔除：豆腐脑（需自制）、鸭胸（用户不认识）、藜麦/奇亚籽（小众网红，用户不认识）
+//  - 保留并允许：鸡胸/鸡腿/瘦猪肉/牛肉、普通鱼/虾/蛤蜊、豆腐/豆浆、蛋奶、米面杂粮、
+//    各类常见蔬菜、健身常用的蛋白粉/蛋白棒；三文鱼/牛油果按用户要求保留
+//  - 每周 7 天不重样；同一星期几在 8 周里绝不重样（种子化打乱，打破机械轮转）
 //  - 蛋白质/蔬菜种类丰富（香菇、蒜毫/蒜苗、油麦菜、秋葵、荷兰豆、紫甘蓝、木耳、海带…）
 
 export const recipes = {
@@ -135,6 +134,16 @@ export const recipes = {
         ],
         steps: ["糙米煮熟", "鸡胸煮熟撕条", "西兰花焯水，拌饭捏团"],
         tips: "糙米GI低。"
+      },
+      {
+        mealType: "早餐", name: "牛油果蛋吐司", totalTime: "10分钟", calories: "约620大卡", protein: "约42g",
+        ingredients: [
+          { name: "全麦面包", amount: "2片", grams: "70g", fist: "0.5个拳头", protein: "6.3g", category: "carb" },
+          { name: "鸡蛋", amount: "3个", grams: "150g", fist: "0.8个手掌", protein: "18.9g", category: "protein" },
+          { name: "牛油果", amount: "半个", grams: "100g", fist: "0.3个拳头", protein: "2g", category: "fruit" }
+        ],
+        steps: ["面包烤脆", "鸡蛋水煮", "牛油果压泥涂面包"],
+        tips: "牛油果提供优质脂肪，切开即食。"
       }
     ],
 
@@ -230,16 +239,6 @@ export const recipes = {
         tips: "汤鲜不需额外油。"
       },
       {
-        mealType: "午餐", name: "鸭胸炒彩椒", totalTime: "25分钟", calories: "约720大卡", protein: "约60g",
-        ingredients: [
-          { name: "鸭胸（去皮）", amount: "200g", grams: "200g", fist: "0.7个手掌", protein: "40g", category: "protein" },
-          { name: "米饭", amount: "1.5碗", grams: "熟250g", fist: "0.8个拳头", protein: "6.5g", category: "carb" },
-          { name: "红黄彩椒", amount: "2个", grams: "300g", fist: "1.5个拳头", protein: "3.6g", category: "vegetable" }
-        ],
-        steps: ["鸭胸去皮切薄片少油煎", "彩椒翻炒", "配米饭"],
-        tips: "去皮减脂。"
-      },
-      {
         mealType: "午餐", name: "清炖牛肉萝卜", totalTime: "35分钟", calories: "约760大卡", protein: "约60g",
         ingredients: [
           { name: "牛肉", amount: "200g", grams: "200g", fist: "0.8个手掌", protein: "42g", category: "protein" },
@@ -288,6 +287,16 @@ export const recipes = {
         ],
         steps: ["豆腐海带同煮成汤", "少盐", "配米饭"],
         tips: "海带补碘，清淡。"
+      },
+      {
+        mealType: "午餐", name: "香煎三文鱼配芦笋红薯", totalTime: "25分钟", calories: "约720大卡", protein: "约70g",
+        ingredients: [
+          { name: "三文鱼", amount: "200g", grams: "200g", fist: "0.7个手掌", protein: "42g", category: "protein" },
+          { name: "红薯", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "2.2g", category: "carb" },
+          { name: "芦笋", amount: "200g", grams: "200g", fist: "1个拳头", protein: "4.4g", category: "vegetable" }
+        ],
+        steps: ["红薯蒸熟", "三文鱼少油每面煎3分钟", "芦笋焯水摆盘"],
+        tips: "三文鱼买鱼柳煎即可，配红薯当主食。"
       }
     ],
 
@@ -407,16 +416,6 @@ export const recipes = {
         tips: "鲜味无需味精。"
       },
       {
-        mealType: "晚餐", name: "鸭胸炒韭菜配米饭", totalTime: "20分钟", calories: "约560大卡", protein: "约40g",
-        ingredients: [
-          { name: "鸭胸（去皮）", amount: "150g", grams: "150g", fist: "0.5个手掌", protein: "30g", category: "protein" },
-          { name: "米饭", amount: "1碗", grams: "熟200g", fist: "0.7个拳头", protein: "5.2g", category: "carb" },
-          { name: "韭菜", amount: "200g", grams: "200g", fist: "1个拳头", protein: "4.4g", category: "vegetable" }
-        ],
-        steps: ["鸭胸去皮切丝煎", "米饭煮熟", "韭菜快炒下鸭丝"],
-        tips: "韭菜炒肉丝最家常。"
-      },
-      {
         mealType: "晚餐", name: "金枪鱼蔬菜沙拉配全麦面包", totalTime: "15分钟", calories: "约620大卡", protein: "约56g",
         ingredients: [
           { name: "金枪鱼罐头", amount: "150g", grams: "150g", fist: "0.6个手掌", protein: "40g", category: "protein" },
@@ -448,6 +447,17 @@ export const recipes = {
         ],
         steps: ["全麦面煮熟", "番茄炒出汁下肉丝鸡蛋", "浇面"],
         tips: "一碗面搞定晚餐。"
+      },
+      {
+        mealType: "晚餐", name: "三文鱼蔬菜卷", totalTime: "25分钟", calories: "约620大卡", protein: "约54g",
+        ingredients: [
+          { name: "三文鱼", amount: "150g", grams: "150g", fist: "0.5个手掌", protein: "31g", category: "protein" },
+          { name: "全麦饼", amount: "2张", grams: "100g", fist: "0.7个拳头", protein: "10g", category: "carb" },
+          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "紫甘蓝", amount: "120g", grams: "120g", fist: "0.6个拳头", protein: "1.9g", category: "vegetable" }
+        ],
+        steps: ["三文鱼微煎切条", "黄瓜紫甘蓝切丝", "卷饼"],
+        tips: "清爽适合晚餐，买来即做。"
       }
     ],
 
@@ -556,27 +566,75 @@ export const recipes = {
         ],
         steps: ["草莓切块拌入酸奶"],
         tips: "简单快手加餐。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "虾仁+牛油果", totalTime: "8分钟", calories: "约300大卡", protein: "约28g",
+        ingredients: [
+          { name: "虾仁", amount: "100g", grams: "100g", fist: "0.4个手掌", protein: "19g", category: "protein" },
+          { name: "牛油果", amount: "半个", grams: "100g", fist: "0.3个拳头", protein: "2g", category: "fruit" }
+        ],
+        steps: ["虾仁煮熟", "牛油果切片撒黑胡椒"],
+        tips: "优质蛋白配好脂肪，懒人加餐。"
       }
     ]
   },
 
-  // ===== 由菜品池确定性生成某一周的菜单 =====
-  // 每周 7 天，每种餐型从池中取 7 道连续且不重复的菜；
-  // 不同周用不同偏移(步进7)，保证相邻周不同、且循环 8 周后才重复。
-  // 池长度 11 / 15 / 15 / 11 均与 STEP=7 互质，可保证 8 周各周完全不同。
+  // ===== 由菜品池确定性“打乱”生成某一周的菜单 =====
+  // 用固定种子的伪随机，把每餐型的菜打散分配到 8周×7天：
+  //  - 每周 7 天该餐型不重样
+  //  - 同一个星期几（如所有“周一”）在 8 周里绝不重样 → 看起来不规律、更“混乱”
+  //  - 种子固定 → 每次加载结果一致（可复现），不像纯随机那样每次刷新都变
+  _seedFrom(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  },
+  _mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  },
+  _ensureGrids() {
+    if (this.__grids) return this.__grids;
+    const types = ['breakfast', 'lunch', 'dinner', 'snack'];
+    const grids = {};
+    for (const t of types) {
+      const L = this.pools[t].length;
+      const rnd = this._mulberry32(this._seedFrom(t));
+      const colUsed = {};           // day -> Set(已用索引)
+      const grid = [];              // grid[week-1] = [该周每天索引]
+      for (let w = 1; w <= 8; w++) {
+        const rowUsed = new Set();
+        const row = [];
+        for (let d = 1; d <= 7; d++) {
+          const cset = colUsed[d] || (colUsed[d] = new Set());
+          const cands = [];
+          for (let i = 0; i < L; i++) if (!rowUsed.has(i) && !cset.has(i)) cands.push(i);
+          let pick;
+          if (cands.length) pick = cands[Math.floor(rnd() * cands.length)];
+          else { for (let i = 0; i < L; i++) if (!rowUsed.has(i)) { pick = i; break; } pick = pick === undefined ? 0 : pick; }
+          rowUsed.add(pick); cset.add(pick); row.push(pick);
+        }
+        grid.push(row);
+      }
+      grids[t] = grid;
+    }
+    this.__grids = grids;
+    return grids;
+  },
   _buildWeek(weekNum) {
     const types = ['breakfast', 'lunch', 'dinner', 'snack'];
-    const typeOffset = { breakfast: 0, lunch: 3, dinner: 6, snack: 9 };
-    const STEP = 7;
+    const grids = this._ensureGrids();
     const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
     const days = [];
     for (let d = 1; d <= 7; d++) {
       const meals = {};
       for (const t of types) {
         const pool = this.pools[t];
-        const L = pool.length;
-        const start = ((weekNum - 1) * STEP + typeOffset[t]) % L;
-        const idx = (start + (d - 1)) % L;
+        const idx = grids[t][weekNum - 1][d - 1];
         const base = pool[idx];
         meals[t] = { ...base, id: `w${weekNum}-d${d}-${t}`, mealType: base.mealType };
       }
