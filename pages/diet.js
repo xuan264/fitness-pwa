@@ -3,26 +3,10 @@ import { store } from '../js/store.js';
 import { db } from '../js/db.js';
 import { recipes } from '../data/recipes.js';
 import { trainingPlan } from '../data/training-plan.js';
-import { foodDatabase, swapDefaults } from '../data/food-database.js';
 import { icons, getDayOfWeek, getDayName, getWorkoutIndexForWeek, bjDateStr, bnow, parseBJDate } from '../js/utils.js';
 
 let selectedDay = getDayOfWeek();
 let viewWeek = null; // null=当前周，否则为查看的周数
-let currentMeals = null; // 当前渲染日的各餐（供食材替换弹窗查找）
-
-// ===== 食材替换（持久化到 localStorage）=====
-const SWAP_KEY = 'xuan_meal_swaps';
-const SWAP_CATS = ['protein', 'carb', 'vegetable', 'fruit'];
-function loadSwaps() { try { return JSON.parse(localStorage.getItem(SWAP_KEY) || '{}'); } catch (e) { return {}; } }
-function saveSwaps(o) { try { localStorage.setItem(SWAP_KEY, JSON.stringify(o)); } catch (e) {} }
-function isSwappable(cat) { return SWAP_CATS.includes(cat); }
-function parseGrams(s) { const m = String(s || '').match(/(\d+(?:\.\d+)?)/); return m ? parseFloat(m[1]) : 0; }
-// 应用已保存的替换，返回该餐最终食材数组
-function resolvedIngredients(meal) {
-  const swaps = loadSwaps();
-  const map = swaps[meal.id] || {};
-  return meal.ingredients.map((ing, idx) => map[idx] ? { ...map[idx] } : ing);
-}
 
 export async function renderDiet(params) {
   if (params.day) selectedDay = parseInt(params.day);
@@ -34,7 +18,6 @@ export async function renderDiet(params) {
   const week = viewWeek;
   const currentMenus = recipes.getWeeklyMenus(week, store.state.appMode);
   const dayMenu = currentMenus.find(m => m.day === selectedDay) || currentMenus[0];
-  currentMeals = dayMenu.meals;
 
   // 当天是否有训练（用于决定是否显示"训练后加餐"）
   const phase = trainingPlan.phases[store.getCurrentPhase()];
@@ -57,7 +40,7 @@ export async function renderDiet(params) {
   const isCurrentWeek = week === currentWeek;
   const weekLabel = isCurrentWeek ? `第${week}周食谱（本周）` : `第${week}周食谱`;
   const prevWeek = week > 1 ? week - 1 : 1;
-  const nextWeek = week < 4 ? week + 1 : 4;
+  const nextWeek = week < 8 ? week + 1 : 8;
   html += `
     <div class="card">
       <div class="flex-between mb-8">
@@ -66,8 +49,8 @@ export async function renderDiet(params) {
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
         <button onclick="switchDietWeek(${prevWeek})" class="btn btn-sm btn-outline" style="padding:4px 10px;cursor:pointer;${week <= 1 ? 'opacity:0.4;pointer-events:none;' : ''}">‹ 上一周</button>
-        <div style="flex:1;text-align:center;font-size:13px;color:var(--text-secondary);">第${week}周 / 共4周</div>
-        <button onclick="switchDietWeek(${nextWeek})" class="btn btn-sm btn-outline" style="padding:4px 10px;cursor:pointer;${week >= 4 ? 'opacity:0.4;pointer-events:none;' : ''}">下一周 ›</button>
+        <div style="flex:1;text-align:center;font-size:13px;color:var(--text-secondary);">第${week}周 / 共8周</div>
+        <button onclick="switchDietWeek(${nextWeek})" class="btn btn-sm btn-outline" style="padding:4px 10px;cursor:pointer;${week >= 8 ? 'opacity:0.4;pointer-events:none;' : ''}">下一周 ›</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">
         ${[1,2,3,4,5,6,7].map(d => `
@@ -131,28 +114,23 @@ export async function renderDiet(params) {
             <span>${icons.protein}${meal.protein}</span>
           </div>` : ''}
           <div class="meal-section">
-            <div class="flex-between" style="align-items:center;margin-bottom:6px;">
-              <h4 style="margin:0;">食材清单</h4>
-              <button class="swap-rich-btn" onclick="autoRich('${meal.id}')">🥬 一键丰富</button>
-            </div>
+            <h4 style="margin:0 0 6px;">食材清单</h4>
             <table class="data-table">
               <thead>
-                <tr><th>食材</th><th>用量</th><th>克数</th><th>拳头法则</th><th>蛋白质</th><th>替换</th></tr>
+                <tr><th>食材</th><th>用量</th><th>克数</th><th>拳头法则</th><th>蛋白质</th></tr>
               </thead>
               <tbody>
-                ${resolvedIngredients(meal).map((i, idx) => `
+                ${meal.ingredients.map(i => `
                   <tr>
                     <td>${i.name}</td>
                     <td>${i.amount}</td>
                     <td>${i.grams}</td>
                     <td>${i.fist}</td>
                     <td>${i.protein}</td>
-                    <td>${isSwappable(i.category) ? `<span class="swap-link" onclick="openSwap('${meal.id}', ${idx})">换</span>` : '<span style="color:var(--text-hint);">—</span>'}</td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
-            <div class="font-sm text-hint" style="margin-top:4px;">点「换」可把该食材替换成同类其他食材（如蔬菜换成蒜毫/蒜苗、香菇等）；「一键丰富」自动把常重复的蔬菜换成更丰富种类。</div>
           </div>
           <div class="meal-section">
             <h4>做法步骤</h4>
@@ -317,77 +295,7 @@ export async function renderDiet(params) {
     }
   };
 
-  // ===== 食材替换 =====
-  window.closeSwapModal = () => { const m = document.getElementById('swap-mask'); if (m) m.remove(); };
-
-  window.openSwap = (mealId, idx) => {
-    const meal = currentMeals ? Object.values(currentMeals).find(m => m.id === mealId) : null;
-    if (!meal) return;
-    const ing = resolvedIngredients(meal)[idx];
-    const cat = ing.category;
-    const catLabel = { protein: '蛋白质', carb: '主食', vegetable: '蔬菜', fruit: '水果' }[cat] || cat;
-    const pool = foodDatabase[cat + 's'] || [];
-    const opts = pool.map(f => `<div class="swap-opt" onclick="doSwap('${mealId}', ${idx}, '${f.name.replace(/'/g, "\\'")}')">
-        <span>${f.name}</span>
-        <span class="text-secondary" style="font-size:12px;white-space:nowrap;">${f.caloriesPer100g}kcal · 蛋白${f.proteinPer100g}g</span>
-      </div>`).join('');
-    const mask = document.createElement('div');
-    mask.className = 'swap-modal-mask';
-    mask.id = 'swap-mask';
-    mask.innerHTML = `<div class="swap-modal" onclick="event.stopPropagation()">
-        <div class="flex-between" style="margin-bottom:10px;align-items:center;">
-          <h4 style="font-size:16px;margin:0;">替换「${ing.name}」</h4>
-          <span onclick="closeSwapModal()" style="color:var(--text-secondary);font-size:22px;line-height:1;cursor:pointer;">×</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">同类可换（${catLabel}）· 点选即替换并保存</div>
-        <div class="swap-opt-list">${opts}</div>
-      </div>`;
-    mask.addEventListener('click', () => window.closeSwapModal());
-    document.body.appendChild(mask);
-  };
-
-  window.doSwap = (mealId, idx, name) => {
-    const meal = currentMeals ? Object.values(currentMeals).find(m => m.id === mealId) : null;
-    if (!meal) return;
-    const cat = resolvedIngredients(meal)[idx].category;
-    const food = (foodDatabase[cat + 's'] || []).find(f => f.name === name);
-    if (!food) return;
-    const def = swapDefaults[cat];
-    const g = parseGrams(def.grams);
-    const newIng = {
-      name: food.name, amount: def.amount, grams: def.grams, fist: def.fist,
-      protein: Math.round(food.proteinPer100g * g / 100) + 'g', category: cat
-    };
-    const swaps = loadSwaps();
-    if (!swaps[mealId]) swaps[mealId] = {};
-    swaps[mealId][idx] = newIng;
-    saveSwaps(swaps);
-    window.closeSwapModal();
-    renderDiet({ day: selectedDay });
-  };
-
-  // 一键丰富：把常重复的蔬菜自动换成更丰富的种类
-  window.autoRich = (mealId) => {
-    const meal = currentMeals ? Object.values(currentMeals).find(m => m.id === mealId) : null;
-    if (!meal) return;
-    const commonVeg = ['西兰花', '菠菜', '番茄', '白菜', '冬瓜', '青椒', '芦笋', '生菜', '胡萝卜', '洋葱', '芹菜'];
-    const richPool = ['蒜毫/蒜苗', '香菇（鲜）', '油麦菜', '茼蒿', '绿豆芽', '秋葵', '芥蓝', '莴笋', '荷兰豆', '紫甘蓝', '娃娃菜', '空心菜', '韭菜', '西葫芦', '小白菜', '油菜', '苦菊', '金针菇', '水发木耳', '海带', '红黄彩椒'];
-    const swaps = loadSwaps();
-    if (!swaps[mealId]) swaps[mealId] = {};
-    resolvedIngredients(meal).forEach((ing, idx) => {
-      if (ing.category === 'vegetable' && commonVeg.includes(ing.name) && !swaps[mealId][idx]) {
-        const pick = richPool[Math.floor(Math.random() * richPool.length)];
-        const food = foodDatabase.vegetables.find(f => f.name === pick);
-        if (food) {
-          const def = swapDefaults.vegetable;
-          const g = parseGrams(def.grams);
-          swaps[mealId][idx] = { name: pick, amount: def.amount, grams: def.grams, fist: def.fist, protein: Math.round(food.proteinPer100g * g / 100) + 'g', category: 'vegetable' };
-        }
-      }
-    });
-    saveSwaps(swaps);
-    renderDiet({ day: selectedDay });
-  };
+  // ===== 食材替换功能已移除（v65 改为扩充菜单种类本身）=====
 }
 
 // 生成一周食材采购清单
@@ -401,7 +309,7 @@ function renderShoppingList(menus, isNextWeek) {
     ['breakfast', 'lunch', 'dinner', 'snack'].forEach(mealType => {
       const meal = dayMenu.meals[mealType];
       if (!meal || !meal.ingredients) return;
-      resolvedIngredients(meal).forEach(ing => {
+      meal.ingredients.forEach(ing => {
         const key = ing.name;
         if (!ingredientMap[key]) {
           ingredientMap[key] = {
