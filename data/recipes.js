@@ -1,10 +1,8 @@
-// 7天食谱数据
-// 基于"1蛋白+1主食+2蔬菜"框架
-// 4周轮换，每周食材有变化
-
-import { week2Menus } from './recipes-week2.js';
-import { week3Menus } from './recipes-week3.js';
-import { week4Menus } from './recipes-week4.js';
+// 食谱数据（v65 重构：菜品池 + 确定性周生成）
+// 设计目标：
+//  - 每道菜均符合「1份蛋白 + 1份主食 + 2份蔬菜」框架
+//  - 每周 7 天不重样，相邻周不同，循环 8 周后再重复
+//  - 蛋白质/蔬菜种类丰富（充分利用扩充后的食材库：香菇、蒜毫/蒜苗、油麦菜、秋葵、荷兰豆、紫甘蓝、木耳、海带…）
 
 export const recipes = {
   meta: {
@@ -19,519 +17,622 @@ export const recipes = {
     proteinTarget: "每公斤体重1.6-2.2g/天"
   },
 
-  // 第1周食谱（原始）
-  weeklyMenus: [
-    // ========== 周一 ==========
-    {
-      day: 1, dayName: "周一",
-      meals: {
-        breakfast: {
-          id: "mon-bf", mealType: "早餐", name: "水煮蛋燕麦粥配苹果",
-          totalTime: "10分钟", calories: "约860大卡", protein: "约66g",
-          ingredients: [
-            { name: "鸡蛋", amount: "6个", grams: "300g", fist: "1.5个手掌", protein: "38g", category: "protein" },
-            { name: "燕麦片", amount: "100g", grams: "100g", fist: "1个拳头", protein: "13g", category: "carb" },
-            { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
-            { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" }
-          ],
-          steps: [
-            "锅中加水烧开，放入燕麦片小火煮5分钟至浓稠",
-            "另起锅烧水，水沸后放入鸡蛋煮7分钟（溏心）或10分钟（全熟）",
-            "燕麦粥盛碗，可倒入牛奶拌匀",
-            "苹果洗净切块摆旁"
-          ],
-          tips: "燕麦选纯燕麦片，不要速溶加糖款。鸡蛋冷水下锅不易破壳。"
-        },
-        lunch: {
-          id: "mon-lunch", mealType: "午餐", name: "鸡胸肉炒西兰花配米饭",
-          totalTime: "20分钟", calories: "约900大卡", protein: "约96g",
-          ingredients: [
-            { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
-            { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
-            { name: "西兰花", amount: "1棵", grams: "400g", fist: "2个拳头", protein: "11.2g", category: "vegetable" },
-            { name: "蒜瓣", amount: "4瓣", grams: "20g", fist: "—", protein: "0g", category: "seasoning" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "鸡胸肉切丁，加少许盐、料酒、生抽腌制10分钟",
-            "西兰花掰小朵，沸水焯1分钟捞出沥干",
-            "热锅冷油，爆香蒜片，下鸡丁翻炒至变色",
-            "加入西兰花翻炒2分钟，加盐调味即可",
-            "同时用电饭煲煮好米饭"
-          ],
-          tips: "鸡胸肉切丁比切片更嫩。腌制时加少许淀粉可锁水。西兰花焯水保持翠绿。"
-        },
-        dinner: {
-          id: "mon-dinner", mealType: "晚餐", name: "香煎鱼配红薯凉拌菠菜",
-          totalTime: "25分钟", calories: "约800大卡", protein: "约70g",
-          ingredients: [
-            { name: "龙利鱼/巴沙鱼", amount: "300g", grams: "300g", fist: "1个手掌", protein: "60g", category: "protein" },
-            { name: "红薯", amount: "2个中等", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
-            { name: "菠菜", amount: "2把", grams: "400g", fist: "2个拳头", protein: "10.4g", category: "vegetable" },
-            { name: "蒜末、生抽、醋", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "红薯洗净，上锅蒸15-20分钟至软烂",
-            "鱼块用厨房纸吸干水分，撒盐和黑胡椒腌5分钟",
-            "平底锅少油，中火煎鱼每面3-4分钟至金黄",
-            "菠菜焯水30秒捞出，过凉水沥干",
-            "菠菜加蒜末、生抽、醋、几滴香油拌匀"
-          ],
-          tips: "煎鱼不粘锅秘诀：锅烧够热再下鱼，不要急着翻面。菠菜焯水去草酸。"
-        },
-        snack: {
-          id: "mon-snack", mealType: "加餐（休息日）", name: "香蕉+牛奶+蛋白粉",
-          totalTime: "2分钟", calories: "约500大卡", protein: "约40g",
-          ingredients: [
-            { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
-            { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
-            { name: "蛋白粉", amount: "2勺", grams: "60g", fist: "—", protein: "48g", category: "protein" }
-          ],
-          steps: ["直接食用即可"],
-          tips: "训练后30分钟内加餐，蛋白质+碳水帮助恢复。"
-        }
+  // ===== 菜品池（每道都是完整的一餐）=====
+  pools: {
+    breakfast: [
+      {
+        mealType: "早餐", name: "水煮蛋燕麦粥配苹果", totalTime: "10分钟", calories: "约860大卡", protein: "约66g",
+        ingredients: [
+          { name: "鸡蛋", amount: "6个", grams: "300g", fist: "1.5个手掌", protein: "38g", category: "protein" },
+          { name: "燕麦片", amount: "100g", grams: "100g", fist: "1个拳头", protein: "13g", category: "carb" },
+          { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" }
+        ],
+        steps: ["锅中加水烧开，放入燕麦片小火煮5分钟至浓稠", "另起锅烧水，水沸后放入鸡蛋煮7-10分钟", "燕麦粥盛碗，可倒入牛奶拌匀", "苹果洗净切块摆旁"],
+        tips: "燕麦选纯燕麦片，不要速溶加糖款。"
+      },
+      {
+        mealType: "早餐", name: "牛奶全麦面包配香蕉", totalTime: "5分钟", calories: "约900大卡", protein: "约60g",
+        ingredients: [
+          { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
+          { name: "全麦面包", amount: "4片", grams: "140g", fist: "1个拳头", protein: "12.6g", category: "carb" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" }
+        ],
+        steps: ["全麦面包稍微烤一下", "煎一个荷包蛋（少油）", "鸡蛋夹入面包，配牛奶和香蕉食用"],
+        tips: "选全麦面包看配料表，全麦粉排第一才是真全麦。"
+      },
+      {
+        mealType: "早餐", name: "希腊酸奶莓果碗", totalTime: "5分钟", calories: "约820大卡", protein: "约64g",
+        ingredients: [
+          { name: "希腊酸奶", amount: "400g", grams: "400g", fist: "1杯", protein: "40g", category: "protein" },
+          { name: "蓝莓", amount: "200g", grams: "200g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
+          { name: "燕麦片", amount: "80g", grams: "80g", fist: "0.8个拳头", protein: "10g", category: "carb" },
+          { name: "核桃", amount: "40g", grams: "40g", fist: "—", protein: "5g", category: "vegetable" }
+        ],
+        steps: ["希腊酸奶舀入碗中", "撒入蓝莓和燕麦片", "核桃掰碎撒表面即可"],
+        tips: "希腊酸奶蛋白质高、碳水低，减脂期友好。"
+      },
+      {
+        mealType: "早餐", name: "红薯泥配煎蛋", totalTime: "15分钟", calories: "约880大卡", protein: "约62g",
+        ingredients: [
+          { name: "红薯", amount: "2个中等", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
+          { name: "鸡蛋", amount: "5个", grams: "250g", fist: "1.2个手掌", protein: "31.5g", category: "protein" },
+          { name: "菠菜", amount: "2把", grams: "300g", fist: "1.5个拳头", protein: "7.8g", category: "vegetable" },
+          { name: "牛奶", amount: "400ml", grams: "400g", fist: "0.7杯", protein: "12.8g", category: "protein" }
+        ],
+        steps: ["红薯蒸熟压成泥", "鸡蛋少油煎至溏心", "菠菜焯水30秒沥干摆旁", "配牛奶食用"],
+        tips: "红薯替代精米面，升糖更平缓。"
+      },
+      {
+        mealType: "早餐", name: "鸡胸蔬菜烘蛋", totalTime: "20分钟", calories: "约900大卡", protein: "约78g",
+        ingredients: [
+          { name: "鸡胸肉", amount: "250g", grams: "250g", fist: "1个手掌", protein: "58g", category: "protein" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "红黄彩椒", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "全麦面包", amount: "3片", grams: "105g", fist: "0.8个拳头", protein: "9.5g", category: "carb" }
+        ],
+        steps: ["鸡胸肉切丁用盐黑胡椒腌10分钟", "彩椒切丁与鸡蛋打散混合", "少油煎锅倒入蛋液小火烘至凝固", "配全麦面包食用"],
+        tips: "烘蛋比煎蛋更嫩，蔬菜可随意替换。"
+      },
+      {
+        mealType: "早餐", name: "玉米虾仁粥", totalTime: "20分钟", calories: "约840大卡", protein: "约70g",
+        ingredients: [
+          { name: "玉米", amount: "2根", grams: "300g", fist: "1个拳头", protein: "9g", category: "carb" },
+          { name: "虾仁", amount: "250g", grams: "250g", fist: "1个手掌", protein: "48g", category: "protein" },
+          { name: "鸡蛋", amount: "3个", grams: "150g", fist: "0.8个手掌", protein: "18.9g", category: "protein" },
+          { name: "小白菜", amount: "2把", grams: "250g", fist: "1.2个拳头", protein: "5.5g", category: "vegetable" }
+        ],
+        steps: ["玉米粒与大米同煮成粥", "粥快好时打入鸡蛋搅散", "虾仁焯熟放入，最后下小白菜"],
+        tips: "虾仁高蛋白低脂，粥里放点姜丝去腥。"
+      },
+      {
+        mealType: "早餐", name: "豆腐脑配杂粮包", totalTime: "10分钟", calories: "约800大卡", protein: "约58g",
+        ingredients: [
+          { name: "豆腐", amount: "400g", grams: "400g", fist: "1个手掌", protein: "44g", category: "protein" },
+          { name: "杂粮包", amount: "3个", grams: "150g", fist: "1个拳头", protein: "12g", category: "carb" },
+          { name: "紫菜", amount: "10g", grams: "10g", fist: "—", protein: "3g", category: "vegetable" },
+          { name: "苹果", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "0.6g", category: "fruit" }
+        ],
+        steps: ["豆腐脑盛碗，撒紫菜、淋生抽香油", "杂粮包蒸热", "配苹果食用"],
+        tips: "豆腐脑用内酯豆腐自制或买现成均可。"
+      },
+      {
+        mealType: "早餐", name: "牛油果蛋吐司", totalTime: "10分钟", calories: "约880大卡", protein: "约60g",
+        ingredients: [
+          { name: "全麦面包", amount: "4片", grams: "140g", fist: "1个拳头", protein: "12.6g", category: "carb" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "牛油果", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "4g", category: "fruit" },
+          { name: "牛奶", amount: "400ml", grams: "400g", fist: "0.7杯", protein: "12.8g", category: "protein" }
+        ],
+        steps: ["面包烤脆", "鸡蛋水煮或煎熟", "牛油果压泥涂面包，夹蛋", "配牛奶"],
+        tips: "牛油果提供优质脂肪，饱腹感强。"
+      },
+      {
+        mealType: "早餐", name: "糙米鸡肉饭团", totalTime: "25分钟", calories: "约860大卡", protein: "约72g",
+        ingredients: [
+          { name: "糙米", amount: "150g生", grams: "150g", fist: "1个拳头", protein: "11g", category: "carb" },
+          { name: "鸡胸肉", amount: "250g", grams: "250g", fist: "1个手掌", protein: "58g", category: "protein" },
+          { name: "西兰花", amount: "200g", grams: "200g", fist: "1个拳头", protein: "5.6g", category: "vegetable" },
+          { name: "圣女果", amount: "200g", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "fruit" }
+        ],
+        steps: ["糙米煮熟", "鸡胸肉煮熟撕条", "西兰花焯水", "米饭拌鸡丝捏成饭团，配圣女果"],
+        tips: "糙米GI低，适合减脂期主食。"
+      },
+      {
+        mealType: "早餐", name: "紫薯酸奶杯", totalTime: "10分钟", calories: "约820大卡", protein: "约62g",
+        ingredients: [
+          { name: "紫薯", amount: "2个", grams: "350g", fist: "1个拳头", protein: "4g", category: "carb" },
+          { name: "希腊酸奶", amount: "350g", grams: "350g", fist: "0.9杯", protein: "35g", category: "protein" },
+          { name: "蓝莓", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "0.9g", category: "fruit" },
+          { name: "杏仁", amount: "30g", grams: "30g", fist: "—", protein: "6g", category: "vegetable" }
+        ],
+        steps: ["紫薯蒸熟压泥铺杯底", "倒入希腊酸奶", "蓝莓与杏仁撒表面"],
+        tips: "紫薯富含花青素，颜色好看又健康。"
+      },
+      {
+        mealType: "早餐", name: "豆浆配鸡蛋蔬菜饼", totalTime: "15分钟", calories: "约840大卡", protein: "约66g",
+        ingredients: [
+          { name: "豆浆", amount: "600ml", grams: "600g", fist: "1杯", protein: "18g", category: "protein" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "全麦面粉", amount: "100g", grams: "100g", fist: "0.7个拳头", protein: "12g", category: "carb" },
+          { name: "西葫芦", amount: "200g", grams: "200g", fist: "1个拳头", protein: "2.4g", category: "vegetable" }
+        ],
+        steps: ["西葫芦擦丝与鸡蛋面粉调成糊", "少油小火煎成薄饼", "配豆浆"],
+        tips: "蔬菜饼藏着蔬菜，挑食也爱吃。"
+      },
+      {
+        mealType: "早餐", name: "小米南瓜粥配蒸蛋", totalTime: "20分钟", calories: "约800大卡", protein: "约64g",
+        ingredients: [
+          { name: "小米", amount: "100g", grams: "100g", fist: "0.7个拳头", protein: "11g", category: "carb" },
+          { name: "南瓜", amount: "300g", grams: "300g", fist: "1.5个拳头", protein: "3g", category: "vegetable" },
+          { name: "鸡蛋", amount: "5个", grams: "250g", fist: "1.2个手掌", protein: "31.5g", category: "protein" },
+          { name: "牛奶", amount: "300ml", grams: "300g", fist: "0.5杯", protein: "9.6g", category: "protein" }
+        ],
+        steps: ["小米南瓜同煮成粥", "鸡蛋蒸成蛋羹", "配牛奶"],
+        tips: "小米养胃，适合早餐暖身。"
       }
-    },
-    // ========== 周二 ==========
-    {
-      day: 2, dayName: "周二",
-      meals: {
-        breakfast: {
-          id: "tue-bf", mealType: "早餐", name: "牛奶全麦面包配香蕉",
-          totalTime: "5分钟", calories: "约900大卡", protein: "约60g",
-          ingredients: [
-            { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
-            { name: "全麦面包", amount: "4片", grams: "140g", fist: "1个拳头", protein: "12.6g", category: "carb" },
-            { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
-            { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
-            { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
-          ],
-          steps: [
-            "全麦面包放入烤箱/平底锅稍微烤一下",
-            "煎一个荷包蛋（少油）",
-            "鸡蛋夹入面包中，配牛奶和香蕉食用"
-          ],
-          tips: "选全麦面包时看配料表，全麦粉排第一才是真全麦。"
-        },
-        lunch: {
-          id: "tue-lunch", mealType: "午餐", name: "番茄牛肉盖饭",
-          totalTime: "30分钟", calories: "约1060大卡", protein: "约92g",
-          ingredients: [
-            { name: "瘦牛肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "78g", category: "protein" },
-            { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
-            { name: "番茄", amount: "4个", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
-            { name: "洋葱", amount: "1/2个", grams: "100g", fist: "—", protein: "1.4g", category: "vegetable" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "牛肉切薄片，加生抽、料酒、少许淀粉腌制10分钟",
-            "番茄切块，洋葱切丝",
-            "热锅少油，下牛肉快速翻炒至变色盛出",
-            "再加少许油，炒洋葱至透明，加番茄炒出汁",
-            "倒回牛肉，加盐、少许糖调味，浇在米饭上"
-          ],
-          tips: "牛肉逆纹切片更嫩。番茄选熟透的出汁多。加少许糖提鲜不减脂。"
-        },
-        dinner: {
-          id: "tue-dinner", mealType: "晚餐", name: "豆腐蔬菜汤配玉米",
-          totalTime: "20分钟", calories: "约760大卡", protein: "约48g",
-          ingredients: [
-            { name: "北豆腐", amount: "2块", grams: "500g", fist: "1个手掌", protein: "40.6g", category: "protein" },
-            { name: "玉米", amount: "2根", grams: "400g", fist: "1个拳头", protein: "16g", category: "carb" },
-            { name: "白菜", amount: "6-8叶", grams: "400g", fist: "2个拳头", protein: "5.2g", category: "vegetable" },
-            { name: "番茄", amount: "2个", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "玉米切段，上锅蒸15分钟",
-            "豆腐切小块，白菜切段，番茄切块",
-            "锅中少油，炒番茄出汁，加水烧开",
-            "放入豆腐和白菜，中火煮8分钟",
-            "加盐、少许白胡椒调味"
-          ],
-          tips: "豆腐先用盐水焯一下不易碎。汤里加番茄天然提鲜，不需要味精。"
-        },
-        snack: {
-          id: "tue-snack", mealType: "加餐（休息日）", name: "苹果+水煮蛋+牛奶",
-          totalTime: "10分钟", calories: "约520大卡", protein: "约42g",
-          ingredients: [
-            { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
-            { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
-            { name: "牛奶", amount: "400ml", grams: "400g", fist: "1杯", protein: "12.8g", category: "protein" }
-          ],
-          steps: ["鸡蛋水煮7-10分钟", "苹果洗净直接食用"],
-          tips: "没有训练的日子可以省略加餐。"
-        }
+    ],
+
+    lunch: [
+      {
+        mealType: "午餐", name: "鸡胸肉炒西兰花配米饭", totalTime: "20分钟", calories: "约900大卡", protein: "约96g",
+        ingredients: [
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "西兰花", amount: "1棵", grams: "400g", fist: "2个拳头", protein: "11.2g", category: "vegetable" },
+          { name: "蒜瓣", amount: "4瓣", grams: "20g", fist: "—", protein: "0g", category: "seasoning" },
+          { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
+        ],
+        steps: ["鸡胸肉切丁腌制10分钟", "西兰花掰小朵焯1分钟", "热锅爆香蒜片下鸡丁翻炒", "加西兰花炒2分钟调味", "同时煮好米饭"],
+        tips: "鸡胸肉切丁比切片更嫩，腌时加淀粉锁水。"
+      },
+      {
+        mealType: "午餐", name: "番茄牛肉盖饭", totalTime: "30分钟", calories: "约1060大卡", protein: "约92g",
+        ingredients: [
+          { name: "牛肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "62g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "番茄", amount: "3个", grams: "450g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
+          { name: "青椒", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+        ],
+        steps: ["牛肉切片用生抽淀粉腌10分钟", "番茄去皮切块炒出汁", "下牛肉与青椒翻炒至熟", "浇在米饭上"],
+        tips: "番茄炒出红油更开胃，牛肉逆纹切更嫩。"
+      },
+      {
+        mealType: "午餐", name: "清蒸鱼配蒜蓉油麦菜", totalTime: "25分钟", calories: "约820大卡", protein: "约80g",
+        ingredients: [
+          { name: "龙利鱼/巴沙鱼", amount: "300g", grams: "300g", fist: "1个手掌", protein: "60g", category: "protein" },
+          { name: "红薯", amount: "2个中等", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
+          { name: "油麦菜", amount: "2把", grams: "400g", fist: "2个拳头", protein: "6.8g", category: "vegetable" },
+          { name: "蒜末、生抽", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
+        ],
+        steps: ["红薯蒸熟", "鱼块腌5分钟后中火蒸8分钟", "油麦菜焯水拌蒜蓉生抽", "鱼淋蒸鱼豉油"],
+        tips: "清蒸保留鱼肉鲜嫩，少油更健康。"
+      },
+      {
+        mealType: "午餐", name: "虾仁炒蛋配糙米", totalTime: "20分钟", calories: "约880大卡", protein: "约86g",
+        ingredients: [
+          { name: "虾仁", amount: "300g", grams: "300g", fist: "1个手掌", protein: "58g", category: "protein" },
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "糙米", amount: "150g生", grams: "150g", fist: "1个拳头", protein: "11g", category: "carb" },
+          { name: "秋葵", amount: "200g", grams: "200g", fist: "1个拳头", protein: "3.6g", category: "vegetable" }
+        ],
+        steps: ["糙米煮熟", "鸡蛋打散炒至半凝固盛出", "虾仁与秋葵翻炒", "倒回鸡蛋翻炒调味"],
+        tips: "秋葵黏液助消化，焯水去涩更爽口。"
+      },
+      {
+        mealType: "午餐", name: "麻婆豆腐配米饭", totalTime: "20分钟", calories: "约900大卡", protein: "约84g",
+        ingredients: [
+          { name: "豆腐", amount: "400g", grams: "400g", fist: "1个手掌", protein: "44g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "韭菜", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "3.3g", category: "vegetable" },
+          { name: "胡萝卜", amount: "1根", grams: "100g", fist: "0.5个拳头", protein: "1.1g", category: "vegetable" }
+        ],
+        steps: ["豆腐切块焯水去豆腥", "肉末炒香下豆瓣酱", "加水焖豆腐入味", "韭黄胡萝卜收汁"],
+        tips: "豆腐植物蛋白丰富，少放油版更低脂。"
+      },
+      {
+        mealType: "午餐", name: "照烧鸡腿饭", totalTime: "30分钟", calories: "约1000大卡", protein: "约88g",
+        ingredients: [
+          { name: "鸡腿", amount: "2个", grams: "300g", fist: "1个手掌", protein: "50g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "西兰花", amount: "200g", grams: "200g", fist: "1个拳头", protein: "5.6g", category: "vegetable" },
+          { name: "玉米", amount: "1根", grams: "150g", fist: "0.5个拳头", protein: "4.5g", category: "vegetable" }
+        ],
+        steps: ["鸡腿去骨煎至两面金黄", "淋照烧酱汁收浓", "西兰花玉米焯水", "铺在米饭上"],
+        tips: "鸡腿去皮可减少脂肪，照烧酱少放糖。"
+      },
+      {
+        mealType: "午餐", name: "瘦肉炒荷兰豆", totalTime: "20分钟", calories: "约880大卡", protein: "约82g",
+        ingredients: [
+          { name: "瘦猪肉", amount: "250g", grams: "250g", fist: "1个手掌", protein: "50g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "荷兰豆", amount: "250g", grams: "250g", fist: "1.2个拳头", protein: "5g", category: "vegetable" },
+          { name: "胡萝卜", amount: "1根", grams: "100g", fist: "0.5个拳头", protein: "1.1g", category: "vegetable" }
+        ],
+        steps: ["瘦肉切丝用生抽腌10分钟", "荷兰豆去筋焯水", "热锅快炒肉丝", "下荷兰豆胡萝卜翻炒调味"],
+        tips: "荷兰豆脆嫩，焯水保色后快炒。"
+      },
+      {
+        mealType: "午餐", name: "香煎三文鱼配芦笋藜麦", totalTime: "25分钟", calories: "约920大卡", protein: "约90g",
+        ingredients: [
+          { name: "三文鱼", amount: "300g", grams: "300g", fist: "1个手掌", protein: "62g", category: "protein" },
+          { name: "藜麦", amount: "120g生", grams: "120g", fist: "0.8个拳头", protein: "16g", category: "carb" },
+          { name: "芦笋", amount: "200g", grams: "200g", fist: "1个拳头", protein: "4.4g", category: "vegetable" },
+          { name: "圣女果", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "1.4g", category: "fruit" }
+        ],
+        steps: ["藜麦煮熟", "三文鱼少油每面煎3分钟", "芦笋焯水", "摆盘配圣女果"],
+        tips: "三文鱼富含Omega-3，减脂期优质脂肪来源。"
+      },
+      {
+        mealType: "午餐", name: "蛤蜊冬瓜汤面", totalTime: "25分钟", calories: "约840大卡", protein: "约78g",
+        ingredients: [
+          { name: "蛤蜊", amount: "400g", grams: "400g", fist: "1.5个手掌", protein: "48g", category: "protein" },
+          { name: "全麦面", amount: "150g", grams: "150g", fist: "1个拳头", protein: "18g", category: "carb" },
+          { name: "冬瓜", amount: "300g", grams: "300g", fist: "1.5个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "小白菜", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "3.3g", category: "vegetable" }
+        ],
+        steps: ["蛤蜊吐沙后加水煮开口", "汤中下冬瓜煮软", "另煮全麦面捞出", "面入汤加小白菜"],
+        tips: "蛤蜊低脂蛋白，汤鲜不需额外调味。"
+      },
+      {
+        mealType: "午餐", name: "鸭胸炒彩椒", totalTime: "25分钟", calories: "约900大卡", protein: "约84g",
+        ingredients: [
+          { name: "鸭胸", amount: "300g", grams: "300g", fist: "1个手掌", protein: "60g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "红黄彩椒", amount: "2个", grams: "300g", fist: "1.5个拳头", protein: "3.6g", category: "vegetable" },
+          { name: "西葫芦", amount: "200g", grams: "200g", fist: "1个拳头", protein: "2.4g", category: "vegetable" }
+        ],
+        steps: ["鸭胸去皮切薄片煎香", "彩椒西葫芦切条翻炒", "调味后配米饭"],
+        tips: "鸭胸去皮减脂，配彩椒维生素丰富。"
+      },
+      {
+        mealType: "午餐", name: "羊肉萝卜煲", totalTime: "35分钟", calories: "约960大卡", protein: "约86g",
+        ingredients: [
+          { name: "羊肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "60g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "白萝卜", amount: "400g", grams: "400g", fist: "2个拳头", protein: "3.2g", category: "vegetable" },
+          { name: "香菜", amount: "少许", grams: "10g", fist: "—", protein: "0.2g", category: "vegetable" }
+        ],
+        steps: ["羊肉切块焯水去膻", "与萝卜同炖至软烂", "撒香菜", "配米饭"],
+        tips: "白萝卜解腻，炖煮更入味。"
+      },
+      {
+        mealType: "午餐", name: "金枪鱼藜麦碗", totalTime: "20分钟", calories: "约860大卡", protein: "约88g",
+        ingredients: [
+          { name: "金枪鱼罐头", amount: "200g", grams: "200g", fist: "1个手掌", protein: "54g", category: "protein" },
+          { name: "藜麦", amount: "120g生", grams: "120g", fist: "0.8个拳头", protein: "16g", category: "carb" },
+          { name: "牛油果", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "4g", category: "fruit" },
+          { name: "圣女果", amount: "200g", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "fruit" }
+        ],
+        steps: ["藜麦煮熟沥干", "金枪鱼沥干铺上", "牛油果切片、圣女果对半摆", "淋少许黑醋"],
+        tips: "金枪鱼罐头选水浸款，少油更健康。"
+      },
+      {
+        mealType: "午餐", name: "香菇滑鸡饭", totalTime: "30分钟", calories: "约940大卡", protein: "约90g",
+        ingredients: [
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "香菇（鲜）", amount: "200g", grams: "200g", fist: "1个拳头", protein: "5.4g", category: "vegetable" },
+          { name: "芥蓝", amount: "200g", grams: "200g", fist: "1个拳头", protein: "5.2g", category: "vegetable" }
+        ],
+        steps: ["鸡胸切片用蚝油腌", "香菇煸炒出香", "下鸡片滑炒熟", "芥蓝焯水摆旁配饭"],
+        tips: "鲜香菇提鲜，不必放味精。"
+      },
+      {
+        mealType: "午餐", name: "毛豆炒肉丝", totalTime: "20分钟", calories: "约880大卡", protein: "约84g",
+        ingredients: [
+          { name: "瘦猪肉", amount: "250g", grams: "250g", fist: "1个手掌", protein: "50g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "毛豆", amount: "200g", grams: "200g", fist: "1个拳头", protein: "20g", category: "vegetable" },
+          { name: "莴笋", amount: "200g", grams: "200g", fist: "1个拳头", protein: "2g", category: "vegetable" }
+        ],
+        steps: ["肉丝用生抽腌", "毛豆焯水", "热锅炒肉丝", "下毛豆莴笋翻炒"],
+        tips: "毛豆植物蛋白高，口感清爽。"
+      },
+      {
+        mealType: "午餐", name: "海带豆腐炖排骨", totalTime: "40分钟", calories: "约940大卡", protein: "约86g",
+        ingredients: [
+          { name: "排骨（瘦）", amount: "300g", grams: "300g", fist: "1个手掌", protein: "58g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300ml", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "海带", amount: "200g", grams: "200g", fist: "1个拳头", protein: "3.4g", category: "vegetable" },
+          { name: "冬瓜", amount: "200g", grams: "200g", fist: "1个拳头", protein: "1.2g", category: "vegetable" }
+        ],
+        steps: ["排骨焯水去血沫", "与海带冬瓜同炖40分钟", "少盐调味", "配米饭"],
+        tips: "海带补碘，炖汤鲜甜。"
       }
-    },
-    // ========== 周三 ==========
-    {
-      day: 3, dayName: "周三",
-      meals: {
-        breakfast: {
-          id: "wed-bf", mealType: "早餐", name: "鸡蛋燕麦粥配桃子",
-          totalTime: "10分钟", calories: "约800大卡", protein: "约60g",
-          ingredients: [
-            { name: "鸡蛋", amount: "6个", grams: "300g", fist: "1.5个手掌", protein: "38g", category: "protein" },
-            { name: "燕麦片", amount: "100g", grams: "100g", fist: "1个拳头", protein: "13g", category: "carb" },
-            { name: "桃子", amount: "2个", grams: "300g", fist: "1个拳头", protein: "2g", category: "fruit" },
-            { name: "牛奶", amount: "400ml", grams: "400g", fist: "1杯", protein: "12.8g", category: "protein" }
-          ],
-          steps: [
-            "燕麦加水煮5分钟至浓稠",
-            "鸡蛋水煮7-10分钟",
-            "燕麦粥可加少许盐调味",
-            "桃子洗净去核切块食用"
-          ],
-          tips: "燕麦粥加一点点盐比加糖更健康，也能提味。"
-        },
-        lunch: {
-          id: "wed-lunch", mealType: "午餐", name: "虾仁炒黄瓜配米饭",
-          totalTime: "15分钟", calories: "约800大卡", protein: "约80g",
-          ingredients: [
-            { name: "虾仁", amount: "300g", grams: "300g", fist: "1个手掌", protein: "72g", category: "protein" },
-            { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
-            { name: "黄瓜", amount: "2根", grams: "400g", fist: "2个拳头", protein: "3.2g", category: "vegetable" },
-            { name: "蒜末、姜片", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "虾仁解冻沥干，加料酒、盐腌5分钟",
-            "黄瓜切丁",
-            "热锅少油，爆香蒜姜，下虾仁翻炒至变色",
-            "加入黄瓜丁翻炒1分钟，加盐调味",
-            "配米饭食用"
-          ],
-          tips: "虾仁炒的时间不要太长，变色即可，否则会老。"
-        },
-        dinner: {
-          id: "wed-dinner", mealType: "晚餐", name: "鸡胸肉红薯冬瓜汤",
-          totalTime: "25分钟", calories: "约760大卡", protein: "约76g",
-          ingredients: [
-            { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
-            { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
-            { name: "冬瓜", amount: "600g", grams: "600g", fist: "2个拳头", protein: "1.8g", category: "vegetable" },
-            { name: "姜片、盐", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
-          ],
-          steps: [
-            "鸡胸肉切小块，焯水去血沫",
-            "冬瓜去皮切厚片",
-            "锅中加水，放入鸡块和姜片，大火烧开转小火炖15分钟",
-            "加入冬瓜和红薯块，继续煮10分钟",
-            "加盐调味"
-          ],
-          tips: "鸡胸肉炖汤容易柴，切小块缩短烹饪时间。冬瓜煮到透明即可。"
-        },
-        snack: {
-          id: "wed-snack", mealType: "加餐（训练后）", name: "牛奶+全麦面包+蛋白粉",
-          totalTime: "2分钟", calories: "约560大卡", protein: "约48g",
-          ingredients: [
-            { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
-            { name: "全麦面包", amount: "2片", grams: "70g", fist: "半个拳头", protein: "6.4g", category: "carb" },
-            { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
-          ],
-          steps: ["牛奶加热后配面包食用"],
-          tips: "全麦面包提供碳水帮助训练后恢复。"
-        }
+    ],
+
+    dinner: [
+      {
+        mealType: "晚餐", name: "香煎鱼配红薯凉拌菠菜", totalTime: "25分钟", calories: "约800大卡", protein: "约70g",
+        ingredients: [
+          { name: "龙利鱼/巴沙鱼", amount: "300g", grams: "300g", fist: "1个手掌", protein: "60g", category: "protein" },
+          { name: "红薯", amount: "2个中等", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
+          { name: "菠菜", amount: "2把", grams: "400g", fist: "2个拳头", protein: "10.4g", category: "vegetable" },
+          { name: "蒜末、生抽、醋", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
+        ],
+        steps: ["红薯蒸熟", "鱼块煎每面3-4分钟", "菠菜焯水拌蒜蓉生抽", "摆盘"],
+        tips: "晚餐清淡，凉拌菜少放油。"
+      },
+      {
+        mealType: "晚餐", name: "鸡胸芦笋沙拉", totalTime: "20分钟", calories: "约760大卡", protein: "约82g",
+        ingredients: [
+          { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
+          { name: "藜麦", amount: "100g生", grams: "100g", fist: "0.7个拳头", protein: "13g", category: "carb" },
+          { name: "芦笋", amount: "200g", grams: "200g", fist: "1个拳头", protein: "4.4g", category: "vegetable" },
+          { name: "圣女果", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "1.4g", category: "fruit" }
+        ],
+        steps: ["鸡胸煮熟撕条", "藜麦煮熟", "芦笋焯水切段", "混合淋油醋汁"],
+        tips: "沙拉酱用油醋代替蛋黄酱，热量更低。"
+      },
+      {
+        mealType: "晚餐", name: "牛肉炒芥蓝", totalTime: "20分钟", calories: "约840大卡", protein: "约84g",
+        ingredients: [
+          { name: "牛肉", amount: "250g", grams: "250g", fist: "1个手掌", protein: "52g", category: "protein" },
+          { name: "糙米", amount: "120g生", grams: "120g", fist: "0.8个拳头", protein: "9g", category: "carb" },
+          { name: "芥蓝", amount: "250g", grams: "250g", fist: "1.2个拳头", protein: "6.5g", category: "vegetable" },
+          { name: "红黄彩椒", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+        ],
+        steps: ["牛肉逆纹切片腌", "糙米煮熟", "芥蓝彩椒快炒", "下牛肉翻炒调味"],
+        tips: "芥蓝梗去皮更嫩，快炒保脆。"
+      },
+      {
+        mealType: "晚餐", name: "虾仁豆腐煲", totalTime: "25分钟", calories: "约820大卡", protein: "约86g",
+        ingredients: [
+          { name: "虾仁", amount: "250g", grams: "250g", fist: "1个手掌", protein: "48g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "豆腐", amount: "300g", grams: "300g", fist: "0.8个手掌", protein: "33g", category: "protein" },
+          { name: "娃娃菜", amount: "200g", grams: "200g", fist: "1个拳头", protein: "3.6g", category: "vegetable" }
+        ],
+        steps: ["豆腐切块煎香", "加水和虾仁娃娃菜煮", "调味收汁", "配米饭"],
+        tips: "虾仁豆腐双蛋白，清淡饱腹。"
+      },
+      {
+        mealType: "晚餐", name: "蒸蛋羹配秋葵", totalTime: "20分钟", calories: "约740大卡", protein: "约70g",
+        ingredients: [
+          { name: "鸡蛋", amount: "6个", grams: "300g", fist: "1.5个手掌", protein: "37.8g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "秋葵", amount: "200g", grams: "200g", fist: "1个拳头", protein: "3.6g", category: "vegetable" },
+          { name: "香菇（鲜）", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "4g", category: "vegetable" }
+        ],
+        steps: ["鸡蛋打散加温水蒸成羹", "秋葵香菇焯水切段摆旁", "淋少许生抽"],
+        tips: "蒸蛋用温水更嫩滑，比例1:1.5。"
+      },
+      {
+        mealType: "晚餐", name: "瘦肉炒莴笋", totalTime: "20分钟", calories: "约800大卡", protein: "约78g",
+        ingredients: [
+          { name: "瘦猪肉", amount: "250g", grams: "250g", fist: "1个手掌", protein: "50g", category: "protein" },
+          { name: "红薯", amount: "2个中等", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
+          { name: "莴笋", amount: "300g", grams: "300g", fist: "1.5个拳头", protein: "3g", category: "vegetable" },
+          { name: "胡萝卜", amount: "1根", grams: "100g", fist: "0.5个拳头", protein: "1.1g", category: "vegetable" }
+        ],
+        steps: ["瘦肉切丝腌", "红薯蒸熟", "莴笋胡萝卜切丝快炒", "下肉丝调味"],
+        tips: "莴笋清脆，晚餐吃着没负担。"
+      },
+      {
+        mealType: "晚餐", name: "三文鱼蔬菜卷", totalTime: "25分钟", calories: "约860大卡", protein: "约82g",
+        ingredients: [
+          { name: "三文鱼", amount: "250g", grams: "250g", fist: "0.8个手掌", protein: "52g", category: "protein" },
+          { name: "全麦饼", amount: "3张", grams: "150g", fist: "1个拳头", protein: "15g", category: "carb" },
+          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "紫甘蓝", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "2.4g", category: "vegetable" }
+        ],
+        steps: ["三文鱼切条微微煎", "黄瓜紫甘蓝切丝", "铺在全麦饼上卷起", "对半切摆盘"],
+        tips: "蔬菜卷清爽，适合晚餐。"
+      },
+      {
+        mealType: "晚餐", name: "白灼虾配蒜蓉空心菜", totalTime: "20分钟", calories: "约780大卡", protein: "约80g",
+        ingredients: [
+          { name: "虾", amount: "300g", grams: "300g", fist: "1个手掌", protein: "57g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "空心菜", amount: "300g", grams: "300g", fist: "1.5个拳头", protein: "6.6g", category: "vegetable" },
+          { name: "蒜末、生抽", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
+        ],
+        steps: ["虾沸水煮红捞出", "空心菜焯水拌蒜蓉生抽", "配米饭"],
+        tips: "白灼最省油，虾鲜甜原味。"
+      },
+      {
+        mealType: "晚餐", name: "豆腐菌菇汤", totalTime: "25分钟", calories: "约720大卡", protein: "约76g",
+        ingredients: [
+          { name: "豆腐", amount: "350g", grams: "350g", fist: "0.9个手掌", protein: "38g", category: "protein" },
+          { name: "糙米", amount: "120g生", grams: "120g", fist: "0.8个拳头", protein: "9g", category: "carb" },
+          { name: "金针菇", amount: "200g", grams: "200g", fist: "1个拳头", protein: "5.4g", category: "vegetable" },
+          { name: "水发木耳", amount: "100g", grams: "100g", fist: "0.5个拳头", protein: "1.2g", category: "vegetable" }
+        ],
+        steps: ["糙米煮熟", "金针菇木耳撕小", "与豆腐同煮成汤", "撒葱花"],
+        tips: "菌菇提鲜，汤里不放油也好喝。"
+      },
+      {
+        mealType: "晚餐", name: "鸡腿蔬菜汤", totalTime: "30分钟", calories: "约820大卡", protein: "约78g",
+        ingredients: [
+          { name: "鸡腿", amount: "2个", grams: "300g", fist: "1个手掌", protein: "50g", category: "protein" },
+          { name: "玉米", amount: "1根", grams: "150g", fist: "0.5个拳头", protein: "4.5g", category: "vegetable" },
+          { name: "西葫芦", amount: "200g", grams: "200g", fist: "1个拳头", protein: "2.4g", category: "vegetable" },
+          { name: "胡萝卜", amount: "1根", grams: "100g", fist: "0.5个拳头", protein: "1.1g", category: "vegetable" }
+        ],
+        steps: ["鸡腿去皮焯水", "与玉米胡萝卜同炖", "下西葫芦煮软", "少盐调味"],
+        tips: "鸡汤暖胃，去皮减脂。"
+      },
+      {
+        mealType: "晚餐", name: "蛤蜊蒸蛋", totalTime: "20分钟", calories: "约760大卡", protein: "约76g",
+        ingredients: [
+          { name: "蛤蜊", amount: "300g", grams: "300g", fist: "1个手掌", protein: "36g", category: "protein" },
+          { name: "鸡蛋", amount: "5个", grams: "250g", fist: "1.2个手掌", protein: "31.5g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "小白菜", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "3.3g", category: "vegetable" }
+        ],
+        steps: ["蛤蜊煮开口取肉", "鸡蛋加温水蒸半凝固", "铺蛤蜊续蒸", "配米饭与小白菜"],
+        tips: "蛤蜊鲜味融入蛋羹，无需味精。"
+      },
+      {
+        mealType: "晚餐", name: "鸭胸炒韭菜", totalTime: "20分钟", calories: "约800大卡", protein: "约78g",
+        ingredients: [
+          { name: "鸭胸", amount: "250g", grams: "250g", fist: "0.8个手掌", protein: "50g", category: "protein" },
+          { name: "藜麦", amount: "100g生", grams: "100g", fist: "0.7个拳头", protein: "13g", category: "carb" },
+          { name: "韭菜", amount: "200g", grams: "200g", fist: "1个拳头", protein: "4.4g", category: "vegetable" },
+          { name: "红黄彩椒", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+        ],
+        steps: ["鸭胸去皮切丝煎", "藜麦煮熟", "韭菜彩椒快炒", "下鸭丝调味"],
+        tips: "韭菜香气足，快炒不出水。"
+      },
+      {
+        mealType: "晚餐", name: "羊肉炒蒜毫", totalTime: "20分钟", calories: "约860大卡", protein: "约80g",
+        ingredients: [
+          { name: "羊肉", amount: "250g", grams: "250g", fist: "0.8个手掌", protein: "50g", category: "protein" },
+          { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
+          { name: "蒜毫/蒜苗", amount: "200g", grams: "200g", fist: "1个拳头", protein: "3.6g", category: "vegetable" },
+          { name: "胡萝卜", amount: "1根", grams: "100g", fist: "0.5个拳头", protein: "1.1g", category: "vegetable" }
+        ],
+        steps: ["羊肉切丝用生抽腌", "蒜毫切段", "热锅快炒羊肉", "下蒜毫胡萝卜翻炒"],
+        tips: "蒜毫比蒜苗更嫩，炒肉很香。"
+      },
+      {
+        mealType: "晚餐", name: "金枪鱼蔬菜沙拉", totalTime: "15分钟", calories: "约740大卡", protein: "约80g",
+        ingredients: [
+          { name: "金枪鱼罐头", amount: "200g", grams: "200g", fist: "1个手掌", protein: "54g", category: "protein" },
+          { name: "全麦面包", amount: "3片", grams: "105g", fist: "0.8个拳头", protein: "9.5g", category: "carb" },
+          { name: "苦菊", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "3g", category: "vegetable" },
+          { name: "圣女果", amount: "200g", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "fruit" }
+        ],
+        steps: ["苦菊洗净撕小", "金枪鱼沥干铺上", "圣女果对半", "淋油醋汁配面包"],
+        tips: "苦菊微苦清热，适合夏天。"
+      },
+      {
+        mealType: "晚餐", name: "木耳炒鸡蛋配杂粮饭", totalTime: "20分钟", calories: "约760大卡", protein: "约74g",
+        ingredients: [
+          { name: "鸡蛋", amount: "5个", grams: "250g", fist: "1.2个手掌", protein: "31.5g", category: "protein" },
+          { name: "杂粮饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "8g", category: "carb" , },
+          { name: "水发木耳", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+        ],
+        steps: ["鸡蛋炒散盛出", "木耳黄瓜翻炒", "倒回鸡蛋调味", "配杂粮饭"],
+        tips: "木耳清肠，晚餐负担小。"
       }
-    },
-    // ========== 周四 ==========
-    {
-      day: 4, dayName: "周四",
-      meals: {
-        breakfast: {
-          id: "thu-bf", mealType: "早餐", name: "牛奶燕麦粥配苹果",
-          totalTime: "8分钟", calories: "约840大卡", protein: "约56g",
-          ingredients: [
-            { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
-            { name: "燕麦片", amount: "100g", grams: "100g", fist: "1个拳头", protein: "13g", category: "carb" },
-            { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
-            { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" }
-          ],
-          steps: [
-            "牛奶倒入锅中加热（不要煮沸）",
-            "加入燕麦片搅拌煮3分钟",
-            "苹果洗净切块放入碗中"
-          ],
-          tips: "用牛奶代替水煮燕麦，蛋白质和钙含量更高。"
-        },
-        lunch: {
-          id: "thu-lunch", mealType: "午餐", name: "煎鱼配米饭炒菠菜",
-          totalTime: "20分钟", calories: "约920大卡", protein: "约76g",
-          ingredients: [
-            { name: "龙利鱼/巴沙鱼", amount: "360g", grams: "360g", fist: "1个手掌", protein: "72g", category: "protein" },
-            { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
-            { name: "菠菜", amount: "2把", grams: "400g", fist: "2个拳头", protein: "10.4g", category: "vegetable" },
-            { name: "蒜末", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "鱼块吸干水分，撒盐黑胡椒腌5分钟",
-            "平底锅少油，中火煎鱼每面3分钟",
-            "菠菜焯水30秒捞出",
-            "热锅少油爆香蒜，下菠菜翻炒，加盐调味",
-            "配米饭食用"
-          ],
-          tips: "鱼不要频繁翻面，一面煎好再翻。"
-        },
-        dinner: {
-          id: "thu-dinner", mealType: "晚餐", name: "豆腐玉米沙拉",
-          totalTime: "15分钟", calories: "约760大卡", protein: "约48g",
-          ingredients: [
-            { name: "北豆腐", amount: "400g", grams: "400g", fist: "1个手掌", protein: "32.4g", category: "protein" },
-            { name: "玉米", amount: "2根", grams: "400g", fist: "1个拳头", protein: "16g", category: "carb" },
-            { name: "生菜", amount: "10-12叶", grams: "300g", fist: "2个拳头", protein: "4.2g", category: "vegetable" },
-            { name: "番茄", amount: "2个", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
-            { name: "生抽、醋、香油", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" }
-          ],
-          steps: [
-            "玉米蒸熟，剥下玉米粒",
-            "豆腐切丁，开水焯1分钟沥干",
-            "生菜撕小片，番茄切块",
-            "所有食材放大碗，加生抽、醋、几滴香油拌匀"
-          ],
-          tips: "豆腐焯水去豆腥味且口感更好。沙拉酱热量高，用生抽醋替代。"
-        },
-        snack: {
-          id: "thu-snack", mealType: "加餐（休息日）", name: "香蕉+牛奶+蛋白粉",
-          totalTime: "2分钟", calories: "约620大卡", protein: "约64g",
-          ingredients: [
-            { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
-            { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
-            { name: "蛋白粉", amount: "2勺", grams: "60g", fist: "—", protein: "48g", category: "protein" }
-          ],
-          steps: ["直接食用"],
-          tips: "香蕉提供快碳，牛奶提供蛋白质，是训练后的黄金组合。"
-        }
+    ],
+
+    snack: [
+      {
+        mealType: "加餐（休息日）", name: "香蕉+牛奶+蛋白粉", totalTime: "2分钟", calories: "约500大卡", protein: "约40g",
+        ingredients: [
+          { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
+          { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
+          { name: "蛋白粉", amount: "2勺", grams: "60g", fist: "—", protein: "48g", category: "protein" }
+        ],
+        steps: ["直接食用即可"],
+        tips: "训练后30分钟内加餐，蛋白质+碳水帮助恢复。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "希腊酸奶+蓝莓+燕麦", totalTime: "3分钟", calories: "约460大卡", protein: "约38g",
+        ingredients: [
+          { name: "希腊酸奶", amount: "300g", grams: "300g", fist: "0.8杯", protein: "30g", category: "protein" },
+          { name: "蓝莓", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "0.9g", category: "fruit" },
+          { name: "燕麦片", amount: "50g", grams: "50g", fist: "0.5个拳头", protein: "6.5g", category: "carb" }
+        ],
+        steps: ["酸奶舀碗", "撒蓝莓燕麦"],
+        tips: "低糖高蛋，训练后好选择。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "水煮蛋+黄瓜", totalTime: "10分钟", calories: "约380大卡", protein: "约34g",
+        ingredients: [
+          { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
+          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+        ],
+        steps: ["鸡蛋煮熟", "黄瓜洗净切条"],
+        tips: "简单高蛋白，热量低。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "牛奶+全麦面包", totalTime: "2分钟", calories: "约420大卡", protein: "约32g",
+        ingredients: [
+          { name: "牛奶", amount: "400ml", grams: "400g", fist: "0.7杯", protein: "12.8g", category: "protein" },
+          { name: "全麦面包", amount: "2片", grams: "70g", fist: "0.5个拳头", protein: "6.3g", category: "carb" }
+        ],
+        steps: ["直接食用"],
+        tips: "方便携带的蛋白加餐。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "坚果+酸奶", totalTime: "2分钟", calories: "约440大卡", protein: "约30g",
+        ingredients: [
+          { name: "无糖酸奶", amount: "300g", grams: "300g", fist: "0.8杯", protein: "9g", category: "protein" },
+          { name: "混合坚果", amount: "30g", grams: "30g", fist: "—", protein: "6g", category: "vegetable" },
+          { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
+        ],
+        steps: ["酸奶加蛋白粉搅匀", "撒坚果"],
+        tips: "坚果补健康脂肪，控制量。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "蛋白棒+苹果", totalTime: "1分钟", calories: "约400大卡", protein: "约35g",
+        ingredients: [
+          { name: "蛋白棒", amount: "1根", grams: "60g", fist: "—", protein: "30g", category: "protein" },
+          { name: "苹果", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "0.6g", category: "fruit" }
+        ],
+        steps: ["直接食用"],
+        tips: "外出便携加餐。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "虾仁+牛油果", totalTime: "8分钟", calories: "约420大卡", protein: "约36g",
+        ingredients: [
+          { name: "虾仁", amount: "150g", grams: "150g", fist: "0.5个手掌", protein: "29g", category: "protein" },
+          { name: "牛油果", amount: "半个", grams: "100g", fist: "0.3个拳头", protein: "2g", category: "fruit" }
+        ],
+        steps: ["虾仁煮熟", "牛油果切片", "撒黑胡椒"],
+        tips: "优质蛋白配好脂肪。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "豆腐脑+圣女果", totalTime: "3分钟", calories: "约360大卡", protein: "约33g",
+        ingredients: [
+          { name: "豆腐", amount: "300g", grams: "300g", fist: "0.8个手掌", protein: "33g", category: "protein" },
+          { name: "圣女果", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "1.4g", category: "fruit" }
+        ],
+        steps: ["豆腐脑淋生抽香油", "圣女果洗净"],
+        tips: "低卡清爽的加餐。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "鸡胸沙拉+圣女果", totalTime: "10分钟", calories: "约380大卡", protein: "约40g",
+        ingredients: [
+          { name: "鸡胸肉", amount: "150g", grams: "150g", fist: "0.5个手掌", protein: "35g", category: "protein" },
+          { name: "生菜", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "2.4g", category: "vegetable" },
+          { name: "圣女果", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "1.4g", category: "fruit" }
+        ],
+        steps: ["鸡胸煮熟撕条", "生菜圣女果拌油醋汁", "撒鸡丝"],
+        tips: "纯蛋白加餐，几乎无负担。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "毛豆+玉米", totalTime: "15分钟", calories: "约400大卡", protein: "约34g",
+        ingredients: [
+          { name: "毛豆", amount: "200g", grams: "200g", fist: "1个拳头", protein: "20g", category: "vegetable" },
+          { name: "玉米", amount: "1根", grams: "150g", fist: "0.5个拳头", protein: "4.5g", category: "vegetable" },
+          { name: "牛奶", amount: "300ml", grams: "300g", fist: "0.5杯", protein: "9.6g", category: "protein" }
+        ],
+        steps: ["毛豆玉米煮熟", "配牛奶"],
+        tips: "植物蛋白+钙质，简单顶饿。"
+      },
+      {
+        mealType: "加餐（休息日）", name: "希腊酸奶+奇亚籽", totalTime: "3分钟", calories: "约420大卡", protein: "约36g",
+        ingredients: [
+          { name: "希腊酸奶", amount: "300g", grams: "300g", fist: "0.8杯", protein: "30g", category: "protein" },
+          { name: "奇亚籽", amount: "20g", grams: "20g", fist: "—", protein: "3.4g", category: "vegetable" },
+          { name: "草莓", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "1g", category: "fruit" }
+        ],
+        steps: ["奇亚籽泡入酸奶", "草莓切片摆上"],
+        tips: "奇亚籽补Omega-3与纤维。"
       }
-    },
-    // ========== 周五 ==========
-    {
-      day: 5, dayName: "周五",
-      meals: {
-        breakfast: {
-          id: "fri-bf", mealType: "早餐", name: "鸡蛋三明治配葡萄",
-          totalTime: "10分钟", calories: "约840大卡", protein: "约60g",
-          ingredients: [
-            { name: "全麦面包", amount: "4片", grams: "140g", fist: "1个拳头", protein: "12.6g", category: "carb" },
-            { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
-            { name: "生菜", amount: "4叶", grams: "60g", fist: "—", protein: "0.8g", category: "vegetable" },
-            { name: "葡萄", amount: "一小串", grams: "300g", fist: "1个拳头", protein: "1g", category: "fruit" },
-            { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" }
-          ],
-          steps: [
-            "煎两个荷包蛋（少油）",
-            "面包上铺生菜和荷包蛋，盖上面包",
-            "葡萄洗净食用"
-          ],
-          tips: "荷包蛋不要煎太老，蛋黄微糖心更好吃。"
-        },
-        lunch: {
-          id: "fri-lunch", mealType: "午餐", name: "鸡胸肉炒番茄配米饭",
-          totalTime: "20分钟", calories: "约880大卡", protein: "约84g",
-          ingredients: [
-            { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
-            { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
-            { name: "番茄", amount: "4个", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
-            { name: "青椒", amount: "2个", grams: "200g", fist: "1个拳头", protein: "2g", category: "vegetable" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "鸡胸肉切丁，腌制10分钟",
-            "番茄切块，青椒切条",
-            "热锅少油炒鸡丁至变色盛出",
-            "炒番茄出汁，加青椒翻炒",
-            "倒回鸡丁，加盐调味，配米饭食用"
-          ],
-          tips: "番茄炒出汁再放鸡丁，味道更均匀。"
-        },
-        dinner: {
-          id: "fri-dinner", mealType: "晚餐", name: "瘦牛肉红薯炒西兰花",
-          totalTime: "25分钟", calories: "约840大卡", protein: "约70g",
-          ingredients: [
-            { name: "瘦牛肉", amount: "240g", grams: "240g", fist: "1个手掌", protein: "62g", category: "protein" },
-            { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
-            { name: "西兰花", amount: "1棵", grams: "400g", fist: "2个拳头", protein: "11.2g", category: "vegetable" },
-            { name: "蒜末", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "牛肉逆纹切薄片，腌制10分钟",
-            "红薯去皮切小块，蒸10分钟至半熟",
-            "西兰花焯水1分钟",
-            "热锅少油炒牛肉至变色盛出",
-            "炒蒜末，加红薯块和西兰花翻炒，倒回牛肉调味"
-          ],
-          tips: "牛肉逆纹切才嫩。红薯先蒸再炒省时间。"
-        },
-        snack: {
-          id: "fri-snack", mealType: "加餐（训练后）", name: "牛奶+苹果+蛋白粉",
-          totalTime: "2分钟", calories: "约500大卡", protein: "约42g",
-          ingredients: [
-            { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
-            { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
-            { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
-          ],
-          steps: ["直接食用"],
-          tips: "周五训练后补充蛋白质恢复周末。"
-        }
+    ]
+  },
+
+  // ===== 由菜品池确定性生成某一周的菜单 =====
+  // 每周 7 天，每种餐型从池中取 7 道连续且不重复的菜；
+  // 不同周用不同偏移(步进5)，保证相邻周不同、且循环 8 周后才重复。
+  _buildWeek(weekNum) {
+    const types = ['breakfast', 'lunch', 'dinner', 'snack'];
+    const typeOffset = { breakfast: 0, lunch: 3, dinner: 6, snack: 9 };
+    const STEP = 7;
+    const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+    const days = [];
+    for (let d = 1; d <= 7; d++) {
+      const meals = {};
+      for (const t of types) {
+        const pool = this.pools[t];
+        const L = pool.length;
+        const start = ((weekNum - 1) * STEP + typeOffset[t]) % L;
+        const idx = (start + (d - 1)) % L;
+        const base = pool[idx];
+        meals[t] = { ...base, id: `w${weekNum}-d${d}-${t}`, mealType: base.mealType };
       }
-    },
-    // ========== 周六 ==========
-    {
-      day: 6, dayName: "周六",
-      meals: {
-        breakfast: {
-          id: "sat-bf", mealType: "早餐", name: "水煮蛋全麦面包配香蕉",
-          totalTime: "10分钟", calories: "约840大卡", protein: "约56g",
-          ingredients: [
-            { name: "鸡蛋", amount: "6个", grams: "300g", fist: "1.5个手掌", protein: "38g", category: "protein" },
-            { name: "全麦面包", amount: "4片", grams: "140g", fist: "1个拳头", protein: "12.6g", category: "carb" },
-            { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
-            { name: "牛奶", amount: "400ml", grams: "400g", fist: "1杯", protein: "12.8g", category: "protein" }
-          ],
-          steps: [
-            "鸡蛋水煮7-10分钟",
-            "全麦面包烤一下",
-            "鸡蛋切片夹面包，配香蕉食用"
-          ],
-          tips: "周末可以多花点时间做一顿丰盛的早餐。"
-        },
-        lunch: {
-          id: "sat-lunch", mealType: "午餐", name: "虾仁冬瓜汤配米饭",
-          totalTime: "20分钟", calories: "约860大卡", protein: "约84g",
-          ingredients: [
-            { name: "虾仁", amount: "360g", grams: "360g", fist: "1个手掌", protein: "86g", category: "protein" },
-            { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
-            { name: "冬瓜", amount: "600g", grams: "600g", fist: "2个拳头", protein: "1.8g", category: "vegetable" },
-            { name: "姜片、葱花", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "虾仁解冻沥干，冬瓜去皮切薄片",
-            "锅中少油，放姜片爆香，加冬瓜翻炒",
-            "加水烧开，中火煮10分钟至冬瓜透明",
-            "下虾仁煮2分钟，加盐调味，撒葱花"
-          ],
-          tips: "冬瓜煮到透明口感最好。虾仁最后放保持嫩。"
-        },
-        dinner: {
-          id: "sat-dinner", mealType: "晚餐", name: "三文鱼配烤蔬菜",
-          totalTime: "25分钟", calories: "约900大卡", protein: "约70g",
-          ingredients: [
-            { name: "三文鱼", amount: "240g", grams: "240g", fist: "1个手掌", protein: "52.8g", category: "protein" },
-            { name: "土豆", amount: "2个", grams: "300g", fist: "1个拳头", protein: "6g", category: "carb" },
-            { name: "西兰花", amount: "1棵", grams: "300g", fist: "1.5个拳头", protein: "8.4g", category: "vegetable" },
-            { name: "青椒", amount: "2个", grams: "200g", fist: "1个拳头", protein: "2g", category: "vegetable" },
-            { name: "橄榄油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "土豆切小块，蒸10分钟至半熟",
-            "西兰花掰小朵，青椒切块",
-            "蔬菜拌少许橄榄油和盐，铺烤盘",
-            "三文鱼放蔬菜上，烤箱200°C烤15分钟",
-            "（没有烤箱可平底锅煎鱼+炒蔬菜）"
-          ],
-          tips: "三文鱼含Omega-3脂肪酸，对减脂和心血管都有益。烤蔬菜比炒更省油。"
-        },
-        snack: {
-          id: "sat-snack", mealType: "加餐（休息日）", name: "西瓜+水煮蛋+牛奶",
-          totalTime: "10分钟", calories: "约460大卡", protein: "约32g",
-          ingredients: [
-            { name: "西瓜", amount: "4块", grams: "400g", fist: "1个拳头", protein: "1.2g", category: "fruit" },
-            { name: "鸡蛋", amount: "2个", grams: "100g", fist: "半手掌", protein: "12.6g", category: "protein" },
-            { name: "牛奶", amount: "400ml", grams: "400g", fist: "1杯", protein: "12.8g", category: "protein" }
-          ],
-          steps: ["鸡蛋水煮", "西瓜切块食用"],
-          tips: "周末加餐可以更随意。"
-        }
-      }
-    },
-    // ========== 周日 ==========
-    {
-      day: 7, dayName: "周日",
-      meals: {
-        breakfast: {
-          id: "sun-bf", mealType: "早餐", name: "牛奶燕麦粥配水煮蛋",
-          totalTime: "10分钟", calories: "约860大卡", protein: "约60g",
-          ingredients: [
-            { name: "牛奶", amount: "600ml", grams: "600g", fist: "1杯", protein: "19.2g", category: "protein" },
-            { name: "燕麦片", amount: "100g", grams: "100g", fist: "1个拳头", protein: "13g", category: "carb" },
-            { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
-            { name: "蓝莓", amount: "一小把", grams: "100g", fist: "半个拳头", protein: "0.8g", category: "fruit" }
-          ],
-          steps: [
-            "牛奶加热后加燕麦煮3分钟",
-            "鸡蛋水煮7分钟",
-            "蓝莓洗净撒在燕麦粥上"
-          ],
-          tips: "蓝莓抗氧化能力强，是减脂期的好水果。"
-        },
-        lunch: {
-          id: "sun-lunch", mealType: "午餐", name: "鸡胸肉炒白菜配米饭",
-          totalTime: "20分钟", calories: "约860大卡", protein: "约80g",
-          ingredients: [
-            { name: "鸡胸肉", amount: "300g", grams: "300g", fist: "1个手掌", protein: "70g", category: "protein" },
-            { name: "米饭", amount: "2碗", grams: "熟300g", fist: "1个拳头", protein: "7.8g", category: "carb" },
-            { name: "白菜", amount: "8-10叶", grams: "500g", fist: "2个拳头", protein: "6.6g", category: "vegetable" },
-            { name: "蒜末", amount: "适量", grams: "—", fist: "—", protein: "0g", category: "seasoning" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "鸡胸肉切片，腌制10分钟",
-            "白菜切段",
-            "热锅少油炒鸡肉至变色盛出",
-            "炒蒜末，下白菜炒软",
-            "倒回鸡肉，加盐调味，配米饭"
-          ],
-          tips: "白菜炒软才好吃，不要急。鸡胸肉切片比切丁更入味。"
-        },
-        dinner: {
-          id: "sun-dinner", mealType: "晚餐", name: "豆腐番茄蛋花汤配红薯",
-          totalTime: "20分钟", calories: "约840大卡", protein: "约64g",
-          ingredients: [
-            { name: "北豆腐", amount: "400g", grams: "400g", fist: "1个手掌", protein: "32.4g", category: "protein" },
-            { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
-            { name: "番茄", amount: "4个", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
-            { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
-            { name: "虾皮", amount: "2小把", grams: "20g", fist: "—", protein: "8g", category: "protein" },
-            { name: "食用油", amount: "2瓷勺", grams: "20g", fist: "—", protein: "0g", category: "oil" }
-          ],
-          steps: [
-            "红薯蒸15分钟",
-            "豆腐切小块，番茄切块",
-            "锅中少油炒番茄出汁，加水烧开",
-            "放入豆腐煮5分钟",
-            "鸡蛋打散淋入汤中，加盐调味"
-          ],
-          tips: "蛋花要在汤沸腾时淋，边淋边搅才能形成细丝。"
-        },
-        snack: {
-          id: "sun-snack", mealType: "加餐（休息日）", name: "香蕉+牛奶+蛋白粉",
-          totalTime: "2分钟", calories: "约500大卡", protein: "约40g",
-          ingredients: [
-            { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
-            { name: "牛奶", amount: "500ml", grams: "500g", fist: "1杯", protein: "16g", category: "protein" },
-            { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
-          ],
-          steps: ["直接食用"],
-          tips: "休息日加餐可选，如果饿了就吃。"
-        }
-      }
+      days.push({ day: d, dayName: dayNames[d - 1], meals });
     }
-  ]
+    return days;
+  },
+
+  _buildAllWeeks() {
+    const N = 8;
+    const all = [];
+    for (let w = 1; w <= N; w++) all.push(this._buildWeek(w));
+    return all;
+  }
 };
 
-// 4周食谱轮换池
-recipes.allWeeklyMenus = [
-  recipes.weeklyMenus,  // 第1周
-  week2Menus,            // 第2周
-  week3Menus,            // 第3周
-  week4Menus             // 第4周
-];
-
-// ===== 单人份食谱：在双人份基础上把用量减半 =====
+// 单人份：在双人份基础上把用量减半
 function halfNumInStr(str) {
   if (typeof str !== 'string') return str;
   return str.replace(/-?\d+(\.\d+)?/g, (m) => {
@@ -558,21 +659,22 @@ function scaleMenusToSingle(menus) {
   return clone;
 }
 
+recipes.allWeeklyMenus = recipes._buildAllWeeks();
 recipes.allWeeklyMenusSingle = recipes.allWeeklyMenus.map(m => scaleMenusToSingle(m));
 
-// 根据当前周数获取对应周的食谱（4周轮换）
-// weekInRound: 1-12（一个周期12周），每4周换一轮食谱
+// 根据当前周数获取对应周的食谱（8周轮换）
+// weekInRound: 1-N（一个周期最多按 8 周轮换）
 // mode: 'double'（双人份，默认）| 'single'（单人份）
 recipes.getWeeklyMenus = function(weekInRound, mode) {
   if (!weekInRound || weekInRound < 1) weekInRound = 1;
-  const weekIdx = (weekInRound - 1) % 4;  // 0-3 对应第1-4周食谱
+  const N = this.allWeeklyMenus.length; // 8
+  const weekIdx = (weekInRound - 1) % N;
   const single = mode === 'single';
   return single ? this.allWeeklyMenusSingle[weekIdx] : this.allWeeklyMenus[weekIdx];
 };
 
 // 获取当前是第几周（从store中获取）
 recipes.getCurrentWeekMenus = function() {
-  // 从全局状态获取当前周数
   const week = (window.__store?.state?.currentWeek) || 1;
   const mode = (window.__store?.state?.appMode) || 'double';
   return this.getWeeklyMenus(week, mode);
