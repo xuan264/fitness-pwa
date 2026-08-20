@@ -1,12 +1,12 @@
-// 食谱数据（家常减脂健身版 · v65g）
+// 食谱数据（家常减脂健身版 · v65h）
 // 设计目标（初心：家常、不花里胡哨、适合自己做饭）：
 //  - 减脂健身框架：足量蛋白 + 适量主食（也可用水果/坚果替代部分主食）+ 足量蔬菜
 //  - 烹饪以蒸、煮、凉拌、少油快炒、家常小炒为主，清淡少油
 //  - “家常”硬标准：蔬菜店/菜场能买到、不需要复杂处理、不那么昂贵、烹饪方便
-//  - 剔除：豆腐脑（需自制）、鸭胸（用户不认识）、藜麦/奇亚籽（小众网红，用户不认识）
+//  - 剔除：豆腐脑（需自制）、鸭胸（用户不认识）、藜麦/奇亚籽（小众网红，用户不认识）、毛豆（用户不要）
 //  - 保留并允许：鸡胸/鸡腿/瘦猪肉/牛肉、普通鱼/虾/蛤蜊、豆腐/豆浆、蛋奶、米面杂粮、
 //    各类常见蔬菜、健身常用的蛋白粉/蛋白棒；三文鱼/牛油果按用户要求保留
-//  - 每周 7 天不重样；同一星期几在 8 周里绝不重样（种子化打乱，打破机械轮转）
+//  - 每周 7 天不重样；同一星期几在 8 周里绝不重样（确定性轮转法，各餐型独立步长，相邻周错开最大）
 //  - 蛋白质/蔬菜种类丰富（香菇、蒜毫/蒜苗、油麦菜、秋葵、荷兰豆、紫甘蓝、木耳、海带…）
 
 export const recipes = {
@@ -267,16 +267,6 @@ export const recipes = {
         ],
         steps: ["鸡片用蚝油腌", "香菇煸香滑炒", "配米饭"],
         tips: "鲜香菇提鲜。"
-      },
-      {
-        mealType: "午餐", name: "毛豆炒肉丝", totalTime: "20分钟", calories: "约720大卡", protein: "约58g",
-        ingredients: [
-          { name: "瘦猪肉", amount: "180g", grams: "180g", fist: "0.7个手掌", protein: "36g", category: "protein" },
-          { name: "米饭", amount: "1.5碗", grams: "熟250g", fist: "0.8个拳头", protein: "6.5g", category: "carb" },
-          { name: "毛豆", amount: "200g", grams: "200g", fist: "1个拳头", protein: "20g", category: "vegetable" }
-        ],
-        steps: ["肉丝腌", "毛豆焯水", "少油快炒", "配米饭"],
-        tips: "毛豆植物蛋白高。"
       },
       {
         mealType: "午餐", name: "海带豆腐汤", totalTime: "25分钟", calories: "约600大卡", protein: "约50g",
@@ -549,16 +539,6 @@ export const recipes = {
         tips: "纯蛋白加餐。"
       },
       {
-        mealType: "加餐（休息日）", name: "毛豆+玉米", totalTime: "15分钟", calories: "约320大卡", protein: "约28g",
-        ingredients: [
-          { name: "毛豆", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "15g", category: "vegetable" },
-          { name: "玉米", amount: "半根", grams: "75g", fist: "0.3个拳头", protein: "2.3g", category: "vegetable" },
-          { name: "牛奶", amount: "200ml", grams: "200g", fist: "0.4杯", protein: "6.4g", category: "protein" }
-        ],
-        steps: ["毛豆玉米煮熟", "配牛奶"],
-        tips: "植物蛋白+钙。"
-      },
-      {
         mealType: "加餐（休息日）", name: "希腊酸奶+草莓", totalTime: "3分钟", calories: "约250大卡", protein: "约26g",
         ingredients: [
           { name: "希腊酸奶", amount: "250g", grams: "250g", fist: "0.7杯", protein: "25g", category: "protein" },
@@ -579,62 +559,26 @@ export const recipes = {
     ]
   },
 
-  // ===== 由菜品池确定性“打乱”生成某一周的菜单 =====
-  // 用固定种子的伪随机，把每餐型的菜打散分配到 8周×7天：
-  //  - 每周 7 天该餐型不重样
-  //  - 同一个星期几（如所有“周一”）在 8 周里绝不重样 → 看起来不规律、更“混乱”
-  //  - 种子固定 → 每次加载结果一致（可复现），不像纯随机那样每次刷新都变
-  _seedFrom(str) {
-    let h = 2166136261;
-    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-    return h >>> 0;
-  },
-  _mulberry32(a) {
-    return function () {
-      a |= 0; a = a + 0x6D2B79F5 | 0;
-      let t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  },
-  _ensureGrids() {
-    if (this.__grids) return this.__grids;
-    const types = ['breakfast', 'lunch', 'dinner', 'snack'];
-    const grids = {};
-    for (const t of types) {
-      const L = this.pools[t].length;
-      const rnd = this._mulberry32(this._seedFrom(t));
-      const colUsed = {};           // day -> Set(已用索引)
-      const grid = [];              // grid[week-1] = [该周每天索引]
-      for (let w = 1; w <= 8; w++) {
-        const rowUsed = new Set();
-        const row = [];
-        for (let d = 1; d <= 7; d++) {
-          const cset = colUsed[d] || (colUsed[d] = new Set());
-          const cands = [];
-          for (let i = 0; i < L; i++) if (!rowUsed.has(i) && !cset.has(i)) cands.push(i);
-          let pick;
-          if (cands.length) pick = cands[Math.floor(rnd() * cands.length)];
-          else { for (let i = 0; i < L; i++) if (!rowUsed.has(i)) { pick = i; break; } pick = pick === undefined ? 0 : pick; }
-          rowUsed.add(pick); cset.add(pick); row.push(pick);
-        }
-        grid.push(row);
-      }
-      grids[t] = grid;
-    }
-    this.__grids = grids;
-    return grids;
-  },
+  // ===== 由菜品池确定性生成某一周的菜单 =====
+  // 每周 7 天，每种餐型从池中取 7 道连续且不重复的菜（一个“7窗口”）；不同周把窗口按 STEP 平移：
+  //  - 每周 7 天不重样
+  //  - 同一个星期几在 8 周里绝不重样（STEP 与池长互质）
+  //  - 相邻周错开最大（STEP 取接近池长一半且与池长互质）→ 近期不重复
+  // 各餐型单独 STEP：breakfast 7(池12) / lunch 5(池14) / dinner 7(池15) / snack 6(池11)
   _buildWeek(weekNum) {
     const types = ['breakfast', 'lunch', 'dinner', 'snack'];
-    const grids = this._ensureGrids();
+    const typeOffset = { breakfast: 0, lunch: 3, dinner: 6, snack: 9 };
+    const STEP_BY = { breakfast: 7, lunch: 5, dinner: 7, snack: 6 };
     const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
     const days = [];
     for (let d = 1; d <= 7; d++) {
       const meals = {};
       for (const t of types) {
         const pool = this.pools[t];
-        const idx = grids[t][weekNum - 1][d - 1];
+        const L = pool.length;
+        const STEP = STEP_BY[t];
+        const start = ((weekNum - 1) * STEP + typeOffset[t]) % L;
+        const idx = (start + (d - 1)) % L;
         const base = pool[idx];
         meals[t] = { ...base, id: `w${weekNum}-d${d}-${t}`, mealType: base.mealType };
       }
