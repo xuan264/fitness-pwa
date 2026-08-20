@@ -52,12 +52,19 @@ export async function renderDiet(params) {
         <div style="flex:1;text-align:center;font-size:13px;color:var(--text-secondary);">第${week}周 / 共8周</div>
         <button onclick="switchDietWeek(${nextWeek})" class="btn btn-sm btn-outline" style="padding:4px 10px;cursor:pointer;${week >= 8 ? 'opacity:0.4;pointer-events:none;' : ''}">下一周 ›</button>
       </div>
+      ${!isCurrentWeek || selectedDay !== getDayOfWeek() ? `<div style="margin-bottom:8px;"><button onclick="backToToday()" class="btn btn-sm btn-outline" style="width:100%;border-color:var(--accent);color:var(--accent);cursor:pointer;">📍 回到今天的食谱</button></div>` : ''}
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">
-        ${[1,2,3,4,5,6,7].map(d => `
-          <div onclick="selectDietDay(${d})" class="btn btn-sm ${d === selectedDay ? 'btn-primary' : 'btn-outline'}" style="text-align:center;padding:6px 0;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">${getDayName(d)}</div>
-        `).join('')}
+        ${[1,2,3,4,5,6,7].map(d => {
+          const isToday = d === getDayOfWeek();
+          const isSel = d === selectedDay;
+          let cls = 'btn btn-sm btn-outline';
+          if (isSel) cls = 'btn btn-sm btn-primary';
+          else if (isToday) cls = 'btn btn-sm btn-accent';
+          const badge = isToday ? '<span style="font-size:9px;font-weight:700;margin-left:2px;vertical-align:super;color:#fff;">今</span>' : '';
+          return `<div onclick="selectDietDay(${d})" class="${cls}" style="text-align:center;padding:6px 0;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;">${getDayName(d)}${badge}</div>`;
+        }).join('')}
       </div>
-      ${!isCurrentWeek ? `<div style="margin-top:8px;font-size:12px;color:var(--accent);text-align:center;">⚠ 正在查看第${week}周菜谱，非本周。点击 <a onclick="backToCurrentWeek()" style="color:var(--primary);cursor:pointer;text-decoration:underline;">返回本周</a></div>` : ''}
+      ${!isCurrentWeek ? `<div style="margin-top:8px;font-size:12px;color:var(--accent);text-align:center;">⚠ 正在查看第${week}周菜谱，非本周。<a onclick="backToToday()" style="color:var(--primary);cursor:pointer;text-decoration:underline;">回到本周</a></div>` : ''}
       </div>`;
 
   // 蛋白质目标（双人份，菜谱用量已翻倍）
@@ -185,27 +192,7 @@ export async function renderDiet(params) {
     `;
   }
 
-  // 饮食框架说明
-  html += `
-    <div class="card mt-16">
-      <div class="card-title">${icons.food} 饮食框架</div>
-      <div class="font-bold text-primary" style="font-size:18px;text-align:center;padding:12px 0;">
-        1份蛋白 + 1份主食 + 2份蔬菜
-      </div>
-      <table class="data-table">
-        <thead>
-          <tr><th>类别</th><th>每餐份量</th><th>视觉参考</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>蛋白质</td><td>100-150g</td><td>1个手掌</td></tr>
-          <tr><td>主食</td><td>50-80g(生重)</td><td>1个拳头</td></tr>
-          <tr><td>蔬菜</td><td>200g+</td><td>2个拳头</td></tr>
-          <tr><td>油</td><td>25-30g/天</td><td>2-3瓷勺</td></tr>
-        </tbody>
-      </table>
-      <div class="font-sm text-secondary mt-8">蛋白质目标：${recipes.meta.proteinTarget}</div>
-    </div>
-  `;
+  // 饮食框架说明（已移除：与每日食谱无关的重复教学块）
 
   html += `</div>`;
 
@@ -268,8 +255,8 @@ export async function renderDiet(params) {
     renderDiet({ day: selectedDay });
   };
 
-  // 返回本周
-  window.backToCurrentWeek = () => {
+  // 返回当日（本周 + 当天）
+  window.backToToday = () => {
     viewWeek = store.state.currentWeek || 1;
     selectedDay = getDayOfWeek();
     renderDiet({ day: selectedDay });
