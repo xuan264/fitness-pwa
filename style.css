@@ -538,31 +538,4 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .time-picker-actions { display: flex; gap: 12px; margin-top: 20px; }
 .time-picker-actions .btn { flex: 1; }
 
-/* ===== 食材替换（菜谱丰富化） ===== */
-.swap-link {
-  display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px;
-  background: var(--primary-light); color: var(--primary-dark);
-  font-size: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.swap-link:active { transform: scale(0.94); }
-.swap-rich-btn {
-  background: var(--primary-light); color: var(--primary-dark); border: none;
-  border-radius: 999px; padding: 4px 11px; font-size: 12px; cursor: pointer; white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-.swap-rich-btn:active { transform: scale(0.95); }
-.swap-modal-mask {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-  z-index: 200; display: flex; align-items: flex-end; justify-content: center;
-}
-.swap-modal {
-  background: var(--surface); width: 100%; max-width: 480px; max-height: 72vh; overflow: auto;
-  border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
-  animation: fadeIn 0.15s ease;
-}
-.swap-opt-list { margin-top: 4px; }
-.swap-opt {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 13px 8px; border-bottom: 1px solid var(--divider); cursor: pointer;
-}
-.swap-opt:active { background: var(--primary-light); }
+/* ===== 食材替换功能已移除（v65 改为扩充菜单种类本身） ===== */
