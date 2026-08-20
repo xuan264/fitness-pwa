@@ -1,5 +1,5 @@
 // Service Worker - 离线缓存 + 通知 + 后台提醒检查
-const CACHE_NAME = 'fitness-pwa-v64';
+const CACHE_NAME = 'fitness-pwa-v65';
 const CACHE_URLS = [
   './',
   './index.html',
@@ -23,6 +23,7 @@ const CACHE_URLS = [
   './pages/prepregnancy.js',
   './pages/week-workout.js',
   './pages/fat-loss.js',
+  './pages/countdown.js',
   './data/training-plan.js',
   './data/fat-loss-plan.js',
   './data/recipes.js',
@@ -209,8 +210,10 @@ self.addEventListener('activate', (event) => {
   startReminderCheck();
 });
 
-// 拦截请求 - 缓存优先（stale-while-revalidate）
-// 避免网络波动导致 ES Module 加载不完整而白屏
+// 拦截请求
+// 应用资源（JS/CSS/HTML）采用「网络优先 + 缓存兜底」：
+// 在线时永远取最新模块，彻底避免版本错配导致的白屏；
+// 仅当网络不可达（离线）时才回退到缓存的上一版。
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
@@ -222,20 +225,21 @@ self.addEventListener('fetch', (event) => {
     url.pathname === '/' ||
     url.pathname === '/fitness-pwa/'
   )) {
-    // 缓存优先：先返回缓存，后台同时更新
+    // 网络优先：先尝试网络获取最新文件
     event.respondWith(
-      caches.match(event.request).then(cached => {
-        // 后台获取最新版本更新缓存
-        const fetchPromise = fetch(event.request).then(response => {
+      fetch(event.request)
+        .then(response => {
           if (response.ok) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
           }
           return response;
-        }).catch(() => {});
-        // 有缓存就用缓存，没有就等网络
-        return cached || fetchPromise;
-      })
+        })
+        .catch(() =>
+          caches.match(event.request).then(cached =>
+            cached || caches.match('./index.html')
+          )
+        )
     );
     return;
   }
