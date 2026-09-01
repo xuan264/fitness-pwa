@@ -238,6 +238,17 @@ function drawWeightChart(records) {
   }
 
   // 数据点 + X轴日期标签
+  // 预计算要显示的标签索引：沿 x 轴均匀分布、最多 6 个、首末必含，避免右下角挤成一团
+  const labelIdx = [];
+  const maxLabels = 6;
+  if (records.length <= maxLabels) {
+    records.forEach((_, i) => labelIdx.push(i));
+  } else {
+    for (let k = 0; k < maxLabels; k++) {
+      const idx = Math.round((records.length - 1) * k / (maxLabels - 1));
+      if (!labelIdx.includes(idx)) labelIdx.push(idx);
+    }
+  }
   records.forEach((r, i) => {
     const x = pad.left + (cw / Math.max(1, records.length - 1)) * i;
     const y = pad.top + ch - ((r.weight * 2 - minW) / range) * ch;
@@ -251,14 +262,12 @@ function drawWeightChart(records) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // X轴日期标签（MM/DD）
-    const dateLabel = r.date.substring(5).replace('-', '/');
-    ctx.fillStyle = '#999';
-    ctx.font = '9px sans-serif';
-    ctx.textAlign = 'center';
-    // 记录少时全部显示，多时隔几个显示
-    const showLabel = records.length <= 6 || i === 0 || i === records.length - 1 || i % Math.ceil(records.length / 5) === 0;
-    if (showLabel) {
+    // X轴日期标签（MM/DD）：均匀分布，首尾标签分别左/右对齐防出界
+    if (labelIdx.includes(i)) {
+      const dateLabel = r.date.substring(5).replace('-', '/');
+      ctx.fillStyle = '#999';
+      ctx.font = '9px sans-serif';
+      ctx.textAlign = i === 0 ? 'left' : (i === records.length - 1 ? 'right' : 'center');
       ctx.fillText(dateLabel, x, h - 6);
     }
   });
