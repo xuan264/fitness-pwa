@@ -250,6 +250,9 @@ async function init() {
     }
     setTimeout(() => { if (tip.parentNode) tip.remove(); }, 15000);
   }
+
+  // 暴露刷新函数给头部刷新按钮（重新渲染当前页，重新读取本地数据）
+  window.refreshPage = () => router.render();
 }
 
 init();
