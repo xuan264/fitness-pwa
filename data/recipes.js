@@ -30,7 +30,7 @@ export const recipes = {
         ingredients: [
           { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25g", category: "protein" },
           { name: "燕麦片", amount: "80g", grams: "80g", fist: "0.8个拳头", protein: "10g", category: "carb" },
-          { name: "苹果", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "1.2g", category: "fruit" }
+          { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "2.4g", category: "fruit" }
         ],
         steps: ["锅中加水烧开，放入燕麦片小火煮5分钟", "鸡蛋另锅煮7-10分钟", "燕麦粥盛碗，苹果切块摆旁"],
         tips: "燕麦选纯燕麦片，煮蛋少油。"
@@ -40,7 +40,7 @@ export const recipes = {
         ingredients: [
           { name: "牛奶", amount: "400ml", grams: "400g", fist: "0.7杯", protein: "12.8g", category: "protein" },
           { name: "全麦面包", amount: "2片", grams: "70g", fist: "0.5个拳头", protein: "6.3g", category: "carb" },
-          { name: "香蕉", amount: "1根", grams: "120g", fist: "0.5个拳头", protein: "1.3g", category: "fruit" }
+          { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" }
         ],
         steps: ["全麦面包稍微烤一下", "配牛奶和香蕉食用"],
         tips: "全麦粉排第一才是真全麦。"
@@ -48,7 +48,7 @@ export const recipes = {
       {
         mealType: "早餐", name: "红薯泥配煎蛋", totalTime: "15分钟", calories: "约620大卡", protein: "约44g",
         ingredients: [
-          { name: "红薯", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "2.2g", category: "carb" },
+          { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "0.8个手掌", protein: "18.9g", category: "protein" },
           { name: "菠菜", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "3.9g", category: "vegetable" }
         ],
@@ -60,7 +60,7 @@ export const recipes = {
         ingredients: [
           { name: "鸡胸肉", amount: "150g", grams: "150g", fist: "0.6个手掌", protein: "35g", category: "protein" },
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "0.8个手掌", protein: "18.9g", category: "protein" },
-          { name: "红黄彩椒", amount: "1个", grams: "150g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+          { name: "红黄彩椒", amount: "2个", grams: "300g", fist: "2个拳头", protein: "3.6g", category: "vegetable" }
         ],
         steps: ["鸡胸切丁用盐黑胡椒腌10分钟", "彩椒切丁与鸡蛋打散", "少油小火烘至凝固"],
         tips: "一道菜同时有蛋白和蔬菜。"
@@ -68,7 +68,7 @@ export const recipes = {
       {
         mealType: "早餐", name: "玉米虾仁粥", totalTime: "20分钟", calories: "约580大卡", protein: "约48g",
         ingredients: [
-          { name: "玉米", amount: "1根", grams: "150g", fist: "0.5个拳头", protein: "4.5g", category: "carb" },
+          { name: "玉米", amount: "2根", grams: "300g", fist: "1个拳头", protein: "9g", category: "carb" },
           { name: "虾仁", amount: "150g", grams: "150g", fist: "0.5个手掌", protein: "29g", category: "protein" },
           { name: "鸡蛋", amount: "2个", grams: "100g", fist: "0.5个手掌", protein: "12.6g", category: "protein" }
         ],
@@ -108,7 +108,7 @@ export const recipes = {
       {
         mealType: "早餐", name: "紫薯酸奶杯", totalTime: "10分钟", calories: "约560大卡", protein: "约38g",
         ingredients: [
-          { name: "紫薯", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "2.4g", category: "carb" },
+          { name: "紫薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.8g", category: "carb" },
           { name: "希腊酸奶", amount: "250g", grams: "250g", fist: "0.7杯", protein: "25g", category: "protein" },
           { name: "蓝莓", amount: "100g", grams: "100g", fist: "0.5个拳头", protein: "0.6g", category: "fruit" }
         ],
@@ -140,7 +140,7 @@ export const recipes = {
         ingredients: [
           { name: "全麦面包", amount: "2片", grams: "70g", fist: "0.5个拳头", protein: "6.3g", category: "carb" },
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "0.8个手掌", protein: "18.9g", category: "protein" },
-          { name: "牛油果", amount: "半个", grams: "100g", fist: "0.3个拳头", protein: "2g", category: "fruit" }
+          { name: "牛油果", amount: "1个", grams: "200g", fist: "0.6个拳头", protein: "4g", category: "fruit" }
         ],
         steps: ["面包烤脆", "鸡蛋水煮", "牛油果压泥涂面包"],
         tips: "牛油果提供优质脂肪，切开即食。"
@@ -172,7 +172,7 @@ export const recipes = {
         mealType: "午餐", name: "清蒸鱼配红薯油麦菜", totalTime: "25分钟", calories: "约680大卡", protein: "约58g",
         ingredients: [
           { name: "龙利鱼/巴沙鱼", amount: "200g", grams: "200g", fist: "0.7个手掌", protein: "40g", category: "protein" },
-          { name: "红薯", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "2.2g", category: "carb" },
+          { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
           { name: "油麦菜", amount: "250g", grams: "250g", fist: "1.2个拳头", protein: "4.3g", category: "vegetable" }
         ],
         steps: ["红薯蒸熟", "鱼块蒸8分钟淋豉油", "油麦菜焯水拌蒜蓉"],
@@ -282,7 +282,7 @@ export const recipes = {
         mealType: "午餐", name: "香煎三文鱼配芦笋红薯", totalTime: "25分钟", calories: "约720大卡", protein: "约70g",
         ingredients: [
           { name: "三文鱼", amount: "200g", grams: "200g", fist: "0.7个手掌", protein: "42g", category: "protein" },
-          { name: "红薯", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "2.2g", category: "carb" },
+          { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
           { name: "芦笋", amount: "200g", grams: "200g", fist: "1个拳头", protein: "4.4g", category: "vegetable" }
         ],
         steps: ["红薯蒸熟", "三文鱼少油每面煎3分钟", "芦笋焯水摆盘"],
@@ -295,7 +295,7 @@ export const recipes = {
         mealType: "晚餐", name: "蒸鱼配红薯凉拌菠菜", totalTime: "25分钟", calories: "约660大卡", protein: "约58g",
         ingredients: [
           { name: "龙利鱼/巴沙鱼", amount: "200g", grams: "200g", fist: "0.7个手掌", protein: "40g", category: "protein" },
-          { name: "红薯", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "2.2g", category: "carb" },
+          { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
           { name: "菠菜", amount: "250g", grams: "250g", fist: "1.2个拳头", protein: "6.5g", category: "vegetable" }
         ],
         steps: ["红薯蒸熟", "鱼蒸8分钟", "菠菜焯水拌蒜蓉"],
@@ -347,7 +347,7 @@ export const recipes = {
         mealType: "晚餐", name: "瘦肉炒莴笋", totalTime: "20分钟", calories: "约660大卡", protein: "约56g",
         ingredients: [
           { name: "瘦猪肉", amount: "180g", grams: "180g", fist: "0.7个手掌", protein: "36g", category: "protein" },
-          { name: "红薯", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "2.2g", category: "carb" },
+          { name: "红薯", amount: "2个", grams: "400g", fist: "1个拳头", protein: "4.4g", category: "carb" },
           { name: "莴笋", amount: "300g", grams: "300g", fist: "1.5个拳头", protein: "3g", category: "vegetable" }
         ],
         steps: ["瘦肉切丝腌", "红薯蒸熟", "莴笋快炒", "下肉丝"],
@@ -358,7 +358,7 @@ export const recipes = {
         ingredients: [
           { name: "瘦猪肉", amount: "150g", grams: "150g", fist: "0.6个手掌", protein: "30g", category: "protein" },
           { name: "全麦饼", amount: "2张", grams: "100g", fist: "0.7个拳头", protein: "10g", category: "carb" },
-          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "黄瓜", amount: "2根", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
           { name: "生菜", amount: "120g", grams: "120g", fist: "0.6个拳头", protein: "1.9g", category: "vegetable" }
         ],
         steps: ["瘦肉切丝少油炒熟", "黄瓜生菜切丝", "铺全麦饼卷起"],
@@ -388,8 +388,8 @@ export const recipes = {
       {
         mealType: "晚餐", name: "鸡腿蔬菜汤", totalTime: "30分钟", calories: "约680大卡", protein: "约52g",
         ingredients: [
-          { name: "鸡腿（去皮）", amount: "1个", grams: "200g", fist: "0.7个手掌", protein: "40g", category: "protein" },
-          { name: "玉米", amount: "半根", grams: "75g", fist: "0.3个拳头", protein: "2.3g", category: "vegetable" },
+          { name: "鸡腿（去皮）", amount: "2个", grams: "400g", fist: "1.4个手掌", protein: "80g", category: "protein" },
+          { name: "玉米", amount: "1根", grams: "150g", fist: "0.6个拳头", protein: "4.6g", category: "vegetable" },
           { name: "西葫芦", amount: "200g", grams: "200g", fist: "1个拳头", protein: "2.4g", category: "vegetable" }
         ],
         steps: ["鸡腿去皮焯水", "与玉米西葫芦炖", "少盐"],
@@ -422,7 +422,7 @@ export const recipes = {
           { name: "鸡蛋", amount: "4个", grams: "200g", fist: "1个手掌", protein: "25.2g", category: "protein" },
           { name: "杂粮饭", amount: "1碗", grams: "熟200g", fist: "0.7个拳头", protein: "6g", category: "carb" },
           { name: "水发木耳", amount: "150g", grams: "150g", fist: "0.8个拳头", protein: "1.8g", category: "vegetable" },
-          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+          { name: "黄瓜", amount: "2根", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" }
         ],
         steps: ["鸡蛋炒散", "木耳黄瓜翻炒", "配杂粮饭"],
         tips: "木耳清肠。"
@@ -443,7 +443,7 @@ export const recipes = {
         ingredients: [
           { name: "三文鱼", amount: "150g", grams: "150g", fist: "0.5个手掌", protein: "31g", category: "protein" },
           { name: "全麦饼", amount: "2张", grams: "100g", fist: "0.7个拳头", protein: "10g", category: "carb" },
-          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" },
+          { name: "黄瓜", amount: "2根", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" },
           { name: "紫甘蓝", amount: "120g", grams: "120g", fist: "0.6个拳头", protein: "1.9g", category: "vegetable" }
         ],
         steps: ["三文鱼微煎切条", "黄瓜紫甘蓝切丝", "卷饼"],
@@ -455,7 +455,7 @@ export const recipes = {
       {
         mealType: "加餐（休息日）", name: "香蕉+牛奶+蛋白粉", totalTime: "2分钟", calories: "约320大卡", protein: "约34g",
         ingredients: [
-          { name: "香蕉", amount: "1根", grams: "120g", fist: "0.5个拳头", protein: "1.3g", category: "fruit" },
+          { name: "香蕉", amount: "2根", grams: "240g", fist: "1个拳头", protein: "2.6g", category: "fruit" },
           { name: "牛奶", amount: "300ml", grams: "300g", fist: "0.5杯", protein: "9.6g", category: "protein" },
           { name: "蛋白粉", amount: "1勺", grams: "30g", fist: "—", protein: "24g", category: "protein" }
         ],
@@ -476,7 +476,7 @@ export const recipes = {
         mealType: "加餐（休息日）", name: "水煮蛋+黄瓜", totalTime: "10分钟", calories: "约280大卡", protein: "约28g",
         ingredients: [
           { name: "鸡蛋", amount: "3个", grams: "150g", fist: "0.8个手掌", protein: "18.9g", category: "protein" },
-          { name: "黄瓜", amount: "1根", grams: "200g", fist: "1个拳头", protein: "1.8g", category: "vegetable" }
+          { name: "黄瓜", amount: "2根", grams: "400g", fist: "2个拳头", protein: "3.6g", category: "vegetable" }
         ],
         steps: ["鸡蛋煮熟", "黄瓜切条"],
         tips: "简单高蛋白。"
@@ -503,8 +503,8 @@ export const recipes = {
       {
         mealType: "加餐（休息日）", name: "蛋白棒+苹果", totalTime: "1分钟", calories: "约320大卡", protein: "约33g",
         ingredients: [
-          { name: "蛋白棒", amount: "1根", grams: "60g", fist: "—", protein: "30g", category: "protein" },
-          { name: "苹果", amount: "1个", grams: "200g", fist: "0.5个拳头", protein: "1.2g", category: "fruit" }
+          { name: "蛋白棒", amount: "2根", grams: "120g", fist: "—", protein: "60g", category: "protein" },
+          { name: "苹果", amount: "2个", grams: "400g", fist: "1个拳头", protein: "2.4g", category: "fruit" }
         ],
         steps: ["直接食用"],
         tips: "外出便携。"
@@ -551,7 +551,7 @@ export const recipes = {
         mealType: "加餐（休息日）", name: "虾仁+牛油果", totalTime: "8分钟", calories: "约300大卡", protein: "约28g",
         ingredients: [
           { name: "虾仁", amount: "100g", grams: "100g", fist: "0.4个手掌", protein: "19g", category: "protein" },
-          { name: "牛油果", amount: "半个", grams: "100g", fist: "0.3个拳头", protein: "2g", category: "fruit" }
+          { name: "牛油果", amount: "1个", grams: "200g", fist: "0.6个拳头", protein: "4g", category: "fruit" }
         ],
         steps: ["虾仁煮熟", "牛油果切片撒黑胡椒"],
         tips: "优质蛋白配好脂肪，懒人加餐。"
