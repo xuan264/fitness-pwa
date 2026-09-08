@@ -23,6 +23,7 @@
     <header id="app-header">
       <h1>璇刻</h1>
       <div class="header-subtitle">健身 · 减脂</div>
+      <button id="refresh-btn" class="header-refresh" onclick="if(window.refreshPage){this.classList.add('spin');setTimeout(()=>this.classList.remove('spin'),600);window.refreshPage();}" title="刷新" aria-label="刷新">🔄</button>
     </header>
     <main id="page-container">
       <!-- 白屏检测：如果 app.js 加载失败，3秒后显示提示 -->
